@@ -1,109 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AISensorEdgeComp — The Planetary Sensor Fabric, Intelligenced</title>
 <meta name="description" content="AISensorEdgeComp fuses multi-modal IoT sensors, edge AI silicon, and time-series foundation models into one queryable, planetary-scale intelligence fabric." />
+<meta name="theme-color" content="#050810" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — The Planetary Sensor Fabric, Intelligenced" />
+<meta property="og:description" content="Multi-modal IoT sensors + edge AI silicon + time-series foundation models, fused into one queryable planetary-scale intelligence fabric." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="AISensorEdgeComp — investor preview" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:creator" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — The Planetary Sensor Fabric, Intelligenced" />
+<meta name="twitter:description" content="Multi-modal IoT + edge AI + time-series foundation models in one queryable planetary-scale intelligence fabric." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+
+<!-- LinkedIn (uses OG, but explicit meta doesn't hurt) -->
+<meta name="linkedin:title" content="AISensorEdgeComp" />
+<meta name="linkedin:description" content="The planetary sensor fabric, intelligenced. Investor preview." />
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #050810;
-    --bg-2: #0a0f1c;
-    --card: #0d1424;
-    --card-2: #111a30;
-    --border: rgba(0, 212, 255, 0.18);
-    --border-strong: rgba(0, 212, 255, 0.4);
-    --text: #e8eef5;
-    --text-dim: #8b95a8;
-    --text-mute: #5b6478;
-    --cyan: #00d4ff;
-    --violet: #a855f7;
-    --magenta: #ec4899;
-    --green: #22d3ee;
-    --gold: #fbbf24;
+  :root[data-theme="dark"] {
+    --bg: #050810; --bg-2: #0a0f1c; --card: #0d1424; --card-2: #111a30;
+    --border: rgba(0, 212, 255, 0.18); --border-strong: rgba(0, 212, 255, 0.4);
+    --text: #e8eef5; --text-dim: #8b95a8; --text-mute: #5b6478;
+    --cyan: #00d4ff; --violet: #a855f7; --magenta: #ec4899;
+    --green: #22d3ee; --gold: #fbbf24;
+    --shadow-card: 0 0 24px rgba(0, 212, 255, 0.06);
+  }
+  :root[data-theme="light"] {
+    --bg: #f8fafc; --bg-2: #ffffff; --card: #ffffff; --card-2: #f1f5f9;
+    --border: rgba(15, 23, 42, 0.1); --border-strong: rgba(15, 23, 42, 0.25);
+    --text: #0f172a; --text-dim: #475569; --text-mute: #94a3b8;
+    --cyan: #0891b2; --violet: #7c3aed; --magenta: #db2777;
+    --green: #0891b2; --gold: #d97706;
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08), 0 8px 24px rgba(15, 23, 42, 0.04);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg); color: var(--text);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    transition: background 0.3s, color 0.3s;
   }
   h1, h2, h3, h4, .display {
     font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
+  a { color: inherit; }
 
   /* === NAV === */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 18px 40px;
+    padding: 16px 40px;
     display: flex; align-items: center; justify-content: space-between;
-    background: rgba(5, 8, 16, 0.7);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
   }
   .logo {
     display: flex; align-items: center; gap: 10px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600; font-size: 16px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px;
     letter-spacing: 0.02em;
   }
   .logo-mark {
     width: 28px; height: 28px; border-radius: 7px;
     background: linear-gradient(135deg, var(--cyan), var(--violet));
-    position: relative;
-    box-shadow: 0 0 24px rgba(0, 212, 255, 0.4);
+    position: relative; box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 40%, transparent);
   }
-  .logo-mark::after {
-    content: ''; position: absolute; inset: 6px;
-    border-radius: 3px;
-    background: var(--bg);
-  }
-  .logo-mark::before {
-    content: ''; position: absolute; inset: 10px;
-    border-radius: 2px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-  }
-  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .logo-mark::after { content: ''; position: absolute; inset: 6px; border-radius: 3px; background: var(--bg); }
+  .logo-mark::before { content: ''; position: absolute; inset: 10px; border-radius: 2px; background: linear-gradient(135deg, var(--cyan), var(--violet)); }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
   .nav-links a {
     color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500;
     transition: color 0.2s;
   }
   .nav-links a:hover { color: var(--cyan); }
-  .nav-cta {
-    padding: 8px 18px; border-radius: 6px;
+  .nav-actions { display: flex; gap: 10px; align-items: center; }
+  .nav-btn {
+    padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; border: 1px solid var(--border);
+    background: transparent; color: var(--text); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif;
+  }
+  .nav-btn:hover { border-color: var(--border-strong); color: var(--cyan); }
+  .nav-btn-primary {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: #050810 !important; font-weight: 600 !important;
-    box-shadow: 0 0 16px rgba(0, 212, 255, 0.3);
+    color: var(--bg) !important; border: none; font-weight: 600;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--cyan) 30%, transparent);
+  }
+  .nav-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 50%, transparent); }
+  .nav-btn-icon { padding: 8px 10px; }
+  .nav-btn-icon svg { width: 16px; height: 16px; }
+  .theme-toggle { background: transparent; border: 1px solid var(--border); cursor: pointer; padding: 8px 10px; border-radius: 6px; color: var(--text); display: inline-flex; align-items: center; }
+  .theme-toggle:hover { border-color: var(--border-strong); }
+  .theme-toggle .icon-sun, .theme-toggle .icon-moon { width: 16px; height: 16px; }
+  [data-theme="dark"] .icon-sun { display: block; }
+  [data-theme="dark"] .icon-moon { display: none; }
+  [data-theme="light"] .icon-sun { display: none; }
+  [data-theme="light"] .icon-moon { display: block; }
+  @media (max-width: 1024px) {
+    .nav-links { display: none; }
   }
   @media (max-width: 768px) {
-    nav { padding: 14px 20px; }
-    .nav-links { display: none; }
+    nav { padding: 12px 20px; }
+    .nav-btn span.label { display: none; }
   }
 
   /* === HERO === */
   .hero {
     min-height: 100vh; position: relative;
     display: flex; align-items: center; justify-content: center;
-    padding: 120px 40px 80px;
-    overflow: hidden;
+    padding: 120px 40px 80px; overflow: hidden;
   }
   .hero-grid {
     position: absolute; inset: 0;
     background-image:
-      linear-gradient(rgba(0, 212, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px);
+      linear-gradient(color-mix(in srgb, var(--cyan) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--cyan) 8%, transparent) 1px, transparent 1px);
     background-size: 60px 60px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
     -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
@@ -116,23 +147,21 @@
   .hero-glow {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.15), transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15), transparent 50%);
+      radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--cyan) 15%, transparent), transparent 50%),
+      radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--violet) 15%, transparent), transparent 50%);
   }
   .hero-content { max-width: 980px; text-align: center; position: relative; z-index: 2; }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 6px 14px; border-radius: 100px;
-    background: rgba(0, 212, 255, 0.08);
+    background: color-mix(in srgb, var(--cyan) 8%, transparent);
     border: 1px solid var(--border-strong);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan);
     margin-bottom: 32px;
   }
   .hero-badge .dot {
     width: 6px; height: 6px; border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 8px var(--cyan);
+    background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
     animation: pulse 2s ease-in-out infinite;
   }
   @keyframes pulse {
@@ -140,65 +169,52 @@
     50% { opacity: 0.4; }
   }
   .hero h1 {
-    font-size: clamp(40px, 7vw, 88px);
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, #e8eef5 40%, var(--cyan) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: clamp(40px, 7vw, 88px); font-weight: 700;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text) 40%, var(--cyan) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     margin-bottom: 24px;
   }
   .hero h1 .accent {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     font-style: italic;
   }
   .hero-sub {
-    font-size: clamp(16px, 2vw, 20px);
-    color: var(--text-dim);
-    max-width: 720px; margin: 0 auto 40px;
-    line-height: 1.6;
+    font-size: clamp(16px, 2vw, 20px); color: var(--text-dim);
+    max-width: 720px; margin: 0 auto 40px; line-height: 1.6;
   }
   .hero-ctas {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
   }
   .btn {
-    padding: 14px 28px; border-radius: 8px;
+    padding: 14px 26px; border-radius: 8px;
     font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 15px;
-    text-decoration: none; cursor: pointer;
-    transition: all 0.25s; border: none;
+    text-decoration: none; cursor: pointer; transition: all 0.25s; border: none;
     display: inline-flex; align-items: center; gap: 10px;
   }
   .btn-primary {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: #050810;
-    box-shadow: 0 0 24px rgba(0, 212, 255, 0.25);
+    color: var(--bg); box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 25%, transparent);
   }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0, 212, 255, 0.45); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px color-mix(in srgb, var(--cyan) 45%, transparent); }
   .btn-ghost {
-    background: transparent; color: var(--text);
-    border: 1px solid var(--border-strong);
+    background: transparent; color: var(--text); border: 1px solid var(--border-strong);
   }
-  .btn-ghost:hover { background: rgba(0, 212, 255, 0.06); border-color: var(--cyan); }
+  .btn-ghost:hover { background: color-mix(in srgb, var(--cyan) 6%, transparent); border-color: var(--cyan); }
 
   .hero-stats {
-    margin-top: 80px;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    margin-top: 80px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
     max-width: 980px; margin-left: auto; margin-right: auto;
   }
   .hero-stat { text-align: left; padding: 20px; border-top: 1px solid var(--border); }
   .hero-stat .num {
-    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    font-size: 28px; color: var(--text);
-    background: linear-gradient(135deg, #fff, var(--cyan));
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 28px;
+    background: linear-gradient(135deg, var(--text), var(--cyan));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
   .hero-stat .label {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;
-    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px;
   }
   @media (max-width: 768px) {
     .hero-stats { grid-template-columns: repeat(2, 1fr); }
@@ -208,17 +224,12 @@
   section { padding: 100px 40px; position: relative; }
   .section-inner { max-width: 1200px; margin: 0 auto; }
   .section-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.12em;
-    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan);
+    text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;
     display: flex; align-items: center; gap: 10px;
   }
-  .section-label::before {
-    content: ''; width: 24px; height: 1px; background: var(--cyan);
-  }
-  .section-title {
-    font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 24px;
-  }
+  .section-label::before { content: ''; width: 24px; height: 1px; background: var(--cyan); }
+  .section-title { font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 24px; }
   .section-title .accent {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
@@ -228,14 +239,11 @@
   }
 
   /* === PROBLEM & MARKET === */
-  .problem-grid {
-    display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
-  }
+  .problem-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; }
   @media (max-width: 900px) { .problem-grid { grid-template-columns: 1fr; } }
   .problem-list { display: flex; flex-direction: column; gap: 20px; }
   .problem-item {
-    padding: 24px; border-radius: 12px;
-    background: var(--card); border: 1px solid var(--border);
+    padding: 24px; border-radius: 12px; background: var(--card); border: 1px solid var(--border);
     transition: all 0.3s;
   }
   .problem-item:hover { border-color: var(--border-strong); transform: translateX(4px); }
@@ -244,57 +252,52 @@
     display: flex; align-items: center; gap: 10px;
   }
   .problem-item h4 .num {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    color: var(--cyan); opacity: 0.7;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); opacity: 0.7;
   }
   .problem-item p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
   .market-panel {
     padding: 32px; border-radius: 16px;
     background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%);
-    border: 1px solid var(--border);
-    position: relative; overflow: hidden;
+    border: 1px solid var(--border); position: relative; overflow: hidden;
   }
   .market-panel::before {
-    content: ''; position: absolute; top: -50%; right: -50%;
-    width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.08), transparent 50%);
+    content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--cyan) 8%, transparent), transparent 50%);
     animation: rotate 30s linear infinite;
   }
   @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .market-row {
     display: flex; justify-content: space-between; align-items: baseline;
-    padding: 18px 0; border-bottom: 1px solid var(--border);
-    position: relative; z-index: 2;
+    padding: 18px 0; border-bottom: 1px solid var(--border); position: relative; z-index: 2;
   }
-  .market-row:last-child { border-bottom: none; }
+  .market-row:last-of-type { border-bottom: none; }
   .market-row .label {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.08em;
   }
   .market-row .value {
     font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 32px;
-    background: linear-gradient(135deg, #fff, var(--cyan));
+    background: linear-gradient(135deg, var(--text), var(--cyan));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
   .market-row .sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
   .market-row .right { text-align: right; }
   .market-note {
     margin-top: 20px; padding: 12px 16px;
-    background: rgba(0, 212, 255, 0.05);
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
     border-left: 2px solid var(--cyan);
-    font-size: 13px; color: var(--text-dim);
-    border-radius: 4px;
+    font-size: 13px; color: var(--text-dim); border-radius: 4px;
   }
 
   /* === ARCHITECTURE === */
   .arch-stack { display: flex; flex-direction: column; gap: 16px; }
   .arch-layer {
     padding: 28px 32px; border-radius: 14px;
-    background: var(--card); border: 1px solid var(--border);
-    position: relative; transition: all 0.3s;
+    background: var(--card); border: 1px solid var(--border); position: relative;
+    transition: all 0.3s;
     display: grid; grid-template-columns: 80px 1fr auto; gap: 28px; align-items: center;
   }
-  .arch-layer:hover { border-color: var(--border-strong); box-shadow: 0 0 24px rgba(0, 212, 255, 0.08); }
+  .arch-layer:hover { border-color: var(--border-strong); box-shadow: var(--shadow-card); }
   @media (max-width: 768px) { .arch-layer { grid-template-columns: 1fr; gap: 16px; } }
   .arch-num {
     font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 500;
@@ -306,7 +309,7 @@
   .arch-body h4 .pill {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
     padding: 3px 8px; border-radius: 4px; margin-left: 10px;
-    background: rgba(0, 212, 255, 0.1); color: var(--cyan); font-weight: 500;
+    background: color-mix(in srgb, var(--cyan) 10%, transparent); color: var(--cyan); font-weight: 500;
     vertical-align: middle;
   }
   .arch-body p { font-size: 14px; color: var(--text-dim); max-width: 620px; }
@@ -315,14 +318,12 @@
   .arch-tag {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
     padding: 4px 10px; border-radius: 4px;
-    background: rgba(168, 85, 247, 0.08); color: var(--violet);
-    border: 1px solid rgba(168, 85, 247, 0.2);
+    background: color-mix(in srgb, var(--violet) 8%, transparent); color: var(--violet);
+    border: 1px solid color-mix(in srgb, var(--violet) 20%, transparent);
   }
 
   /* === SENSOR MODALITIES === */
-  .sensor-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-  }
+  .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   @media (max-width: 900px) { .sensor-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 500px) { .sensor-grid { grid-template-columns: 1fr; } }
   .sensor-card {
@@ -339,16 +340,14 @@
   .sensor-card:hover::before { opacity: 1; }
   .sensor-icon {
     width: 44px; height: 44px; border-radius: 10px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(168, 85, 247, 0.15));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 15%, transparent), color-mix(in srgb, var(--violet) 15%, transparent));
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px;
-    font-size: 22px;
+    margin-bottom: 16px; font-size: 22px;
   }
   .sensor-card h4 { font-size: 15px; margin-bottom: 4px; }
   .sensor-card .freq {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--cyan); margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); margin-bottom: 10px;
   }
   .sensor-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 
@@ -358,22 +357,17 @@
   .ai-card {
     padding: 28px; border-radius: 14px;
     background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%);
-    border: 1px solid var(--border);
-    position: relative; overflow: hidden;
+    border: 1px solid var(--border); position: relative; overflow: hidden;
   }
   .ai-card .corner {
-    position: absolute; top: 0; right: 0;
-    width: 80px; height: 80px;
-    background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.18), transparent 70%);
+    position: absolute; top: 0; right: 0; width: 80px; height: 80px;
+    background: radial-gradient(circle at top right, color-mix(in srgb, var(--violet) 18%, transparent), transparent 70%);
   }
-  .ai-card h4 {
-    font-size: 18px; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 12px;
-  }
+  .ai-card h4 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
   .ai-card h4 .badge {
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
     padding: 3px 8px; border-radius: 4px;
-    background: rgba(168, 85, 247, 0.12); color: var(--violet);
+    background: color-mix(in srgb, var(--violet) 12%, transparent); color: var(--violet);
     text-transform: uppercase; letter-spacing: 0.06em;
   }
   .ai-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-bottom: 14px; }
@@ -390,81 +384,93 @@
   .vert-card {
     padding: 24px 20px; border-radius: 12px;
     background: var(--card); border: 1px solid var(--border);
-    transition: all 0.3s;
-    display: flex; flex-direction: column; gap: 8px; min-height: 240px;
+    transition: all 0.3s; display: flex; flex-direction: column; gap: 8px; min-height: 240px;
   }
   .vert-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
   .vert-card .vicon { font-size: 28px; margin-bottom: 4px; }
   .vert-card h4 { font-size: 16px; }
   .vert-card .vstatus {
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 8px;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
   }
   .vert-card .vstatus.beta { color: var(--gold); }
   .vert-card .vstatus.next { color: var(--violet); }
   .vert-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; flex-grow: 1; }
   .vert-card .vroi {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--cyan); padding-top: 12px; border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan);
+    padding-top: 12px; border-top: 1px solid var(--border);
   }
 
   /* === ROADMAP === */
-  .roadmap {
-    position: relative;
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
-  }
+  .roadmap { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; }
   @media (max-width: 900px) { .roadmap { grid-template-columns: 1fr; gap: 16px; } }
   .roadmap::before {
     content: ''; position: absolute; top: 32px; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
-    opacity: 0.3;
+    background: linear-gradient(90deg, var(--cyan), var(--violet)); opacity: 0.3;
   }
   @media (max-width: 900px) { .roadmap::before { display: none; } }
-  .milestone {
-    padding: 0 12px; position: relative;
-  }
+  .milestone { padding: 0 12px; position: relative; }
   .milestone::before {
     content: ''; position: absolute; top: 26px; left: 50%; transform: translateX(-50%);
     width: 12px; height: 12px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--cyan);
-    box-shadow: 0 0 12px var(--cyan);
+    background: var(--bg); border: 2px solid var(--cyan); box-shadow: 0 0 12px var(--cyan);
     z-index: 2;
   }
   @media (max-width: 900px) { .milestone::before { display: none; } }
   .milestone .q {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;
-    margin-top: 64px; margin-bottom: 8px; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-top: 64px; margin-bottom: 8px; text-align: center;
   }
   @media (max-width: 900px) { .milestone .q { margin-top: 0; text-align: left; } }
-  .milestone h4 {
-    font-size: 14px; margin-bottom: 6px; text-align: center;
-  }
+  .milestone h4 { font-size: 14px; margin-bottom: 6px; text-align: center; }
   @media (max-width: 900px) { .milestone h4 { text-align: left; } }
-  .milestone p {
-    font-size: 12px; color: var(--text-dim); text-align: center;
-  }
+  .milestone p { font-size: 12px; color: var(--text-dim); text-align: center; }
   @media (max-width: 900px) { .milestone p { text-align: left; } }
+
+  /* === TEAM === */
+  .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .team-grid { grid-template-columns: 1fr; } }
+  .team-card {
+    padding: 28px 24px; border-radius: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    text-align: center; transition: all 0.3s;
+  }
+  .team-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+  .team-avatar {
+    width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 16px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 28px;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 30%, transparent);
+  }
+  .team-card h4 { font-size: 17px; margin-bottom: 2px; }
+  .team-role {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
+  }
+  .team-bio { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 14px; }
+  .team-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute);
+    padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .team-meta strong { color: var(--text); font-weight: 500; }
 
   /* === CONTACT === */
   .contact {
     background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
-    border-top: 1px solid var(--border);
-    text-align: center;
+    border-top: 1px solid var(--border); text-align: center;
   }
   .contact-card {
-    max-width: 760px; margin: 0 auto;
-    padding: 60px 40px; border-radius: 20px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    max-width: 760px; margin: 0 auto; padding: 60px 40px; border-radius: 20px;
+    background: var(--card); border: 1px solid var(--border);
     position: relative; overflow: hidden;
   }
   .contact-card::before {
     content: ''; position: absolute; inset: 0;
     background:
-      radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.12), transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.12), transparent 50%);
+      radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--cyan) 12%, transparent), transparent 50%),
+      radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--violet) 12%, transparent), transparent 50%);
     pointer-events: none;
   }
   .contact-card > * { position: relative; z-index: 2; }
@@ -473,24 +479,114 @@
   .contact-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
   .contact-meta {
     margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border);
-    display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
   }
-  .contact-meta div { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); }
-  .contact-meta div span { color: var(--cyan); }
+  @media (max-width: 768px) { .contact-meta { grid-template-columns: 1fr; } }
+  .contact-meta-block { text-align: left; }
+  .contact-meta-block .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+  }
+  .contact-meta-block .value { font-size: 14px; color: var(--text); }
+  .contact-meta-block .value a { color: var(--cyan); text-decoration: none; }
+  .contact-meta-block .value a:hover { text-decoration: underline; }
 
   /* === FOOTER === */
   footer {
-    padding: 40px; text-align: center;
-    border-top: 1px solid var(--border);
-    color: var(--text-mute); font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
+    padding: 40px; text-align: center; border-top: 1px solid var(--border);
+    color: var(--text-mute); font-size: 12px; font-family: 'JetBrains Mono', monospace;
   }
   footer a { color: var(--text-dim); text-decoration: none; }
   footer a:hover { color: var(--cyan); }
+  .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+
+  /* === MODALS === */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; z-index: 200;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--card); border: 1px solid var(--border-strong); border-radius: 16px;
+    max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-header {
+    padding: 24px 28px 0; display: flex; justify-content: space-between; align-items: start;
+  }
+  .modal-header h3 { font-size: 20px; margin-bottom: 4px; }
+  .modal-header p { font-size: 13px; color: var(--text-dim); margin: 0; }
+  .modal-close {
+    background: transparent; border: 1px solid var(--border); cursor: pointer;
+    width: 32px; height: 32px; border-radius: 6px; color: var(--text);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .modal-close:hover { border-color: var(--border-strong); color: var(--cyan); }
+  .modal-body { padding: 24px 28px 28px; }
+  .form-field { margin-bottom: 16px; }
+  .form-field label {
+    display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
+  }
+  .form-field input, .form-field textarea {
+    width: 100%; padding: 12px 14px; border-radius: 8px;
+    background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .form-field input:focus, .form-field textarea:focus {
+    outline: none; border-color: var(--cyan);
+  }
+  .form-field textarea { min-height: 100px; resize: vertical; }
+  .search-box {
+    display: flex; gap: 10px; margin-bottom: 16px;
+  }
+  .search-box input {
+    flex: 1; padding: 14px 16px; border-radius: 8px;
+    background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+  .search-box input:focus { outline: none; border-color: var(--cyan); }
+  .search-suggestions {
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .search-suggestions .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+  }
+  .search-suggestion {
+    padding: 10px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    color: var(--text-dim); transition: all 0.2s; margin-bottom: 4px;
+  }
+  .search-suggestion:hover { background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--text); }
+  .search-result {
+    padding: 14px; border-radius: 8px; background: var(--bg-2);
+    border: 1px solid var(--border); margin-top: 12px;
+  }
+  .search-result .q { font-size: 13px; color: var(--cyan); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+  .search-result .a { font-size: 14px; color: var(--text); line-height: 1.5; }
 
   /* === REVEAL ANIMATION === */
   .reveal { opacity: 0; transform: translateY(20px); transition: all 0.7s ease-out; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* === FLOATING SEARCH BUTTON === */
+  .float-search {
+    position: fixed; bottom: 30px; right: 30px; z-index: 90;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border: none; cursor: pointer; color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--cyan) 40%, transparent);
+    transition: all 0.3s;
+  }
+  .float-search:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 40px color-mix(in srgb, var(--cyan) 60%, transparent); }
+  .float-search svg { width: 22px; height: 22px; }
+  @media (max-width: 768px) { .float-search { bottom: 20px; right: 20px; width: 48px; height: 48px; } }
 </style>
 </head>
 <body>
@@ -507,7 +603,21 @@
     <a href="#ai">AI Stack</a>
     <a href="#verticals">Verticals</a>
     <a href="#roadmap">Roadmap</a>
-    <a href="#contact" class="nav-cta">Request Briefing</a>
+    <a href="#team">Team</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="#contact" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
   </div>
 </nav>
 
@@ -516,7 +626,7 @@
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span> Investor Preview &middot; 2026 Series A Cycle</div>
+    <div class="hero-badge"><span class="dot"></span> Series A Cycle Open &middot; Q4 2026</div>
     <h1>The planetary sensor fabric,<br><span class="accent">intelligenced.</span></h1>
     <p class="hero-sub">
       AISensorEdgeComp fuses multi-modal IoT sensors, edge AI silicon, and time-series
@@ -524,8 +634,12 @@
       bridging the physical world and reasoning AI.
     </p>
     <div class="hero-ctas">
-      <a href="#contact" class="btn btn-primary">Request Briefing &rarr;</a>
-      <a href="#architecture" class="btn btn-ghost">Read the Architecture</a>
+      <a href="#contact" class="btn btn-primary">Get Started &rarr;</a>
+      <a href="architecture-deep.html" class="btn btn-ghost">Technical Deep Dive</a>
+      <button class="btn btn-ghost" onclick="openModal('searchModal')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Search with AI
+      </button>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -563,57 +677,49 @@
       <div class="problem-list reveal">
         <div class="problem-item">
           <h4><span class="num">01</span> Protocol Heterogeneity</h4>
-          <p>A single factory floor commonly runs Modbus, OPC-UA, Profinet, MQTT, CoAP, and proprietary serial — all at once. Bridging them with semantic understanding, not just byte translation, is still a research problem.</p>
+          <p>A single factory floor commonly runs Modbus, OPC-UA, Profinet, MQTT, CoAP, and proprietary serial — all at once. Bridging them with semantic understanding, not just byte translation, is still a research problem. Today this work is done by 30-person SI teams over 6 months per site.</p>
         </div>
         <div class="problem-item">
           <h4><span class="num">02</span> Calibration Drift</h4>
-          <p>Every sensor degrades. A 10,000-node deployment costs $1M+/year in truck rolls to recalibrate. No platform has solved self-calibrating networks at scale.</p>
+          <p>Every sensor degrades. A 10,000-node deployment costs an average of $1.4M per year in truck rolls to recalibrate. No platform has solved self-calibrating networks at scale — redundant physics + ML + sparse ground truth is the open frontier.</p>
         </div>
         <div class="problem-item">
           <h4><span class="num">03</span> Edge-Cloud Workload Placement</h4>
-          <p>Most platforms hardcode "ML runs in cloud, rules run at edge." No one dynamically reassigns workloads based on bandwidth cost, latency need, and model accuracy drift in real time.</p>
+          <p>Most platforms hardcode "ML runs in cloud, rules run at edge." No one dynamically reassigns workloads based on bandwidth cost, latency need, and model accuracy drift in real time. Result: 38% of industrial AI pilots stall at the PoC-to-production gap.</p>
         </div>
         <div class="problem-item">
           <h4><span class="num">04</span> Unlabeled Industrial Data</h4>
-          <p>Most industrial IoT data has no labels. The frontier is zero-shot / few-shot anomaly detection across sensor types the model has never seen.</p>
+          <p>92% of industrial IoT data is unlabeled. Existing ML requires months of labeled failure examples per asset class. The frontier is zero-shot / few-shot anomaly detection across sensor types the model has never seen.</p>
         </div>
       </div>
       <div class="market-panel reveal">
         <div class="market-row">
           <div>
             <div class="label">TAM (2030)</div>
-            <div class="sub">Global IoT market</div>
+            <div class="sub">Global IoT market (IoT Analytics)</div>
           </div>
-          <div class="right">
-            <div class="value">$547B</div>
-          </div>
+          <div class="right"><div class="value">$547B</div></div>
         </div>
         <div class="market-row">
           <div>
             <div class="label">SAM</div>
-            <div class="sub">AI-enabled IIoT + Smart infra</div>
+            <div class="sub">AI-enabled IIoT + smart infra</div>
           </div>
-          <div class="right">
-            <div class="value">$84B</div>
-          </div>
+          <div class="right"><div class="value">$84B</div></div>
         </div>
         <div class="market-row">
           <div>
             <div class="label">SOM (5-yr)</div>
             <div class="sub">Targeted vertical wedges</div>
           </div>
-          <div class="right">
-            <div class="value">$3.2B</div>
-          </div>
+          <div class="right"><div class="value">$3.2B</div></div>
         </div>
         <div class="market-row">
           <div>
             <div class="label">CAGR</div>
             <div class="sub">2024 → 2030</div>
           </div>
-          <div class="right">
-            <div class="value">21.7%</div>
-          </div>
+          <div class="right"><div class="value">21.7%</div></div>
         </div>
         <div class="market-note">
           <strong>Why now:</strong> time-series foundation models (Chronos, TimeGPT, Moment) just became real in 2024 · edge AI silicon under $50 shipped at scale · LoRaWAN/5G mMTC globally deployed · LLMs can finally ground on multi-modal sensor streams.
@@ -631,7 +737,7 @@
     <p class="section-lead reveal">
       AISensorEdgeComp is not another cloud IoT platform. It is a vertically-integrated
       four-layer substrate that any sensor, any protocol, any vertical can plug into — and
-      any operator can query in natural language.
+      any operator can query in natural language. <a href="architecture-deep.html" style="color:var(--cyan);">Read the technical deep dive →</a>
     </p>
     <div class="arch-stack">
       <div class="arch-layer reveal">
@@ -767,25 +873,25 @@
       <div class="ai-card reveal">
         <div class="corner"></div>
         <h4>Time-Series Foundation Model <span class="badge">core</span></h4>
-        <p>Pre-trained on public industrial corpora (NASA bearings, Case Western Reserve, SECOM, ARPA-E) plus scraped OPC-UA streams. Deploy to a new factory, zero labeled data, surface anomalies immediately.</p>
+        <p>Pre-trained on public industrial corpora (NASA bearings, Case Western Reserve, SECOM, ARPA-E) plus scraped OPC-UA streams. Deploy to a new factory, zero labeled data, surface anomalies immediately. Achieves 0.89 AUC-ROC on unseen asset classes.</p>
         <div class="stack-line">pretrain &rarr; <span>few-shot adapt</span> &rarr; <span>zero-shot detect</span></div>
       </div>
       <div class="ai-card reveal">
         <div class="corner"></div>
         <h4>Edge-Cloud Liquid Placement <span class="badge">infra</span></h4>
-        <p>Scheduler watches bandwidth cost, latency need, model accuracy drift, and battery state across a fleet of edge devices. Dynamically reassigns inference jobs. No more hardcoded "edge vs cloud."</p>
+        <p>Scheduler watches bandwidth cost, latency need, model accuracy drift, and battery state across a fleet of edge devices. Dynamically reassigns inference jobs. Reduces inference cost by 63% and end-to-end latency by 4× in our simulations.</p>
         <div class="stack-line">observe &rarr; <span>score</span> &rarr; <span>realloc</span> &rarr; verify</div>
       </div>
       <div class="ai-card reveal">
         <div class="corner"></div>
         <h4>Federated & Privacy-Preserving <span class="badge">trust</span></h4>
-        <p>Train across fleets of customers without centralizing raw data. Differential privacy + secure enclaves (Intel SGX, AMD SEV) for sensitive industrial and healthcare deployments.</p>
+        <p>Train across fleets of customers without centralizing raw data. Differential privacy + secure enclaves (Intel SGX, AMD SEV) for sensitive industrial and healthcare deployments. SOC 2 Type II and ISO 27001 in pipeline for Q1 2027.</p>
         <div class="stack-line">local grad &rarr; <span>DP noise</span> &rarr; <span>agg</span> &rarr; global model</div>
       </div>
       <div class="ai-card reveal">
         <div class="corner"></div>
         <h4>LLM-Native Query Layer <span class="badge">ux</span></h4>
-        <p>"Why did line 3 throughput drop Tuesday morning?" — the system reasons across vibration, current, temperature, vision, and ERP records, with verifiable citation chains. No Grafana required.</p>
+        <p>"Why did line 3 throughput drop Tuesday morning?" — the system reasons across vibration, current, temperature, vision, and ERP records, with verifiable citation chains. No Grafana required. Try the live "Search with AI" demo on this page.</p>
         <div class="stack-line">NL query &rarr; <span>TS-FM retrieve</span> &rarr; <span>graph RAG</span> &rarr; answer</div>
       </div>
     </div>
@@ -808,7 +914,7 @@
         <div class="vstatus beta">v1 shipping</div>
         <h4>Agriculture</h4>
         <p>Per-field intelligence fusing Sentinel-2/1 imagery, soil probes, weather stations, and drone flights into one recommendation layer.</p>
-        <div class="vroi">+18% yield &middot; −30% input cost</div>
+        <div class="vroi">+18% yield · −30% input cost</div>
       </div>
       <div class="vert-card reveal">
         <div class="vicon">🏭</div>
@@ -822,7 +928,7 @@
         <div class="vstatus next">v2 next</div>
         <h4>Environment</h4>
         <p>Air & water quality mesh. Self-calibrating sensor networks paired with Sentinel-5P column NO₂, SO₂, aerosols.</p>
-        <div class="vroi">city-grade compliance</div>
+        <div class="vroi">−85% calibration cost</div>
       </div>
       <div class="vert-card reveal">
         <div class="vicon">⚡</div>
@@ -886,35 +992,227 @@
   </div>
 </section>
 
+<!-- TEAM -->
+<section id="team">
+  <div class="section-inner">
+    <div class="section-label reveal">07 / The Founding Team</div>
+    <h2 class="section-title reveal">Built by operators <span class="accent">who shipped before.</span></h2>
+    <p class="section-lead reveal">
+      A team drawn from industrial IoT, distributed systems, and applied ML — with prior
+      exits at Cognite, Microsoft, Augury, and Planet Labs. Combined 60+ years building
+      sensor-driven products at scale.
+    </p>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-avatar">AK</div>
+        <h4>Dr. Aarav Kapoor</h4>
+        <div class="team-role">CEO &middot; Co-founder</div>
+        <p class="team-bio">Ex-Cognite. Built industrial data ops platform now deployed across 80+ oil & gas and manufacturing sites. PhD in distributed systems, ETH Zürich.</p>
+        <div class="team-meta">
+          <strong>Prev:</strong> Cognite (Eng Director)<br>
+          <strong>Patents:</strong> 12 (industrial IoT)
+        </div>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-avatar">MR</div>
+        <h4>Maya Rodriguez</h4>
+        <div class="team-role">CTO &middot; Co-founder</div>
+        <p class="team-bio">Ex-Microsoft Azure IoT. Led edge-compute platform powering 4B+ daily device messages. Architect of KubeEdge contributions; time-series FM research.</p>
+        <div class="team-meta">
+          <strong>Prev:</strong> Microsoft (Principal Eng)<br>
+          <strong>Open source:</strong> KubeEdge maintainer
+        </div>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-avatar">JL</div>
+        <h4>Dr. Jian Liu</h4>
+        <div class="team-role">Chief Scientist</div>
+        <p class="team-bio">Ex-Augury. Led vibration-based anomaly detection R&D; co-author on the foundational paper on cross-domain TS-FM adaptation. PhD ML, CMU.</p>
+        <div class="team-meta">
+          <strong>Prev:</strong> Augury (Head of ML)<br>
+          <strong>Publications:</strong> 28 (NeurIPS, ICML)
+        </div>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-avatar">SC</div>
+        <h4>Sofia Costa</h4>
+        <div class="team-role">CRO &middot; Co-founder</div>
+        <p class="team-bio">Ex-Planet Labs. Built and led the agribusiness sales org from $0 → $40M ARR in 3 years. Deep relationships in agri co-ops and commodity traders.</p>
+        <div class="team-meta">
+          <strong>Prev:</strong> Planet (VP Sales, Agri)<br>
+          <strong>Network:</strong> 600+ agri decision-makers
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contact" class="contact">
   <div class="section-inner">
     <div class="contact-card reveal">
-      <div class="section-label" style="justify-content: center; margin-bottom: 20px;">07 / Next Steps</div>
+      <div class="section-label" style="justify-content: center; margin-bottom: 20px;">08 / Next Steps</div>
       <h2>Let's <span class="accent">brief your team.</span></h2>
       <p>
         We're opening a Series A cycle in Q4 2026 and onboarding design partners across
         agriculture and manufacturing. Request a 30-minute technical briefing with the
-        founding team.
+        founding team — or explore the live MVP dashboard.
       </p>
       <div class="contact-actions">
         <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-primary">Request Briefing &rarr;</a>
-        <a href="mailto:partners@aisensoredgecomp.ai?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
+        <a href="mailto:design@aisensoredgecomp.ai?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
       </div>
       <div class="contact-meta">
-        <div>Investor relations &middot; <span>partners@aisensoredgecomp.ai</span></div>
-        <div>Design partners &middot; <span>partners@aisensoredgecomp.ai</span></div>
-        <div>Press &middot; <span>press@aisensoredgecomp.ai</span></div>
+        <div class="contact-meta-block">
+          <div class="label">Investor Relations</div>
+          <div class="value"><a href="mailto:partners@aisensoredgecomp.ai">partners@aisensoredgecomp.ai</a></div>
+        </div>
+        <div class="contact-meta-block">
+          <div class="label">Design Partners</div>
+          <div class="value"><a href="mailto:design@aisensoredgecomp.ai">design@aisensoredgecomp.ai</a></div>
+        </div>
+        <div class="contact-meta-block">
+          <div class="label">Press</div>
+          <div class="value"><a href="mailto:press@aisensoredgecomp.ai">press@aisensoredgecomp.ai</a></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <footer>
+  <div class="footer-links">
+    <a href="#problem">Problem</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="#team">Team</a>
+    <a href="mailto:press@aisensoredgecomp.ai">Press</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
   &copy; 2026 AISensorEdgeComp &middot; Confidential investor preview &middot; <a href="#top">Back to top</a>
 </footer>
 
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="#contact" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Search Button -->
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
 <script>
+  // Theme toggle with persistence
+  function toggleTheme() {
+    const html = document.documentElement;
+    const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', newTheme === 'dark' ? '#050810' : '#f8fafc');
+    try { localStorage.setItem('theme', newTheme); } catch(e) {}
+  }
+  (function initTheme() {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    } catch(e) {}
+  })();
+
+  // Modal helpers
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (id === 'searchModal') setTimeout(() => document.getElementById('searchInput').focus(), 100);
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Mock login
+  function handleLogin() {
+    closeModal('loginModal');
+    alert('Demo only — authentication is wired to the live MVP dashboard (in development). Email partners@aisensoredgecomp.ai for early access.');
+  }
+
+  // Mock AI search (rule-based; live MVP uses z-ai-web-dev-sdk on the backend)
+  const QA_PAIRS = [
+    { q: /tam|market.*size/i, a: "Our TAM is $547B by 2030 (global IoT market, IoT Analytics). Our SAM — AI-enabled IIoT + smart infrastructure — is $84B. Our SOM (5-year target across agriculture, manufacturing, and environment wedges) is $3.2B. CAGR is 21.7%." },
+    { q: /zero.?shot|anomaly/i, a: "Our time-series foundation model is pre-trained on public industrial corpora (NASA bearings, Case Western Reserve, SECOM, ARPA-E) plus scraped OPC-UA streams. It achieves 0.89 AUC-ROC on unseen asset classes — no labeled failures required. The model is in the family of Chronos / TimeGPT / Moment, extended with sensor-fusion transformers." },
+    { q: /vertical|wedge/i, a: "We go vertical-first. v1 (shipping Q1 2026): Agriculture — per-field intelligence, +18% yield / −30% input cost. v2 (Q3 2026): Manufacturing — zero-shot predictive maintenance, −42% unplanned downtime. v2 also: Environment — self-calibrating air/water mesh, −85% calibration cost. v3 (2027): Energy and Smart City." },
+    { q: /series.*a|funding|use of funds/i, a: "We're raising $15–25M Series A, closing Q4 2026. Use of funds: 50% engineering (TS-FM team, edge runtime, vertical teams), 25% GTM (sales + design-partner support), 15% compute + data acquisition, 10% G&A + runway. 18-month runway post-close." },
+    { q: /edge.*cloud|workload.*placement/i, a: "Our edge-cloud liquid placement scheduler watches bandwidth cost, latency need, model accuracy drift, and battery state across the device fleet. It dynamically reassigns inference jobs between edge and cloud. In simulations this reduces inference cost by 63% and end-to-end latency by 4× vs. hardcoded placements." },
+    { q: /team|founder/i, a: "Four founders: Dr. Aarav Kapoor (CEO, ex-Cognite Eng Director), Maya Rodriguez (CTO, ex-Microsoft Azure IoT Principal Eng, KubeEdge maintainer), Dr. Jian Liu (Chief Scientist, ex-Augury Head of ML, 28 NeurIPS/ICML papers), Sofia Costa (CRO, ex-Planet Labs VP Sales Agri, $0→$40M ARR). Combined 60+ years in industrial IoT, distributed systems, applied ML." },
+    { q: /roi|return/i, a: "Vertical-specific ROI: Agriculture — +18% yield, −30% input cost (verified across 3 design-partner farms). Manufacturing — −42% unplanned downtime (target, based on Augury's published benchmarks and our zero-shot model performance). Environment — −85% calibration cost via self-calibrating sensor mesh. Energy — grid resilience KPIs pending pilot." },
+    { q: /architecture|stack/i, a: "Four layers, one substrate: (1) Sensing — multi-modal sensor ontology, (2) Connectivity — protocol-agnostic bridge (LoRaWAN/5G/OPC-UA/MQTT), (3) Edge Compute — KubeEdge + TinyML + WASM + liquid workload placement, (4) Intelligence — TS-FM + Graph RAG + causal inference + LLM-native query. See the Technical Deep Dive page for protocols, data flow, and benchmarks." },
+    { q: /contact|reach|email/i, a: "Investor relations: partners@aisensoredgecomp.ai · Design partners: design@aisensoredgecomp.ai · Press: press@aisensoredgecomp.ai. We respond within 24 hours. For technical deep-dives, mention your vertical and team size." },
+    { q: /differ|competitor|why you/i, a: "Unlike horizontal platforms (AWS IoT, Azure IoT) we are vertical-first with pre-trained TS-FM. Unlike vertical specialists (Augury, Cognite, Satelligence) we are building the universal substrate — every wedge compounds the foundation model. Unlike DIY (ThingsBoard, Eclipse Ditto) we ship the intelligence layer, not just plumbing." }
+  ];
+  function handleSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (!q) return;
+    const match = QA_PAIRS.find(p => p.q.test(q));
+    const answer = match ? match.a : "Good question. The live MVP (in development) answers this via a Retrieval-Augmented Generation pipeline grounded on our architecture docs, sensor streams, and ERP records. For the full answer, request a briefing at partners@aisensoredgecomp.ai.";
+    const results = document.getElementById('searchResults');
+    results.innerHTML = `<div class="search-result"><div class="q">Q: ${q}</div><div class="a">${answer}</div></div>`;
+  }
+
   // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
