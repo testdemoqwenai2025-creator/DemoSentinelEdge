@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — The Planetary Sensor Fabric, Intelligenced</title>
+<meta name="description" content="AISensorEdgeComp fuses multi-modal IoT sensors, edge AI silicon, and time-series foundation models into one queryable, planetary-scale intelligence fabric." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #050810;
+    --bg-2: #0a0f1c;
+    --card: #0d1424;
+    --card-2: #111a30;
+    --border: rgba(0, 212, 255, 0.18);
+    --border-strong: rgba(0, 212, 255, 0.4);
+    --text: #e8eef5;
+    --text-dim: #8b95a8;
+    --text-mute: #5b6478;
+    --cyan: #00d4ff;
+    --violet: #a855f7;
+    --magenta: #ec4899;
+    --green: #22d3ee;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, .display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* === NAV === */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 18px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(5, 8, 16, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 16px;
+    letter-spacing: 0.02em;
+  }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    position: relative;
+    box-shadow: 0 0 24px rgba(0, 212, 255, 0.4);
+  }
+  .logo-mark::after {
+    content: ''; position: absolute; inset: 6px;
+    border-radius: 3px;
+    background: var(--bg);
+  }
+  .logo-mark::before {
+    content: ''; position: absolute; inset: 10px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+  }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-cta {
+    padding: 8px 18px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: #050810 !important; font-weight: 600 !important;
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.3);
+  }
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+  }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100vh; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    padding: 120px 40px 80px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 212, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    animation: gridDrift 60s linear infinite;
+  }
+  @keyframes gridDrift {
+    from { background-position: 0 0; }
+    to { background-position: 60px 60px; }
+  }
+  .hero-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.15), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15), transparent 50%);
+  }
+  .hero-content { max-width: 980px; text-align: center; position: relative; z-index: 2; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 100px;
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid var(--border-strong);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--cyan);
+    margin-bottom: 32px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 88px);
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #e8eef5 40%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 24px;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-style: italic;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-dim);
+    max-width: 720px; margin: 0 auto 40px;
+    line-height: 1.6;
+  }
+  .hero-ctas {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 14px 28px; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 15px;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.25s; border: none;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: #050810;
+    box-shadow: 0 0 24px rgba(0, 212, 255, 0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0, 212, 255, 0.45); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-ghost:hover { background: rgba(0, 212, 255, 0.06); border-color: var(--cyan); }
+
+  .hero-stats {
+    margin-top: 80px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    max-width: 980px; margin-left: auto; margin-right: auto;
+  }
+  .hero-stat { text-align: left; padding: 20px; border-top: 1px solid var(--border); }
+  .hero-stat .num {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 28px; color: var(--text);
+    background: linear-gradient(135deg, #fff, var(--cyan));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-stat .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  @media (max-width: 768px) {
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* === SECTIONS === */
+  section { padding: 100px 40px; position: relative; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before {
+    content: ''; width: 24px; height: 1px; background: var(--cyan);
+  }
+  .section-title {
+    font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 24px;
+  }
+  .section-title .accent {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .section-lead {
+    font-size: 18px; color: var(--text-dim); max-width: 760px; margin-bottom: 56px;
+  }
+
+  /* === PROBLEM & MARKET === */
+  .problem-grid {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
+  }
+  @media (max-width: 900px) { .problem-grid { grid-template-columns: 1fr; } }
+  .problem-list { display: flex; flex-direction: column; gap: 20px; }
+  .problem-item {
+    padding: 24px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .problem-item:hover { border-color: var(--border-strong); transform: translateX(4px); }
+  .problem-item h4 {
+    font-size: 17px; color: var(--text); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .problem-item h4 .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--cyan); opacity: 0.7;
+  }
+  .problem-item p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+  .market-panel {
+    padding: 32px; border-radius: 16px;
+    background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .market-panel::before {
+    content: ''; position: absolute; top: -50%; right: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.08), transparent 50%);
+    animation: rotate 30s linear infinite;
+  }
+  @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .market-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 18px 0; border-bottom: 1px solid var(--border);
+    position: relative; z-index: 2;
+  }
+  .market-row:last-child { border-bottom: none; }
+  .market-row .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .market-row .value {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 32px;
+    background: linear-gradient(135deg, #fff, var(--cyan));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .market-row .sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .market-row .right { text-align: right; }
+  .market-note {
+    margin-top: 20px; padding: 12px 16px;
+    background: rgba(0, 212, 255, 0.05);
+    border-left: 2px solid var(--cyan);
+    font-size: 13px; color: var(--text-dim);
+    border-radius: 4px;
+  }
+
+  /* === ARCHITECTURE === */
+  .arch-stack { display: flex; flex-direction: column; gap: 16px; }
+  .arch-layer {
+    padding: 28px 32px; border-radius: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    position: relative; transition: all 0.3s;
+    display: grid; grid-template-columns: 80px 1fr auto; gap: 28px; align-items: center;
+  }
+  .arch-layer:hover { border-color: var(--border-strong); box-shadow: 0 0 24px rgba(0, 212, 255, 0.08); }
+  @media (max-width: 768px) { .arch-layer { grid-template-columns: 1fr; gap: 16px; } }
+  .arch-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 500;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+  .arch-body h4 { font-size: 19px; margin-bottom: 6px; }
+  .arch-body h4 .pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 3px 8px; border-radius: 4px; margin-left: 10px;
+    background: rgba(0, 212, 255, 0.1); color: var(--cyan); font-weight: 500;
+    vertical-align: middle;
+  }
+  .arch-body p { font-size: 14px; color: var(--text-dim); max-width: 620px; }
+  .arch-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 280px; }
+  @media (max-width: 768px) { .arch-tags { justify-content: flex-start; max-width: none; } }
+  .arch-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 4px 10px; border-radius: 4px;
+    background: rgba(168, 85, 247, 0.08); color: var(--violet);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+  }
+
+  /* === SENSOR MODALITIES === */
+  .sensor-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  @media (max-width: 900px) { .sensor-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .sensor-grid { grid-template-columns: 1fr; } }
+  .sensor-card {
+    padding: 24px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .sensor-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .sensor-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+  .sensor-card:hover::before { opacity: 1; }
+  .sensor-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(168, 85, 247, 0.15));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+  .sensor-card h4 { font-size: 15px; margin-bottom: 4px; }
+  .sensor-card .freq {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--cyan); margin-bottom: 10px;
+  }
+  .sensor-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  /* === AI/ML STACK === */
+  .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .ai-grid { grid-template-columns: 1fr; } }
+  .ai-card {
+    padding: 28px; border-radius: 14px;
+    background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .ai-card .corner {
+    position: absolute; top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.18), transparent 70%);
+  }
+  .ai-card h4 {
+    font-size: 18px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ai-card h4 .badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 3px 8px; border-radius: 4px;
+    background: rgba(168, 85, 247, 0.12); color: var(--violet);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .ai-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-bottom: 14px; }
+  .ai-card .stack-line {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--text-mute); padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .ai-card .stack-line span { color: var(--cyan); }
+
+  /* === VERTICALS === */
+  .vert-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  @media (max-width: 1100px) { .vert-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .vert-grid { grid-template-columns: 1fr; } }
+  .vert-card {
+    padding: 24px 20px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    transition: all 0.3s;
+    display: flex; flex-direction: column; gap: 8px; min-height: 240px;
+  }
+  .vert-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+  .vert-card .vicon { font-size: 28px; margin-bottom: 4px; }
+  .vert-card h4 { font-size: 16px; }
+  .vert-card .vstatus {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .vert-card .vstatus.beta { color: var(--gold); }
+  .vert-card .vstatus.next { color: var(--violet); }
+  .vert-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; flex-grow: 1; }
+  .vert-card .vroi {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--cyan); padding-top: 12px; border-top: 1px solid var(--border);
+  }
+
+  /* === ROADMAP === */
+  .roadmap {
+    position: relative;
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+  }
+  @media (max-width: 900px) { .roadmap { grid-template-columns: 1fr; gap: 16px; } }
+  .roadmap::before {
+    content: ''; position: absolute; top: 32px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    opacity: 0.3;
+  }
+  @media (max-width: 900px) { .roadmap::before { display: none; } }
+  .milestone {
+    padding: 0 12px; position: relative;
+  }
+  .milestone::before {
+    content: ''; position: absolute; top: 26px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+    z-index: 2;
+  }
+  @media (max-width: 900px) { .milestone::before { display: none; } }
+  .milestone .q {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 64px; margin-bottom: 8px; text-align: center;
+  }
+  @media (max-width: 900px) { .milestone .q { margin-top: 0; text-align: left; } }
+  .milestone h4 {
+    font-size: 14px; margin-bottom: 6px; text-align: center;
+  }
+  @media (max-width: 900px) { .milestone h4 { text-align: left; } }
+  .milestone p {
+    font-size: 12px; color: var(--text-dim); text-align: center;
+  }
+  @media (max-width: 900px) { .milestone p { text-align: left; } }
+
+  /* === CONTACT === */
+  .contact {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .contact-card {
+    max-width: 760px; margin: 0 auto;
+    padding: 60px 40px; border-radius: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .contact-card::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.12), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.12), transparent 50%);
+    pointer-events: none;
+  }
+  .contact-card > * { position: relative; z-index: 2; }
+  .contact-card h2 { font-size: clamp(28px, 4vw, 44px); margin-bottom: 16px; }
+  .contact-card p { color: var(--text-dim); margin-bottom: 32px; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .contact-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .contact-meta {
+    margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;
+  }
+  .contact-meta div { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); }
+  .contact-meta div span { color: var(--cyan); }
+
+  /* === FOOTER === */
+  footer {
+    padding: 40px; text-align: center;
+    border-top: 1px solid var(--border);
+    color: var(--text-mute); font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--cyan); }
+
+  /* === REVEAL ANIMATION === */
+  .reveal { opacity: 0; transform: translateY(20px); transition: all 0.7s ease-out; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </div>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#sensors">Sensors</a>
+    <a href="#ai">AI Stack</a>
+    <a href="#verticals">Verticals</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#contact" class="nav-cta">Request Briefing</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Investor Preview &middot; 2026 Series A Cycle</div>
+    <h1>The planetary sensor fabric,<br><span class="accent">intelligenced.</span></h1>
+    <p class="hero-sub">
+      AISensorEdgeComp fuses multi-modal IoT sensors, edge AI silicon, and time-series
+      foundation models into one queryable, planetary-scale intelligence layer —
+      bridging the physical world and reasoning AI.
+    </p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn btn-primary">Request Briefing &rarr;</a>
+      <a href="#architecture" class="btn btn-ghost">Read the Architecture</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">50B+</div>
+        <div class="label">Sensors by 2030</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">$547B</div>
+        <div class="label">IoT Market TAM</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">4-Layer</div>
+        <div class="label">Fusion Stack</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">Zero-shot</div>
+        <div class="label">Industrial Anomaly Model</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM & MARKET -->
+<section id="problem">
+  <div class="section-inner">
+    <div class="section-label reveal">01 / The Open Frontier</div>
+    <h2 class="section-title reveal">The world is instrumented.<br><span class="accent">The data is not intelligent.</span></h2>
+    <p class="section-lead reveal">
+      50 billion sensors will be deployed by 2030. They generate exabytes per day. Yet the
+      intelligence layer that should turn this torrent into decisions is fragmented, brittle,
+      and locked inside vertical silos. The opportunity is not another sensor — it is the
+      universal substrate that makes every sensor queryable, calibratable, and reason-able.
+    </p>
+    <div class="problem-grid">
+      <div class="problem-list reveal">
+        <div class="problem-item">
+          <h4><span class="num">01</span> Protocol Heterogeneity</h4>
+          <p>A single factory floor commonly runs Modbus, OPC-UA, Profinet, MQTT, CoAP, and proprietary serial — all at once. Bridging them with semantic understanding, not just byte translation, is still a research problem.</p>
+        </div>
+        <div class="problem-item">
+          <h4><span class="num">02</span> Calibration Drift</h4>
+          <p>Every sensor degrades. A 10,000-node deployment costs $1M+/year in truck rolls to recalibrate. No platform has solved self-calibrating networks at scale.</p>
+        </div>
+        <div class="problem-item">
+          <h4><span class="num">03</span> Edge-Cloud Workload Placement</h4>
+          <p>Most platforms hardcode "ML runs in cloud, rules run at edge." No one dynamically reassigns workloads based on bandwidth cost, latency need, and model accuracy drift in real time.</p>
+        </div>
+        <div class="problem-item">
+          <h4><span class="num">04</span> Unlabeled Industrial Data</h4>
+          <p>Most industrial IoT data has no labels. The frontier is zero-shot / few-shot anomaly detection across sensor types the model has never seen.</p>
+        </div>
+      </div>
+      <div class="market-panel reveal">
+        <div class="market-row">
+          <div>
+            <div class="label">TAM (2030)</div>
+            <div class="sub">Global IoT market</div>
+          </div>
+          <div class="right">
+            <div class="value">$547B</div>
+          </div>
+        </div>
+        <div class="market-row">
+          <div>
+            <div class="label">SAM</div>
+            <div class="sub">AI-enabled IIoT + Smart infra</div>
+          </div>
+          <div class="right">
+            <div class="value">$84B</div>
+          </div>
+        </div>
+        <div class="market-row">
+          <div>
+            <div class="label">SOM (5-yr)</div>
+            <div class="sub">Targeted vertical wedges</div>
+          </div>
+          <div class="right">
+            <div class="value">$3.2B</div>
+          </div>
+        </div>
+        <div class="market-row">
+          <div>
+            <div class="label">CAGR</div>
+            <div class="sub">2024 → 2030</div>
+          </div>
+          <div class="right">
+            <div class="value">21.7%</div>
+          </div>
+        </div>
+        <div class="market-note">
+          <strong>Why now:</strong> time-series foundation models (Chronos, TimeGPT, Moment) just became real in 2024 · edge AI silicon under $50 shipped at scale · LoRaWAN/5G mMTC globally deployed · LLMs can finally ground on multi-modal sensor streams.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-inner">
+    <div class="section-label reveal">02 / The Stack</div>
+    <h2 class="section-title reveal">Four layers. <span class="accent">One substrate.</span></h2>
+    <p class="section-lead reveal">
+      AISensorEdgeComp is not another cloud IoT platform. It is a vertically-integrated
+      four-layer substrate that any sensor, any protocol, any vertical can plug into — and
+      any operator can query in natural language.
+    </p>
+    <div class="arch-stack">
+      <div class="arch-layer reveal">
+        <div class="arch-num">04</div>
+        <div class="arch-body">
+          <h4>Intelligence Layer <span class="pill">reasoning</span></h4>
+          <p>Time-series foundation models, multimodal sensor fusion transformers, LLM-native query interface, causal inference for root-cause, and physics-informed neural networks for domain constraints.</p>
+        </div>
+        <div class="arch-tags">
+          <span class="arch-tag">TS-FM</span>
+          <span class="arch-tag">Graph RAG</span>
+          <span class="arch-tag">Causal</span>
+          <span class="arch-tag">PINN</span>
+        </div>
+      </div>
+      <div class="arch-layer reveal">
+        <div class="arch-num">03</div>
+        <div class="arch-body">
+          <h4>Edge Compute Layer <span class="pill">liquid</span></h4>
+          <p>Container orchestration at the edge (KubeEdge), TinyML on $1 MCUs, WebAssembly portable functions, and a scheduler that dynamically reassigns inference workloads between edge and cloud based on bandwidth, latency, and accuracy drift.</p>
+        </div>
+        <div class="arch-tags">
+          <span class="arch-tag">KubeEdge</span>
+          <span class="arch-tag">TinyML</span>
+          <span class="arch-tag">WASM</span>
+          <span class="arch-tag">Federated</span>
+        </div>
+      </div>
+      <div class="arch-layer reveal">
+        <div class="arch-num">02</div>
+        <div class="arch-body">
+          <h4>Connectivity Layer <span class="pill">agnostic</span></h4>
+          <p>Protocol-agnostic bridge spanning LoRaWAN, NB-IoT, 5G mMTC, Wi-Fi HaLow, TSN, Wi-SUN, and direct-to-satellite IoT. Semantic normalization across Modbus, OPC-UA, MQTT, CoAP — turning bytes into meaning.</p>
+        </div>
+        <div class="arch-tags">
+          <span class="arch-tag">LoRaWAN</span>
+          <span class="arch-tag">5G mMTC</span>
+          <span class="arch-tag">OPC-UA</span>
+          <span class="arch-tag">MQTT</span>
+        </div>
+      </div>
+      <div class="arch-layer reveal">
+        <div class="arch-num">01</div>
+        <div class="arch-body">
+          <h4>Sensing Layer <span class="pill">multi-modal</span></h4>
+          <p>Fusion of vibration, gas, vision, hyperspectral, mmWave radar, soil probes, weather stations, AIS, and Earth-observation imagery — with self-calibration networks that use redundant physics and sparse ground truth.</p>
+        </div>
+        <div class="arch-tags">
+          <span class="arch-tag">MEMS</span>
+          <span class="arch-tag">mmWave</span>
+          <span class="arch-tag">Hyperspectral</span>
+          <span class="arch-tag">EO Fusion</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SENSOR MODALITIES -->
+<section id="sensors">
+  <div class="section-inner">
+    <div class="section-label reveal">03 / What We Fuse</div>
+    <h2 class="section-title reveal">A sensor ontology, <span class="accent">not a sensor list.</span></h2>
+    <p class="section-lead reveal">
+      Every modality below is normalized to a semantic model — this float is compressor
+      outlet temperature in °C, sampled at 1 Hz — so any model, any operator, any vertical
+      can reason across all of them without bespoke integration.
+    </p>
+    <div class="sensor-grid">
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">📡</div>
+        <h4>Vibration</h4>
+        <div class="freq">10 kHz · tri-axial</div>
+        <p>Rotating machinery health, bearing fault detection, structural integrity monitoring.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">💨</div>
+        <h4>Gas / Chemical</h4>
+        <div class="freq">1 Hz · multi-pixel</div>
+        <p>Industrial emissions, air quality, leak detection, process chemistry fingerprinting.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">📷</div>
+        <h4>Vision / Hyperspectral</h4>
+        <div class="freq">30 fps · 31 bands</div>
+        <p>Material identification, defect detection, crop stress, food quality grading.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">📡</div>
+        <h4>mmWave Radar</h4>
+        <div class="freq">60 GHz · non-contact</div>
+        <p>Vital signs, occupancy, gesture, micro-motion through walls and obstructions.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">🌱</div>
+        <h4>Soil / Substrate</h4>
+        <div class="freq">15 min · NPK+pH+EC</div>
+        <p>Precision agriculture, irrigation optimization, contamination tracking.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">🌡️</div>
+        <h4>Weather / Climate</h4>
+        <div class="freq">1 min · 12 params</div>
+        <p>Microclimate grids, severe weather nowcasting, renewable generation forecasting.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">🛰️</div>
+        <h4>AIS / Maritime</h4>
+        <div class="freq">2 s · VHF + satellite</div>
+        <p>Vessel tracking, illegal fishing detection, supply chain disruption signals.</p>
+      </div>
+      <div class="sensor-card reveal">
+        <div class="sensor-icon">🌍</div>
+        <h4>Earth Observation</h4>
+        <div class="freq">5 days · 10m</div>
+        <p>Sentinel-1/2/5P, Landsat, PlanetScope — fused with ground sensors for ground truth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI/ML STACK -->
+<section id="ai">
+  <div class="section-inner">
+    <div class="section-label reveal">04 / The Intelligence</div>
+    <h2 class="section-title reveal">Foundation models <span class="accent">meet physical reality.</span></h2>
+    <p class="section-lead reveal">
+      The 2024 emergence of time-series foundation models changed what was possible. We
+      extend them with sensor-fusion transformers, edge-cloud co-inference, and causal
+      reasoning — turning pattern recognition into decisions.
+    </p>
+    <div class="ai-grid">
+      <div class="ai-card reveal">
+        <div class="corner"></div>
+        <h4>Time-Series Foundation Model <span class="badge">core</span></h4>
+        <p>Pre-trained on public industrial corpora (NASA bearings, Case Western Reserve, SECOM, ARPA-E) plus scraped OPC-UA streams. Deploy to a new factory, zero labeled data, surface anomalies immediately.</p>
+        <div class="stack-line">pretrain &rarr; <span>few-shot adapt</span> &rarr; <span>zero-shot detect</span></div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="corner"></div>
+        <h4>Edge-Cloud Liquid Placement <span class="badge">infra</span></h4>
+        <p>Scheduler watches bandwidth cost, latency need, model accuracy drift, and battery state across a fleet of edge devices. Dynamically reassigns inference jobs. No more hardcoded "edge vs cloud."</p>
+        <div class="stack-line">observe &rarr; <span>score</span> &rarr; <span>realloc</span> &rarr; verify</div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="corner"></div>
+        <h4>Federated & Privacy-Preserving <span class="badge">trust</span></h4>
+        <p>Train across fleets of customers without centralizing raw data. Differential privacy + secure enclaves (Intel SGX, AMD SEV) for sensitive industrial and healthcare deployments.</p>
+        <div class="stack-line">local grad &rarr; <span>DP noise</span> &rarr; <span>agg</span> &rarr; global model</div>
+      </div>
+      <div class="ai-card reveal">
+        <div class="corner"></div>
+        <h4>LLM-Native Query Layer <span class="badge">ux</span></h4>
+        <p>"Why did line 3 throughput drop Tuesday morning?" — the system reasons across vibration, current, temperature, vision, and ERP records, with verifiable citation chains. No Grafana required.</p>
+        <div class="stack-line">NL query &rarr; <span>TS-FM retrieve</span> &rarr; <span>graph RAG</span> &rarr; answer</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VERTICALS -->
+<section id="verticals">
+  <div class="section-inner">
+    <div class="section-label reveal">05 / Vertical Wedges</div>
+    <h2 class="section-title reveal">Horizontal platform. <span class="accent">Vertical wedges.</span></h2>
+    <p class="section-lead reveal">
+      Long-term vision is the universal substrate. Go-to-market is vertical-first —
+      where the pain is sharpest, the buyer is clearest, and the ROI is measurable in
+      one quarter. Each wedge compounds the foundation model.
+    </p>
+    <div class="vert-grid">
+      <div class="vert-card reveal">
+        <div class="vicon">🌾</div>
+        <div class="vstatus beta">v1 shipping</div>
+        <h4>Agriculture</h4>
+        <p>Per-field intelligence fusing Sentinel-2/1 imagery, soil probes, weather stations, and drone flights into one recommendation layer.</p>
+        <div class="vroi">+18% yield &middot; −30% input cost</div>
+      </div>
+      <div class="vert-card reveal">
+        <div class="vicon">🏭</div>
+        <div class="vstatus next">v2 next</div>
+        <h4>Manufacturing</h4>
+        <p>Zero-shot predictive maintenance. Plug into existing OPC-UA / Modbus historians, surface anomalies without labeled failures.</p>
+        <div class="vroi">−42% unplanned downtime</div>
+      </div>
+      <div class="vert-card reveal">
+        <div class="vicon">🌊</div>
+        <div class="vstatus next">v2 next</div>
+        <h4>Environment</h4>
+        <p>Air & water quality mesh. Self-calibrating sensor networks paired with Sentinel-5P column NO₂, SO₂, aerosols.</p>
+        <div class="vroi">city-grade compliance</div>
+      </div>
+      <div class="vert-card reveal">
+        <div class="vicon">⚡</div>
+        <div class="vstatus">v3 roadmap</div>
+        <h4>Energy</h4>
+        <p>Grid-edge intelligence. Substation anomaly detection, distributed solar forecasting, demand-response orchestration.</p>
+        <div class="vroi">grid resilience</div>
+      </div>
+      <div class="vert-card reveal">
+        <div class="vicon">🏙️</div>
+        <div class="vstatus">v3 roadmap</div>
+        <h4>Smart City</h4>
+        <p>Traffic, air, buildings, water — one operations layer for municipal operators. Citizen-grade transparency.</p>
+        <div class="vroi">ops consolidation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-inner">
+    <div class="section-label reveal">06 / Path to Scale</div>
+    <h2 class="section-title reveal">Six quarters <span class="accent">from wedge to platform.</span></h2>
+    <p class="section-lead reveal">
+      Aggressive but capital-efficient. First revenue in Q2 2026. Series A close in Q4 2026.
+      Platform launch in Q1 2027. International expansion from Q2 2027.
+    </p>
+    <div class="roadmap">
+      <div class="milestone reveal">
+        <div class="q">Q1 2026</div>
+        <h4>Wedge MVP</h4>
+        <p>Agriculture v1 deployed with 3 design partner farms. Public data + simulated sensors.</p>
+      </div>
+      <div class="milestone reveal">
+        <div class="q">Q2 2026</div>
+        <h4>First Revenue</h4>
+        <p>Paid pilots convert. Manufacturing vertical spec'd with 2 anchor OEMs.</p>
+      </div>
+      <div class="milestone reveal">
+        <div class="q">Q3 2026</div>
+        <h4>2nd Vertical</h4>
+        <p>Manufacturing v1 live. Zero-shot anomaly model trained across 50M hours of sensor data.</p>
+      </div>
+      <div class="milestone reveal">
+        <div class="q">Q4 2026</div>
+        <h4>Series A</h4>
+        <p>Close $15–25M Series A. Team to 30. Platform layer (intelligence + edge scheduler) GA.</p>
+      </div>
+      <div class="milestone reveal">
+        <div class="q">Q1 2027</div>
+        <h4>Platform GA</h4>
+        <p>Self-serve intelligence layer. SDK release. 3rd vertical (environment) live.</p>
+      </div>
+      <div class="milestone reveal">
+        <div class="q">Q2 2027</div>
+        <h4>International</h4>
+        <p>EU + APAC expansion. Energy and smart-city verticals in design partner phase.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact">
+  <div class="section-inner">
+    <div class="contact-card reveal">
+      <div class="section-label" style="justify-content: center; margin-bottom: 20px;">07 / Next Steps</div>
+      <h2>Let's <span class="accent">brief your team.</span></h2>
+      <p>
+        We're opening a Series A cycle in Q4 2026 and onboarding design partners across
+        agriculture and manufacturing. Request a 30-minute technical briefing with the
+        founding team.
+      </p>
+      <div class="contact-actions">
+        <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-primary">Request Briefing &rarr;</a>
+        <a href="mailto:partners@aisensoredgecomp.ai?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
+      </div>
+      <div class="contact-meta">
+        <div>Investor relations &middot; <span>partners@aisensoredgecomp.ai</span></div>
+        <div>Design partners &middot; <span>partners@aisensoredgecomp.ai</span></div>
+        <div>Press &middot; <span>press@aisensoredgecomp.ai</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 AISensorEdgeComp &middot; Confidential investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Subtle parallax on hero glow
+  const heroGlow = document.querySelector('.hero-glow');
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    if (heroGlow) heroGlow.style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  // Smooth nav offset
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 70;
+        const y = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
