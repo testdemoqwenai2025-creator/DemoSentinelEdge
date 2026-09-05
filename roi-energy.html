@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — ROI Calculator: Energy</title>
+<meta name="description" content="Sector-specific ROI calculator for Energy. Calculate your projected savings with AISensorEdgeComp." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .src-container { max-width: 900px; margin: 0 auto; padding: 100px 40px 60px; }
+  .src-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin: 20px 0; }
+  .src-stat { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; text-align: center; background: linear-gradient(135deg, #fbbf24, var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .src-slider { width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-2); outline: none; cursor: pointer; }
+  .src-slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fbbf24; cursor: pointer; border: 2px solid var(--bg); }
+  .src-slider::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fbbf24; cursor: pointer; border: 2px solid var(--bg); }
+</style>
+</head>
+<body id="sector-roi-energy">
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="roi-calculator.html">General ROI</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<section class="page-hero" style="min-height: 25vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="roi-calculator.html">ROI Calculator</a><span class="sep">/</span><span>Energy</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>⚡ Energy · Sector-specific ROI</div>
+    <h1>Energy <span class="accent">ROI Calculator</span></h1>
+    <p class="lead">Calculate your projected annual savings with AISensorEdgeComp for energy operations. Based on our published benchmarks for this sector.</p>
+  </div>
+</section>
+
+<div class="src-container">
+  <div class="src-card">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Your energy operation</div>
+    
+    <div style="margin-bottom: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Sensor count</span><span style="color: #fbbf24;"><span id="s-sensor-display">3,000</span></span>
+      </div>
+      <input type="range" class="src-slider" id="s-sensor" min="100" max="50000" step="100" value="3000" oninput="updateSectorROI()" />
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Annual downtime cost</span><span style="color: #fbbf24;">$<span id="s-down-display">6,000,000</span></span>
+      </div>
+      <input type="range" class="src-slider" id="s-down" min="0" max="20000000" step="50000" value="6000000" oninput="updateSectorROI()" />
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Annual calibration cost</span><span style="color: #fbbf24;">$<span id="s-cal-display">180,000</span></span>
+      </div>
+      <input type="range" class="src-slider" id="s-cal" min="0" max="2000000" step="10000" value="180000" oninput="updateSectorROI()" />
+    </div>
+  </div>
+
+  <div class="src-card" style="background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%); border-top: 3px solid #fbbf24;">
+    <div class="src-stat" id="s-roi">$0</div>
+    <div style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.1em;">Net annual ROI</div>
+    <div style="display: flex; justify-content: space-around; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+      <div style="text-align: center;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);">Downtime savings</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; color: var(--green);" id="s-down-save">$0</div></div>
+      <div style="text-align: center;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);">Calibration savings</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; color: var(--green);" id="s-cal-save">$0</div></div>
+      <div style="text-align: center;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);">Platform cost</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; color: var(--magenta);" id="s-plat-cost">$0</div></div>
+      <div style="text-align: center;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);">Payback</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; color: var(--text);" id="s-payback">—</div></div>
+    </div>
+    <div style="margin-top: 20px; padding: 12px; background: color-mix(in srgb, #fbbf24 5%, var(--bg-2)); border-radius: 8px; font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+      Benchmarks: −35% downtime, −85% calibration cost. <a href="verticals.html" style="color: #fbbf24;">View sector benchmarks →</a>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+    <a href="roi-calculator.html" class="btn btn-ghost btn-sm">← General ROI Calculator</a>
+    <a href="sectors.html" class="btn btn-ghost btn-sm">All Sectors</a>
+    <a href="problem.html" class="btn btn-ghost btn-sm">The 4 Problems →</a>
+    <a href="portal.html" class="btn btn-primary btn-sm">Sign up as design partner →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="roi-calculator.html">General ROI</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Energy ROI Calculator &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+function updateSectorROI() {
+  const sensors = parseInt(document.getElementById('s-sensor').value);
+  const downtime = parseInt(document.getElementById('s-down')?.value || 0);
+  const cal = parseInt(document.getElementById('s-cal')?.value || 0);
+  const downSave = downtime * 0.35;
+  const calSave = cal * 0.85;
+  const platCost = (7000 * 12) + (sensors * 2.5 * 12);
+  const roi = downSave + calSave - platCost;
+  const payback = roi > 0 ? Math.round(12 * platCost / (downSave + calSave)) + ' months' : 'N/A';
+
+  document.getElementById('s-sensor-display').textContent = sensors.toLocaleString();
+  document.getElementById("s-down-display").textContent = downtime.toLocaleString();
+  document.getElementById('s-cal-display').textContent = cal.toLocaleString();
+  document.getElementById('s-roi').textContent = (roi >= 0 ? '' : '−') + '$' + Math.abs(roi).toLocaleString();
+  document.getElementById('s-down-save').textContent = '$' + Math.round(downSave).toLocaleString();
+  document.getElementById('s-cal-save').textContent = '$' + Math.round(calSave).toLocaleString();
+  document.getElementById('s-plat-cost').textContent = '$' + Math.round(platCost).toLocaleString();
+  document.getElementById('s-payback').textContent = payback;
+}
+updateSectorROI();
+</script>
+</body>
+</html>
