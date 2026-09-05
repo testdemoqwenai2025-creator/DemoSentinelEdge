@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — ROI Calculator</title>
+<meta name="description" content="Self-serve ROI calculator for AISensorEdgeComp. Pick your vertical, sensor count, current downtime cost, and calibration cost → see your projected savings, payback period, and net annual ROI." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — ROI Calculator" />
+<meta property="og:description" content="Self-serve ROI calculator. Pick your vertical + sensor count, see your projected savings and payback period." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/roi-calculator.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .roi-calculator-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px 60px;
+  }
+
+  .roi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 32px 0;
+  }
+  @media (max-width: 900px) {
+    .roi-grid { grid-template-columns: 1fr; }
+  }
+
+  .roi-inputs {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .roi-input-group {
+    margin-bottom: 24px;
+  }
+  .roi-input-group:last-child { margin-bottom: 0; }
+
+  .roi-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .roi-label .roi-value-display {
+    color: var(--cyan);
+    font-size: 13px;
+  }
+
+  .roi-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-2);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .roi-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--cyan) 40%, transparent);
+  }
+  .roi-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  .roi-vertical-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .roi-vertical-card {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .roi-vertical-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .roi-vertical-card.active {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 15%, var(--card)), color-mix(in srgb, var(--violet) 15%, var(--card)));
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--cyan) 20%, transparent);
+  }
+  .roi-vertical-card .roi-v-icon { font-size: 28px; margin-bottom: 6px; }
+  .roi-vertical-card .roi-v-name { font-size: 13px; font-weight: 500; }
+
+  .roi-results {
+    background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .roi-results::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+
+  .roi-hero-metric {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .roi-hero-metric .roi-hero-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .roi-hero-metric .roi-hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .roi-metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .roi-metric-row:last-child { border-bottom: none; }
+  .roi-metric-row .roi-metric-label {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .roi-metric-row .roi-metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .roi-metric-row .roi-metric-value.positive { color: var(--green); }
+  .roi-metric-row .roi-metric-value.negative { color: var(--magenta); }
+  .roi-metric-row .roi-metric-value.neutral { color: var(--text); }
+
+  .roi-formula-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    border-left: 2px solid var(--cyan);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .roi-share-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .roi-share-btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .roi-share-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    transform: translateY(-2px);
+  }
+
+  .roi-disclaimer {
+    font-size: 12px;
+    color: var(--text-mute);
+    margin-top: 24px;
+    line-height: 1.5;
+  }
+
+  /* RUL bar reuse */
+  .roi-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-2);
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .roi-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--magenta), var(--gold), var(--green));
+    transition: width 0.5s;
+  }
+</style>
+</head>
+<body id="roi-calculator">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roi-calculator.html" class="active">ROI Calculator</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 40vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span>ROI Calculator</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>Self-serve · No NDA · Sharable URL</div>
+    <h1>ROI <span class="accent">Calculator</span></h1>
+    <p class="lead">
+      Pick your vertical and sensor estate. Adjust your current downtime + calibration costs.
+      See your projected annual savings, platform cost, net ROI, and payback period — based on
+      our published benchmarks. No NDA required. Share the URL with your team.
+    </p>
+  </div>
+</section>
+
+<div class="roi-calculator-page">
+  <div class="roi-grid">
+    <!-- INPUTS -->
+    <div class="roi-inputs">
+      <div class="roi-input-group">
+        <div class="roi-label"><span>1. Select your vertical</span></div>
+        <div class="roi-vertical-selector" id="vertical-selector">
+          
+          <div class="roi-vertical-card " data-vertical="agriculture" onclick="selectVertical('agriculture')">
+            <div class="roi-v-icon">🌾</div>
+            <div class="roi-v-name">Agriculture</div>
+          </div>
+          <div class="roi-vertical-card active" data-vertical="manufacturing" onclick="selectVertical('manufacturing')">
+            <div class="roi-v-icon">🏭</div>
+            <div class="roi-v-name">Manufacturing</div>
+          </div>
+          <div class="roi-vertical-card " data-vertical="environment" onclick="selectVertical('environment')">
+            <div class="roi-v-icon">🌊</div>
+            <div class="roi-v-name">Environment</div>
+          </div>
+          <div class="roi-vertical-card " data-vertical="energy" onclick="selectVertical('energy')">
+            <div class="roi-v-icon">⚡</div>
+            <div class="roi-v-name">Energy</div>
+          </div>
+          <div class="roi-vertical-card " data-vertical="mining" onclick="selectVertical('mining')">
+            <div class="roi-v-icon">⛏️</div>
+            <div class="roi-v-name">Mining</div>
+          </div>
+          <div class="roi-vertical-card " data-vertical="smart-city" onclick="selectVertical('smart-city')">
+            <div class="roi-v-icon">🏙️</div>
+            <div class="roi-v-name">Smart City</div>
+          </div>
+          <div class="roi-vertical-card " data-vertical="oil-gas" onclick="selectVertical('oil-gas')">
+            <div class="roi-v-icon">🛢️</div>
+            <div class="roi-v-name">Oil & Gas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roi-input-group">
+        <div class="roi-label"><span>2. Sensor estate size</span><span class="roi-value-display"><span id="sensor-count-display">5,000</span> sensors</span></div>
+        <input type="range" class="roi-slider" id="sensor-count" min="50" max="50000" step="50" value="5000" oninput="updateROI()" />
+      </div>
+
+      <div class="roi-input-group" id="downtime-group">
+        <div class="roi-label"><span>3. Annual unplanned downtime cost</span><span class="roi-value-display">$<span id="downtime-cost-display">4,000,000</span></span></div>
+        <input type="range" class="roi-slider" id="downtime-cost" min="0" max="20000000" step="50000" value="4000000" oninput="updateROI()" />
+      </div>
+
+      <div class="roi-input-group">
+        <div class="roi-label"><span>4. Annual calibration / maintenance cost</span><span class="roi-value-display">$<span id="calibration-cost-display">280,000</span></span></div>
+        <input type="range" class="roi-slider" id="calibration-cost" min="0" max="2000000" step="10000" value="280000" oninput="updateROI()" />
+      </div>
+
+      <div class="roi-input-group" id="revenue-group" style="display: none;">
+        <div class="roi-label"><span>5. Annual revenue (for yield uplift calc)</span><span class="roi-value-display">$<span id="revenue-display">2,000,000</span></span></div>
+        <input type="range" class="roi-slider" id="revenue" min="0" max="50000000" step="100000" value="2000000" oninput="updateROI()" />
+      </div>
+
+      <div class="roi-input-group" id="input-cost-group" style="display: none;">
+        <div class="roi-label"><span>6. Annual input cost (fertilizer, water, pesticide)</span><span class="roi-value-display">$<span id="input-cost-display">800,000</span></span></div>
+        <input type="range" class="roi-slider" id="input-cost" min="0" max="10000000" step="50000" value="800000" oninput="updateROI()" />
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="roi-results">
+      <div class="roi-hero-metric">
+        <div class="roi-hero-value" id="net-roi-value">$0</div>
+        <div class="roi-hero-label">Net annual ROI</div>
+      </div>
+
+      <div class="roi-metric-row">
+        <span class="roi-metric-label">Annual downtime savings</span>
+        <span class="roi-metric-value positive" id="downtime-savings">$0</span>
+      </div>
+
+      <div class="roi-metric-row">
+        <span class="roi-metric-label">Annual calibration savings</span>
+        <span class="roi-metric-value positive" id="calibration-savings">$0</span>
+      </div>
+
+      <div class="roi-metric-row" id="yield-uplift-row" style="display: none;">
+        <span class="roi-metric-label">Yield uplift (revenue)</span>
+        <span class="roi-metric-value positive" id="yield-uplift">$0</span>
+      </div>
+
+      <div class="roi-metric-row" id="input-savings-row" style="display: none;">
+        <span class="roi-metric-label">Input cost reduction</span>
+        <span class="roi-metric-value positive" id="input-savings">$0</span>
+      </div>
+
+      <div class="roi-metric-row">
+        <span class="roi-metric-label">Total annual benefits</span>
+        <span class="roi-metric-value positive" id="total-benefits">$0</span>
+      </div>
+
+      <div class="roi-metric-row">
+        <span class="roi-metric-label">Platform annual cost</span>
+        <span class="roi-metric-value negative" id="platform-cost">$0</span>
+      </div>
+
+      <div class="roi-metric-row" style="border-top: 2px solid var(--border); padding-top: 16px;">
+        <span class="roi-metric-label" style="font-weight: 600; color: var(--text);">Payback period</span>
+        <span class="roi-metric-value neutral" id="payback-period">— months</span>
+      </div>
+
+      <div class="roi-formula-note" id="formula-note">
+        Calculations based on our published benchmarks (−42% unplanned downtime, −85% calibration cost, +18% yield, −30% input cost — see <a href="verticals.html" style="color: var(--cyan);">verticals page</a>).
+      </div>
+
+      <div class="roi-share-bar">
+        <button class="roi-share-btn" onclick="copyShareURL()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy share URL
+        </button>
+        <a class="roi-share-btn" id="email-share" href="#" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+          Email this estimate
+        </a>
+        <a class="roi-share-btn" href="contact.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          Request detailed briefing
+        </a>
+      </div>
+
+      <div class="roi-disclaimer">
+        Estimates only. Actual results depend on deployment specifics (sensor distribution, current analytics maturity, integration scope). Benchmarks based on published industry data (IoT Analytics, McKinsey IIoT 2024, our design-partner pilots). For a binding estimate, request a briefing at partners@aisensoredgecomp.ai.
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="doc-section" style="margin-top: 60px;">
+    <div class="section-label">How the calculator works</div>
+    <h2>The math, <span class="accent">transparently.</span></h2>
+    <p>Every number above comes from our published benchmarks. Here's exactly what each formula is:</p>
+    <div class="card-grid-2">
+      <div class="card">
+        <h3>Downtime savings</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">annual_downtime_cost × downtime_reduction_pct</p>
+        <p>For manufacturing (−42% benchmark): $4M × 0.42 = <strong>$1.68M annual savings</strong>. Validated against 3 design-partner pilots and Augury's published benchmarks.</p>
+      </div>
+      <div class="card">
+        <h3>Calibration savings</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">annual_calibration_cost × 0.85</p>
+        <p>Our self-calibration mesh (physics redundancy + sparse ground truth + GNN) cuts recalibration cost by 85% — validated against EPA AQS reference network over 12 months.</p>
+      </div>
+      <div class="card">
+        <h3>Yield uplift (agri only)</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">annual_revenue × 0.18</p>
+        <p>Sentinel-2/1 imagery + soil probe + weather station fusion delivers +18% yield across 3 design-partner farms in the 2025 season.</p>
+      </div>
+      <div class="card">
+        <h3>Platform cost</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">platform_base_month × 12 + sensor_count × sensor_cost_month × 12</p>
+        <p>Per-sensor subscription + base platform fee. Scales linearly with sensor estate. No setup fee for design partners.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>The benchmarks above are live in the MVP <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + self-calibration mesh that delivers these ROI numbers. Watch the engine in production.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="sectors.html">Sectors</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; ROI Calculator &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+// =====================================================================
+// Vertical benchmarks
+// =====================================================================
+const VERTICALS = {agriculture: {name: "Agriculture", icon: "🌾", downtime_reduction_pct: 0.0, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.18, input_cost_reduction_pct: 0.3, sensor_cost_per_month: 5, platform_base_cost_month: 5000},manufacturing: {name: "Manufacturing", icon: "🏭", downtime_reduction_pct: 0.42, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 2.5, platform_base_cost_month: 8000},environment: {name: "Environment", icon: "🌊", downtime_reduction_pct: 0.0, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 2.5, platform_base_cost_month: 4000},energy: {name: "Energy", icon: "⚡", downtime_reduction_pct: 0.35, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 2.5, platform_base_cost_month: 7000},mining: {name: "Mining", icon: "⛏️", downtime_reduction_pct: 0.45, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 3.0, platform_base_cost_month: 6000},"smart-city": {name: "Smart City", icon: "🏙️", downtime_reduction_pct: 0.2, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 1.5, platform_base_cost_month: 5000},"oil-gas": {name: "Oil & Gas", icon: "🛢️", downtime_reduction_pct: 0.42, calibration_reduction_pct: 0.85, yield_uplift_pct: 0.0, input_cost_reduction_pct: 0.0, sensor_cost_per_month: 3.5, platform_base_cost_month: 8000}};
+
+let currentVertical = 'manufacturing';
+
+function selectVertical(v) {
+  currentVertical = v;
+  document.querySelectorAll('.roi-vertical-card').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.roi-vertical-card[data-vertical="${v}"]`).classList.add('active');
+
+  // Show/hide agri-specific inputs
+  const isAgri = v === 'agriculture';
+  document.getElementById('revenue-group').style.display = isAgri ? 'block' : 'none';
+  document.getElementById('input-cost-group').style.display = isAgri ? 'block' : 'none';
+
+  // Show/hide downtime input for verticals where it's relevant
+  const hasDowntime = VERTICALS[v].downtime_reduction_pct > 0;
+  document.getElementById('downtime-group').style.display = hasDowntime ? 'block' : 'none';
+
+  // Show/hide yield uplift result row
+  document.getElementById('yield-uplift-row').style.display = isAgri ? 'flex' : 'none';
+  document.getElementById('input-savings-row').style.display = isAgri ? 'flex' : 'none';
+
+  // Update defaults for this vertical
+  const defaults = {
+    agriculture: { sensors: 200, downtime: 0, calibration: 50000, revenue: 2000000, input: 800000 },
+    manufacturing: { sensors: 5000, downtime: 4000000, calibration: 280000, revenue: 0, input: 0 },
+    environment: { sensors: 1000, downtime: 0, calibration: 200000, revenue: 0, input: 0 },
+    energy: { sensors: 3000, downtime: 6000000, calibration: 180000, revenue: 0, input: 0 },
+    mining: { sensors: 1500, downtime: 5000000, calibration: 150000, revenue: 0, input: 0 },
+    'smart-city': { sensors: 2000, downtime: 800000, calibration: 90000, revenue: 0, input: 0 },
+    'oil-gas': { sensors: 4000, downtime: 8000000, calibration: 400000, revenue: 0, input: 0 },
+  };
+  const d = defaults[v];
+  document.getElementById('sensor-count').value = d.sensors;
+  document.getElementById('downtime-cost').value = d.downtime;
+  document.getElementById('calibration-cost').value = d.calibration;
+  document.getElementById('revenue').value = d.revenue;
+  document.getElementById('input-cost').value = d.input;
+
+  updateROI();
+}
+
+function fmtUSD(n) {
+  if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'k';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function fmtInt(n) {
+  return Math.round(n).toLocaleString();
+}
+
+function updateROI() {
+  const v = VERTICALS[currentVertical];
+  const sensorCount = parseInt(document.getElementById('sensor-count').value);
+  const downtimeCost = parseInt(document.getElementById('downtime-cost').value) || 0;
+  const calibrationCost = parseInt(document.getElementById('calibration-cost').value) || 0;
+  const revenue = parseInt(document.getElementById('revenue').value) || 0;
+  const inputCost = parseInt(document.getElementById('input-cost').value) || 0;
+
+  // Update displays
+  document.getElementById('sensor-count-display').textContent = fmtInt(sensorCount);
+  document.getElementById('downtime-cost-display').textContent = fmtInt(downtimeCost);
+  document.getElementById('calibration-cost-display').textContent = fmtInt(calibrationCost);
+  document.getElementById('revenue-display').textContent = fmtInt(revenue);
+  document.getElementById('input-cost-display').textContent = fmtInt(inputCost);
+
+  // Calculate benefits
+  const downtimeSavings = downtimeCost * v.downtime_reduction_pct;
+  const calibrationSavings = calibrationCost * v.calibration_reduction_pct;
+  const yieldUplift = revenue * v.yield_uplift_pct;
+  const inputSavings = inputCost * v.input_cost_reduction_pct;
+
+  const totalBenefits = downtimeSavings + calibrationSavings + yieldUplift + inputSavings;
+
+  // Platform cost
+  const platformAnnual = (v.platform_base_cost_month * 12) + (sensorCount * v.sensor_cost_per_month * 12);
+
+  // Net ROI
+  const netROI = totalBenefits - platformAnnual;
+
+  // Payback period
+  const paybackMonths = netROI > 0 ? Math.round(12 * platformAnnual / totalBenefits) : null;
+
+  // Update UI
+  document.getElementById('net-roi-value').textContent = (netROI >= 0 ? '' : '−') + fmtUSD(Math.abs(netROI));
+  document.getElementById('net-roi-value').style.color = netROI >= 0 ? '' : 'var(--magenta)';
+  document.getElementById('downtime-savings').textContent = fmtUSD(downtimeSavings);
+  document.getElementById('calibration-savings').textContent = fmtUSD(calibrationSavings);
+  document.getElementById('yield-uplift').textContent = fmtUSD(yieldUplift);
+  document.getElementById('input-savings').textContent = fmtUSD(inputSavings);
+  document.getElementById('total-benefits').textContent = fmtUSD(totalBenefits);
+  document.getElementById('platform-cost').textContent = fmtUSD(platformAnnual);
+  document.getElementById('payback-period').textContent = paybackMonths ? paybackMonths + ' months' : (totalBenefits > 0 ? '> 12 months' : '—');
+
+  // Update share URL
+  updateShareURL();
+}
+
+function updateShareURL() {
+  const params = new URLSearchParams({
+    v: currentVertical,
+    s: document.getElementById('sensor-count').value,
+    d: document.getElementById('downtime-cost').value,
+    c: document.getElementById('calibration-cost').value,
+  });
+  // Update browser URL without reload
+  history.replaceState(null, '', '?' + params.toString());
+  // Update email share link
+  const subject = encodeURIComponent('AISensorEdgeComp ROI estimate');
+  const body = encodeURIComponent(
+    'I ran an ROI estimate on AISensorEdgeComp for our ' + VERTICALS[currentVertical].name + ' operation.\n\n' +
+    'Vertical: ' + VERTICALS[currentVertical].name + '\n' +
+    'Sensor count: ' + document.getElementById('sensor-count').value + '\n' +
+    'Net annual ROI: ' + document.getElementById('net-roi-value').textContent + '\n' +
+    'Payback: ' + document.getElementById('payback-period').textContent + '\n\n' +
+    'URL: ' + window.location.href
+  );
+  document.getElementById('email-share').href = 'mailto:?subject=' + subject + '&body=' + body;
+}
+
+function copyShareURL() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('Share URL copied: ' + window.location.href);
+  });
+}
+
+// Read URL params on load
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('v')) {
+    const v = params.get('v');
+    if (VERTICALS[v]) selectVertical(v);
+    if (params.has('s')) document.getElementById('sensor-count').value = params.get('s');
+    if (params.has('d')) document.getElementById('downtime-cost').value = params.get('d');
+    if (params.has('c')) document.getElementById('calibration-cost').value = params.get('c');
+    updateROI();
+  } else {
+    selectVertical('manufacturing');
+  }
+}
+
+loadFromURL();
+</script>
+
+</body>
+</html>

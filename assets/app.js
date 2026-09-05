@@ -149,3 +149,153 @@ window.addEventListener('DOMContentLoaded', function () {
   const themeBtn = document.querySelector('.theme-toggle');
   if (themeBtn) themeBtn.addEventListener('click', window.toggleTheme);
 });
+
+// =====================================================================
+// MEGA-MENU NAV — injected on page load
+// Enhances the existing <nav> with a 4-column mega-menu showing every
+// page on the site, grouped by category. Also adds a floating "site
+// map" button bottom-left that opens the same menu from anywhere.
+// =====================================================================
+
+(function initMegaMenu() {
+  const PAGES = [
+    {
+      section: "Landing",
+      items: [
+        { href: "index.html", label: "Home", desc: "Overview + hero" },
+      ]
+    },
+    {
+      section: "Topical Deep Dives",
+      items: [
+        { href: "problem.html", label: "Problem & Market", desc: "4 problems, $547B TAM" },
+        { href: "architecture.html", label: "Architecture", desc: "4-layer overview" },
+        { href: "sensors.html", label: "Sensors Catalog", desc: "8 modalities" },
+        { href: "sensor-types.html", label: "Sensor Types & Arch", desc: "12 types, 96 live" },
+        { href: "ai-stack.html", label: "AI/ML Stack", desc: "TS-FM + Graph RAG" },
+        { href: "verticals.html", label: "Verticals", desc: "5 wedges" },
+        { href: "roadmap.html", label: "Roadmap", desc: "6 quarters" },
+        { href: "team.html", label: "Team", desc: "4 founders" },
+        { href: "contact.html", label: "Contact", desc: "Investor paths" },
+      ]
+    },
+    {
+      section: "Layer Architecture",
+      items: [
+        { href: "layer-sensing.html", label: "Layer 01: Sensing", desc: "Ontology + calibration" },
+        { href: "layer-connectivity.html", label: "Layer 02: Connectivity", desc: "12 protocols" },
+        { href: "layer-edge.html", label: "Layer 03: Edge Compute", desc: "Liquid placement" },
+        { href: "layer-intelligence.html", label: "Layer 04: Intelligence", desc: "TS-FM 350M" },
+      ]
+    },
+    {
+      section: "Engineering & Scenarios",
+      items: [
+        { href: "engineering.html", label: "Engineering Hub", desc: "87-file repo" },
+        { href: "system-design.html", label: "System Design", desc: "10-section doc" },
+        { href: "architecture-deep.html", label: "Technical Deep Dive", desc: "Engineering due-diligence" },
+        { href: "sectors.html", label: "Sectors Hub", desc: "7 verticals" },
+        { href: "scenario-offshore-oil-gas.html", label: "Offshore O&G Scenario", desc: "64 assets, 192 sensors" },
+      ]
+    },
+    {
+      section: "Tools & Engagement",
+      items: [
+        { href: "roi-calculator.html", label: "ROI Calculator", desc: "Self-serve" },
+        { href: "https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors", label: "Live MVP Dashboard", desc: "Real-time", external: true },
+        { href: "https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform", label: "Platform Source", desc: "87 files", external: true },
+        { href: "https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-MVP", label: "MVP Source", desc: "Next.js", external: true },
+      ]
+    },
+  ];
+
+  function buildMegaMenu() {
+    const menu = document.createElement("div");
+    menu.className = "mega-menu";
+    menu.id = "megaMenu";
+    PAGES.forEach((group, idx) => {
+      if (idx === 4) {
+        // After the 4th group, start a new row visually for the Tools section
+        // (grid is 4-column; we have 5 groups, so the 5th wraps — that's fine)
+      }
+      const col = document.createElement("div");
+      col.className = "mega-menu-column";
+      const h = document.createElement("h4");
+      h.textContent = group.section;
+      col.appendChild(h);
+      group.items.forEach(item => {
+        const a = document.createElement("a");
+        a.href = item.href;
+        if (item.external) a.target = "_blank", a.rel = "noopener";
+        const label = document.createElement("span");
+        label.className = "mega-link-label";
+        label.textContent = (item.external ? "↗ " : "") + item.label;
+        const desc = document.createElement("span");
+        desc.className = "mega-link-desc";
+        desc.textContent = item.desc;
+        a.appendChild(label);
+        a.appendChild(desc);
+        col.appendChild(a);
+      });
+      menu.appendChild(col);
+    });
+    return menu;
+  }
+
+  function init() {
+    // Find the existing <nav>
+    const nav = document.querySelector("nav");
+    if (!nav) return;
+
+    // Build the mega menu
+    const megaMenu = buildMegaMenu();
+    nav.appendChild(megaMenu);
+
+    // Add a "Pages" trigger button in the nav-links area
+    const navLinks = nav.querySelector(".nav-links");
+    if (navLinks) {
+      const trigger = document.createElement("button");
+      trigger.className = "nav-btn";
+      trigger.style.cssText = "padding: 6px 12px; font-size: 13px; background: transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;";
+      trigger.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Pages ▾';
+      trigger.setAttribute("aria-label", "Open site menu");
+
+      trigger.addEventListener("click", function(e) {
+        e.stopPropagation();
+        megaMenu.classList.toggle("open");
+      });
+      navLinks.insertBefore(trigger, navLinks.firstChild);
+    }
+
+    // Close mega-menu on outside click
+    document.addEventListener("click", function(e) {
+      if (!megaMenu.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+        megaMenu.classList.remove("open");
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") megaMenu.classList.remove("open");
+    });
+
+    // Add floating site-map button (bottom-left, mirrors the search button bottom-right)
+    const fab = document.createElement("button");
+    fab.className = "site-map-fab";
+    fab.setAttribute("aria-label", "Open site menu");
+    fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>';
+    fab.addEventListener("click", function() {
+      megaMenu.classList.add("open");
+      // Scroll to top so the mega-menu (positioned under nav) is visible
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    document.body.appendChild(fab);
+  }
+
+  // Run after DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
