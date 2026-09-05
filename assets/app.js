@@ -180,6 +180,15 @@ window.addEventListener('DOMContentLoaded', function () {
       ]
     },
     {
+      section: "Problem Deep Dives",
+      items: [
+        { href: "protocol-heterogeneity.html", label: "Protocol Heterogeneity", desc: "16 protocols → 3 weeks" },
+        { href: "calibration-drift.html", label: "Calibration Drift", desc: "−85% recalibration cost" },
+        { href: "edge-cloud-placement.html", label: "Edge-Cloud Placement", desc: "5-axis liquid scheduler" },
+        { href: "unlabeled-industrial-data.html", label: "Unlabeled Data", desc: "Zero-shot TS-FM, 0.89 AUC" },
+      ]
+    },
+    {
       section: "Layer Architecture",
       items: [
         { href: "layer-sensing.html", label: "Layer 01: Sensing", desc: "Ontology + calibration" },
