@@ -194,6 +194,103 @@
 </div>
 </div>
 
+<!-- WHY THESE FOUR PROBLEMS COMPOUND -->
+<section id="compound-value" style="background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); border-top: 1px solid var(--border); padding: 80px 40px;">
+  <div style="max-width: 1100px; margin: 0 auto;">
+    <div class="section-label reveal" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">▼ The Compound Effect</div>
+    <h2 class="reveal" style="font-size: clamp(28px, 4vw, 44px); margin-bottom: 20px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;">Why these four problems <span style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">compound.</span></h2>
+    <p class="reveal" style="font-size: 18px; color: var(--text-dim); max-width: 720px; margin-bottom: 40px;">Each problem, solved in isolation, delivers value. But solved together — by the same platform — the value compounds. Each solution feeds the others. This is why AISensorEdgeComp is a platform, not a point solution.</p>
+
+    <!-- Compound diagram -->
+    <div class="reveal" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin: 32px 0;">
+      <!-- Protocol Heterogeneity feeds -->
+      <div style="padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; border-top: 3px solid #00d4ff;">
+        <h3 style="font-size: 17px; margin-bottom: 12px;">Protocol Heterogeneity → enables everything else</h3>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.6;">The <strong>canonical schema</strong> (Problem 1) is the foundation. Without clean, normalized data, the self-calibration mesh (Problem 2) has nothing to calibrate, the liquid placement scheduler (Problem 3) has nothing to route, and the TS-FM (Problem 4) has nothing to infer on. Protocol normalization happens first, at the edge, before any other processing.</p>
+        <div style="margin-top: 12px; padding: 8px 12px; background: color-mix(in srgb, var(--cyan) 5%, var(--bg-2)); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan);">→ Feeds: calibration mesh, placement scheduler, TS-FM</div>
+      </div>
+
+      <!-- Calibration feeds -->
+      <div style="padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; border-top: 3px solid #22c55e;">
+        <h3 style="font-size: 17px; margin-bottom: 12px;">Calibration Drift → enables trust in AI</h3>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.6;">The <strong>self-calibration mesh</strong> (Problem 2) produces <code>calibration_confidence</code> (0.0-1.0) on every measurement. This score feeds into the TS-FM (Problem 4) — low-confidence readings are down-weighted in the inference window. It also feeds the placement scheduler (Problem 3) — low-confidence readings from a drifting sensor may be routed to the more accurate cloud model for a second opinion.</p>
+        <div style="margin-top: 12px; padding: 8px 12px; background: color-mix(in srgb, var(--green) 5%, var(--bg-2)); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green);">→ Feeds: placement scheduler (confidence weighting), TS-FM (input quality)</div>
+      </div>
+
+      <!-- Placement feeds -->
+      <div style="padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; border-top: 3px solid #fbbf24;">
+        <h3 style="font-size: 17px; margin-bottom: 12px;">Edge-Cloud Placement → enables scale + ESG</h3>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.6;">The <strong>liquid placement scheduler</strong> (Problem 3) routes inference jobs dynamically. It uses the TS-FM's confidence (Problem 4) as an input — when edge model accuracy drifts, it routes to the cloud model. It also uses the <code>calibration_confidence</code> (Problem 2) — low-confidence readings may trigger a cloud fallback. The scheduler's carbon-aware routing is our ESG differentiator.</p>
+        <div style="margin-top: 12px; padding: 8px 12px; background: color-mix(in srgb, var(--gold) 5%, var(--bg-2)); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);">← Uses: TS-FM confidence, calibration confidence → → Enables: 72h edge autonomy, carbon-aware routing</div>
+      </div>
+
+      <!-- TS-FM feeds -->
+      <div style="padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; border-top: 3px solid #a855f7;">
+        <h3 style="font-size: 17px; margin-bottom: 12px;">Unlabeled Data (TS-FM) → enables zero-shot from day 1</h3>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.6;">The <strong>TS-FM</strong> (Problem 4) runs zero-shot anomaly detection on the canonical data (Problem 1), weighted by calibration confidence (Problem 2), routed by the liquid scheduler (Problem 3). Its confidence scores feed back into the scheduler — high-confidence edge inferences stay local; low-confidence ones escalate to cloud. The TS-FM also learns from federated gradients across all customers, compounding accuracy over time.</p>
+        <div style="margin-top: 12px; padding: 8px 12px; background: color-mix(in srgb, var(--violet) 5%, var(--bg-2)); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--violet);">← Uses: canonical data, calibration confidence, placement routing → → Feeds: placement decisions (confidence), federated model improvement</div>
+      </div>
+    </div>
+
+    <!-- The compounding loop -->
+    <div class="reveal" style="margin: 40px 0; padding: 32px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 5%, var(--card)), color-mix(in srgb, var(--violet) 5%, var(--card))); border: 1px solid var(--border-strong); border-radius: 16px;">
+      <h3 style="font-size: 20px; margin-bottom: 16px; text-align: center;">The Compounding Loop</h3>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">
+        <div style="padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--cyan);">Protocol normalization</div>
+        <span style="color: var(--cyan); font-size: 18px;">→</span>
+        <div style="padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--green);">Calibration confidence</div>
+        <span style="color: var(--cyan); font-size: 18px;">→</span>
+        <div style="padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--gold);">Placement decision</div>
+        <span style="color: var(--cyan); font-size: 18px;">→</span>
+        <div style="padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--violet);">TS-FM inference</div>
+        <span style="color: var(--cyan); font-size: 18px;">→</span>
+        <div style="padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--cyan);">Anomaly alert + confidence</div>
+        <span style="color: var(--cyan); font-size: 18px;">↺</span>
+      </div>
+      <p style="text-align: center; margin-top: 16px; font-size: 14px; color: var(--text-dim); max-width: 700px; margin-left: auto; margin-right: auto;">Each loop iteration improves the system: the TS-FM's confidence feeds back into the placement scheduler (which jobs should go to cloud for a second opinion), the calibration mesh learns from anomaly patterns (which sensors drift faster), and the federated learning loop improves the TS-FM across all customers. <strong>The loop compounds — every customer makes every other customer's deployment better.</strong></p>
+    </div>
+
+    <!-- Sector compounding examples -->
+    <div class="reveal" style="margin: 32px 0;">
+      <h3 style="font-size: 22px; margin-bottom: 20px;">How this compounds across sectors</h3>
+      <p style="font-size: 15px; color: var(--text-dim); margin-bottom: 24px;">A chemical plant doesn't just get protocol normalization. It gets calibration drift correction + edge-cloud placement + zero-shot anomaly detection — simultaneously. Here's what the compound effect looks like in practice:</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">🛢️ Oil &amp; Gas — Offshore Platform</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: 12 protocols normalized in 3 weeks (vs. 6 months). <strong>Calibration drift</strong>: 50 gas detectors self-calibrate (−85% cost). <strong>Placement</strong>: safety-critical always at edge, batch to cloud via satellite. <strong>TS-FM</strong>: zero-shot on new wellhead from day 1. <strong>Compound</strong>: the canonical schema feeds the calibration mesh, which feeds the placement scheduler, which routes the TS-FM inference — all in one pipeline, all from one platform.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">⚗️ Chemical Plant</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: 5 protocols (OPC-UA, Modbus, FF, HART, Profinet) normalized in 4 weeks. <strong>Calibration drift</strong>: 5,000 instruments self-calibrate (−84% cost). <strong>Placement</strong>: safety-critical reactor monitoring always at edge. <strong>TS-FM</strong>: detects reactor runaway zero-shot. <strong>Compound</strong>: when the TS-FM detects an anomaly, it uses the calibration confidence to verify the reading isn't drift-induced, the scheduler routes the inference to cloud for a second opinion, and the Graph RAG traces the causal chain from sensor → reactor → maintenance log → ERP.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">🏥 Hospital ICU</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: HL7 + MQTT + proprietary serial normalized in 2 weeks. <strong>Calibration drift</strong>: ventilator sensors self-calibrate. <strong>Placement</strong>: ventilator disconnect alert <2s (always at edge). <strong>TS-FM</strong>: detects early sepsis zero-shot (0.2% incidence). <strong>Compound</strong>: the TS-FM's sepsis early-warning uses the calibration confidence to exclude readings from drifting sensors, the placement scheduler ensures ventilator alerts never depend on WAN, and the canonical schema means the LLM query layer can answer "why did patient P-1234's vitals change?" with cited evidence from all modalities.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">⚡ Smart Grid</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: IEC 61850 + DNP3 + Modbus + PMU normalized in 4 weeks. <strong>Calibration drift</strong>: 3,000 CT/PT instruments self-calibrate (−85% cost). <strong>Placement</strong>: protective relay actions <10ms (always at edge, TSN). <strong>TS-FM</strong>: detects transformer partial discharge zero-shot. <strong>Compound</strong>: the canonical schema unifies IEC 61850 logical nodes with DNP3 points, the calibration mesh catches drifting CTs before they cause revenue-metering errors, the placement scheduler routes protective actions to the edge and cross-substation analytics to the cloud, and the TS-FM flags partial discharge on a transformer it's never seen before — all from day one of deployment.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">⛏️ Mining — Remote Site</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: Modbus + LoRaWAN + satellite IoT normalized in 3 weeks. <strong>Calibration drift</strong>: gas detectors self-calibrate (critical for safety). <strong>Placement</strong>: gas detection always at edge (sub-10s), equipment health deferred to cloud via satellite (battery-aware). <strong>TS-FM</strong>: detects truck drivetrain faults zero-shot. <strong>Compound</strong>: the placement scheduler uses battery state (from the calibration mesh's sensor health monitoring) to decide whether to defer non-critical inferences to cloud; the TS-FM's confidence feeds back into the scheduler; and the carbon-aware routing shifts more to edge when the local diesel generator is the power source.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 8px;">💧 Water Treatment</h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;"><strong>Protocol heterogeneity</strong>: Modbus + OPC-UA + LoRaWAN + HART normalized in 2 weeks. <strong>Calibration drift</strong>: 1,000 distribution sensors self-calibrate (−90% cost). <strong>Placement</strong>: LoRaWAN battery-aware routing. <strong>TS-FM</strong>: detects chlorine residual drops zero-shot. <strong>Compound</strong>: the canonical schema unifies treatment plant OPC-UA tags with distribution network LoRaWAN payloads; the calibration mesh catches drifting chlorine sensors before they cause compliance violations; the TS-FM detects quality anomalies the same day a new treatment process is commissioned; and the placement scheduler extends battery life 2× by deferring non-critical inferences to cloud.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- The network effect -->
+    <div class="reveal" style="margin: 32px 0; padding: 24px; background: color-mix(in srgb, var(--cyan) 5%, var(--card)); border: 1px solid var(--border); border-radius: 12px;">
+      <h3 style="font-size: 20px; margin-bottom: 12px;">The Federated Network Effect</h3>
+      <p style="font-size: 15px; color: var(--text-dim); line-height: 1.7;">The compounding doesn't stop within a single deployment. Through <strong>federated learning</strong>, every customer's data improves the TS-FM for all customers — without sharing raw data (DP noise + SGX secure aggregation). After 36 months of customer data compounding, the model's accuracy on industrial anomalies will be <strong>structurally unreachable</strong> by any competitor that doesn't have federated learning. AWS IoT and Azure IoT can't copy this — they would have to convince their customers to share gradients, and customers don't trust them with their data. <a href="federated-learning.html" style="color: var(--cyan);">See the federated learning visualization →</a></p>
+    </div>
+
+  </div>
+</section>
 
 <footer>
   <div class="footer-links">

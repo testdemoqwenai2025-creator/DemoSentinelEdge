@@ -1109,6 +1109,34 @@
   </div>
 </div>
 
+
+    <section class="doc-section">
+      <div class="section-label">Related problem deep dives</div>
+      <h2>How AISensorEdgeComp solves the four problems <span class="accent" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">on this platform</span></h2>
+      <p style="color: var(--text-dim); font-size: 15px; margin-bottom: 20px;">The Atlantis-7 platform faces all four structural problems. Here's how the platform addresses each — and how they compound.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid var(--cyan);">
+          <h4 style="font-size: 15px; margin-bottom: 6px;">📡 <a href="protocol-heterogeneity.html" style="color: var(--cyan); text-decoration: none;">Protocol Heterogeneity</a></h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">64 assets across 17 categories speak OPC-UA, Modbus, MQTT, LoRaWAN, and proprietary serial. The LLM-assisted normalization pipeline maps all 5,000+ tags to the canonical schema in <strong>3 weeks</strong> (vs. 6 months traditional, $1.2M).</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid var(--green);">
+          <h4 style="font-size: 15px; margin-bottom: 6px;">🔬 <a href="calibration-drift.html" style="color: var(--green); text-decoration: none;">Calibration Drift</a></h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">6 gas detectors (90-day intervals), 3 compressors (180-day vibration), 4 wells (180-day pressure). Self-calibration mesh uses physics redundancy + GNN to cut recalibration cost by <strong>85%</strong> — from $28K/year to $4.2K/year.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid var(--gold);">
+          <h4 style="font-size: 15px; margin-bottom: 6px;">⚡ <a href="edge-cloud-placement.html" style="color: var(--gold); text-decoration: none;">Edge-Cloud Placement</a></h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">Safety-critical inferences (gas leak, ESD, fire) always on-device (Hailo-8). Non-critical batch analytics to cloud via satellite (off-peak). <strong>72-hour edge autonomy</strong> on WAN loss. Carbon-aware routing for ESG.</p>
+        </div>
+        <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid var(--violet);">
+          <h4 style="font-size: 15px; margin-bottom: 6px;">🧠 <a href="unlabeled-industrial-data.html" style="color: var(--violet); text-decoration: none;">Unlabeled Data</a></h4>
+          <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">New wellhead commissioned with zero labeled failures. TS-FM detects pressure anomalies, flow deviations, and vibration baseline drift <strong>zero-shot from day 1</strong> (0.89 AUC-ROC). Improves as real data accumulates.</p>
+        </div>
+      </div>
+      <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 5%, var(--card)), color-mix(in srgb, var(--violet) 5%, var(--card))); border: 1px solid var(--border-strong); border-radius: 12px;">
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.6;"><strong style="color: var(--text);">The compound effect:</strong> the canonical schema (Problem 1) feeds the self-calibration mesh (Problem 2), which produces <code>calibration_confidence</code> that the liquid placement scheduler (Problem 3) uses to decide edge-vs-cloud routing, which routes the TS-FM inference (Problem 4) — and the TS-FM's confidence feeds back into the scheduler. All four solutions run in one pipeline, on one platform, from day one. <a href="problem.html#compound-value" style="color: var(--cyan);">Read more about the compound effect →</a></p>
+      </div>
+    </section>
+
 <!-- LIVE MVP BANNER -->
 <div class="live-banner">
   <div class="live-banner-card reveal">

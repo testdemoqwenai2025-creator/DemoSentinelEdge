@@ -131,7 +131,10 @@
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/oil-gas">sectors/oil-gas/ in the platform repo →</a> (config.yaml, README.md, sector-specific Grafana dashboards TBD)</p>
   <h3>Live scenario demo</h3>
   <p>See the platform deployed on a real offshore production scenario: <a href="scenario-offshore-oil-gas.html"><strong>Atlantis-7 offshore platform</strong> →</a> — 64 assets across 17 categories (wells, separators, compressors, pumps, heat exchangers, flare, storage, pipelines, valves, gas detection, fire detection, ESDVs, power generators, HVAC, diesel generators, UPS, control room), 192 sensor endpoints, live synthetic telemetry, maintenance log, audit trail, RUL predictions, compliance dashboard.</p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (12 protocols, 3-week onboarding) · <a href="calibration-drift.html" style="color: var(--cyan);">→ Calibration Drift</a> (offshore gas detectors, −85% cost) · <a href="edge-cloud-placement.html" style="color: var(--cyan);">→ Edge-Cloud Placement</a> (satellite backhaul, 72h autonomy) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (new wellhead, zero-shot from day 1)</p>
+</section></section>
 
 <section class="doc-section" id="chemical-plant">
   <div class="section-label">Sector 2 of 7</div>
@@ -159,7 +162,10 @@
   <h3>Buyer</h3>
   <p>Plant managers, process safety engineers, plant operations VPs at BASF, Dow, DuPont, LyondellBasell, ExxonMobil Chemical, Sinopec, Mitsubishi Chemical. Buyer titles: Plant Manager, Process Safety Engineer, VP Operations.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/chemical-plant">sectors/chemical-plant/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (5 protocols, 4-week onboarding) · <a href="calibration-drift.html" style="color: var(--cyan);">→ Calibration Drift</a> (5,000 instruments, −84% cost) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (reactor runaway, zero-shot detection)</p>
+</section></section>
 
 <section class="doc-section" id="hospital-icu">
   <div class="section-label">Sector 3 of 7</div>
@@ -186,7 +192,10 @@
   <h3>Buyer</h3>
   <p>Hospitals (Mayo Clinic, Cleveland Clinic, Johns Hopkins), integrated delivery networks (Kaiser, HCA), telemedicine providers (Teladoc, Amwell). Buyer titles: Chief Medical Information Officer, ICU Director, VP Clinical Operations.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/hospital-icu">sectors/hospital-icu/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (HL7 + MQTT + serial, 2-week onboarding) · <a href="edge-cloud-placement.html" style="color: var(--cyan);">→ Edge-Cloud Placement</a> (ventilator alert <2s, always at edge) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (rare sepsis, +22% early detection)</p>
+</section></section>
 
 <section class="doc-section" id="autonomous-vehicles">
   <div class="section-label">Sector 4 of 7</div>
@@ -213,7 +222,10 @@
   <h3>Buyer</h3>
   <p>Fleet operators (Waymo, Cruise, TuSimple, Kodiak), AV software companies (Aurora, Mobileye, Apex.AI), Tier-1 suppliers (Bosch, Continental, ZF). Buyer titles: VP Engineering, VP Fleet Operations, Director of Safety.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/autonomous-vehicles">sectors/autonomous-vehicles/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (CAN bus + Ethernet, 3-week onboarding) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (new vehicle model, zero collision data, zero-shot perception anomalies)</p>
+</section></section>
 
 <section class="doc-section" id="smart-grid">
   <div class="section-label">Sector 5 of 7</div>
@@ -240,7 +252,10 @@
   <h3>Buyer</h3>
   <p>Utilities (Duke, Southern, NextEra, Dominion, ConEd), ISO/RTOs (PJM, MISO, CAISO, ERCOT), distributed energy operators. Buyer titles: VP Grid Operations, Director of Asset Management, Chief Digitization Officer.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/smart-grid">sectors/smart-grid/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (IEC 61850 + DNP3, 4-week onboarding) · <a href="calibration-drift.html" style="color: var(--cyan);">→ Calibration Drift</a> (3,000 CT/PT instruments, −85% cost) · <a href="edge-cloud-placement.html" style="color: var(--cyan);">→ Edge-Cloud Placement</a> (protective relay <10ms, TSN) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (transformer PD, zero-shot)</p>
+</section></section>
 
 <section class="doc-section" id="mining">
   <div class="section-label">Sector 6 of 7</div>
@@ -267,7 +282,10 @@
   <h3>Buyer</h3>
   <p>Mining operators (Rio Tinto, BHP, Freeport-McMoRan, Newmont, Glencore), equipment OEMs (Caterpillar, Komatsu, Sandvik), processing plants. Buyer titles: VP Operations, Mine Manager, Director of Maintenance.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/mining">sectors/mining/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (Modbus + LoRaWAN + satellite, 3-week onboarding) · <a href="calibration-drift.html" style="color: var(--cyan);">→ Calibration Drift</a> (gas detectors, safety-critical) · <a href="edge-cloud-placement.html" style="color: var(--cyan);">→ Edge-Cloud Placement</a> (remote site, battery-aware, carbon-aware) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (truck drivetrain, zero-shot)</p>
+</section></section>
 
 <section class="doc-section" id="water-treatment">
   <div class="section-label">Sector 7 of 7</div>
@@ -294,7 +312,10 @@
   <h3>Buyer</h3>
   <p>Municipal water utilities (American Water, Veolia, Suez), industrial water users (energy, semiconductor, food & beverage), water-tech companies (Xylem, Evoqua, Pall). Buyer titles: VP Operations, Director of Treatment, Chief Engineer.</p>
   <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/water-treatment">sectors/water-treatment/ in the platform repo →</a></p>
-</section>
+
+  <h3>Related problem deep dives</h3>
+  <p><a href="protocol-heterogeneity.html" style="color: var(--cyan);">→ Protocol Heterogeneity</a> (4 protocols, 2-week onboarding) · <a href="calibration-drift.html" style="color: var(--cyan);">→ Calibration Drift</a> (1,000 sensors, −90% cost) · <a href="edge-cloud-placement.html" style="color: var(--cyan);">→ Edge-Cloud Placement</a> (LoRaWAN battery-aware) · <a href="unlabeled-industrial-data.html" style="color: var(--cyan);">→ Unlabeled Data</a> (chlorine drops, zero-shot)</p>
+</section></section>
 
 
 <div class="live-banner">
