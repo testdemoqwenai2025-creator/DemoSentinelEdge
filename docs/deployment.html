@@ -4,17 +4,243 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Deployment — AISensorEdgeComp Docs</title>
-<meta name="description" content="Local dev, staging, production deployment guides." />
+<meta name="description" content="Local, staging, production, air-gapped" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/styles.css" />
+
+<style>
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+  .docs-sidebar {
+    background: var(--bg-2);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .docs-version-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    margin: 0 16px 12px;
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--cyan) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+  }
+  .docs-search {
+    margin: 0 16px 16px;
+  }
+  .docs-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .docs-search input:focus { border-color: var(--cyan); }
+  .docs-sidebar-category {
+    padding: 8px 16px 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    font-weight: 600;
+  }
+  .docs-sidebar-link {
+    display: block;
+    padding: 7px 16px 7px 28px;
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .docs-sidebar-link:hover {
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    color: var(--text);
+  }
+  .docs-sidebar-link.active {
+    color: var(--cyan);
+    border-left-color: var(--cyan);
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    font-weight: 500;
+  }
+  .docs-main {
+    padding: 40px;
+    max-width: 900px;
+  }
+  .docs-breadcrumb {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .docs-breadcrumb a { color: var(--text-mute); text-decoration: none; }
+  .docs-breadcrumb a:hover { color: var(--cyan); }
+  .docs-breadcrumb span { color: var(--text-mute); }
+  .docs-content h1 {
+    font-size: 36px;
+    margin-bottom: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .docs-description {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+  .docs-content h2 {
+    font-size: 24px;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+  }
+  .docs-content h3 {
+    font-size: 18px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .docs-content p {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .docs-content ul, .docs-content ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+  }
+  .docs-content li {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .docs-content code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 2px 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+  .docs-content pre {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    margin: 16px 0;
+  }
+  .docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+  .docs-content th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mute);
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .docs-content td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .docs-footer-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .docs-edit-link {
+    font-size: 13px;
+    color: var(--text-mute);
+    text-decoration: none;
+  }
+  .docs-edit-link:hover { color: var(--cyan); }
+  .docs-last-updated {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .docs-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding: 20px 0;
+  }
+  .docs-nav-prev, .docs-nav-next {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .docs-nav-prev:hover, .docs-nav-next:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-sidebar { display: none; }
+  }
+</style>
+<script>
+function filterDocs(event) {
+  const query = event.target.value.toLowerCase();
+  document.querySelectorAll('.docs-sidebar-link').forEach(link => {
+    const title = link.dataset-title || link.textContent;
+    if (title.toLowerCase().includes(query)) {
+      link.style.display = 'block';
+    } else {
+      link.style.display = 'none';
+    }
+  });
+}
+</script>
 </head>
 <body id="docs-deployment">
 <nav>
   <a href="../index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
   <div class="nav-links">
-    <a href="../index.html">← Back</a>
+    <a href="../index.html">← Home</a>
+    <a href="index.html">Docs</a>
     <a href="../engineering.html">Engineering</a>
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
   </div>
@@ -27,54 +253,75 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       <span class="label">Live Dashboard</span>
     </a>
-    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="../contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
 </nav>
+<div style="padding-top: 60px;">
+<div class="docs-layout">
+  <nav class="docs-sidebar">
+<div class="docs-version-badge">v0.4 · Sep 2026</div>
+<div class="docs-search"><input type="text" placeholder="Search docs..." id="docs-search" oninput="filterDocs(event)" /></div>
+<div class="docs-sidebar-category">Getting Started</div>
+<a href="quickstart.html" class="docs-sidebar-link " data-title="Quickstart">Quickstart</a>
+<a href="onboarding.html" class="docs-sidebar-link " data-title="Design Partner Onboarding">Design Partner Onboarding</a>
+<div class="docs-sidebar-category">API</div>
+<a href="api.html" class="docs-sidebar-link " data-title="API Reference">API Reference</a>
+<div class="docs-sidebar-category">SDKs</div>
+<a href="sdk-python.html" class="docs-sidebar-link " data-title="Python SDK">Python SDK</a>
+<a href="sdk-javascript.html" class="docs-sidebar-link " data-title="JavaScript SDK">JavaScript SDK</a>
+<div class="docs-sidebar-category">Data</div>
+<a href="schemas.html" class="docs-sidebar-link " data-title="Data Schemas">Data Schemas</a>
+<div class="docs-sidebar-category">Deployment</div>
+<a href="deployment.html" class="docs-sidebar-link active" data-title="Deployment">Deployment</a>
+<div class="docs-sidebar-category">Reference</div>
+<a href="troubleshooting.html" class="docs-sidebar-link " data-title="Troubleshooting">Troubleshooting</a>
+</nav>
 
-<div style="min-height: 100vh; padding-top: 100px;">
-  <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
-    <div class="breadcrumb"><a href="index.html">Docs</a><span class="sep">/</span><span>Deployment</span></div>
-    <h1 style="font-size: 36px; margin-bottom: 24px;">Deployment</h1>
-    <section class="doc-section" style="border: none; padding: 0;">
+  <div class="docs-main">
+    <div class="docs-breadcrumb">
+      <a href="../index.html">Home</a> <span>/</span>
+      <a href="index.html">Docs</a> <span>/</span>
+      <span>Deployment</span> <span>/</span>
+      <span>Deployment</span>
+    </div>
+    <div class="docs-content">
+      <h1>Deployment</h1>
+      <p class="docs-description">Local, staging, production, air-gapped</p>
       
-     <h2>Local development</h2>
-     <div class="code-block"><pre><span class="key">make</span> up
-<span class="key">make</span> health</pre></div>
-     <h2>Production (Kubernetes + Helm)</h2>
-     <div class="code-block"><pre><span class="comment"># Deploy to production namespace</span>
-helm upgrade --install aisensoredgecomp ./helm/aisensoredgecomp \
+<h2>Local development</h2>
+<pre><code>make up
+make health</code></pre>
+<h2>Production (Kubernetes + Helm)</h2>
+<pre><code>helm upgrade --install aisensoredgecomp ./helm/aisensoredgecomp \
   --values ./helm/values-production.yaml \
-  --namespace production \
-  --create-namespace \
-  --wait</pre></div>
-     <h2>Production sizing</h2>
-     <table class="data-table">
-       <thead><tr><th>Component</th><th>Replicas</th><th>CPU/Mem</th><th>Storage</th></tr></thead>
-       <tbody>
-         <tr><td>Kafka</td><td>5 brokers</td><td>4 CPU / 16Gi</td><td>1Ti / broker</td></tr>
-         <tr><td>Flink TM</td><td>8</td><td>2 CPU / 4Gi</td><td>—</td></tr>
-         <tr><td>TimescaleDB</td><td>3 (HA)</td><td>4 CPU / 8Gi</td><td>1Ti</td></tr>
-         <tr><td>ClickHouse</td><td>3 (sharded)</td><td>8 CPU / 16Gi</td><td>5Ti</td></tr>
-         <tr><td>Ingest</td><td>12</td><td>1 CPU / 1Gi</td><td>—</td></tr>
-         <tr><td>API</td><td>8</td><td>2 CPU / 2Gi</td><td>—</td></tr>
-         <tr><td>ML</td><td>4 (+GPU)</td><td>4 CPU / 8Gi + nvidia</td><td>—</td></tr>
-       </tbody>
-     </table>
-     <p><strong>Total:</strong> ~120 vCPU, ~256 GiB RAM, ~10 TiB storage. Sustained: 1M msgs/sec.</p>
-     <h2>Air-gapped deployment</h2>
-     <p>For sensitive verticals (defense, energy, healthcare), the full stack runs on a single k8s cluster with no external network calls. Images are pulled from an internal registry; S3 is replaced with MinIO (on-prem).</p>
-     <div class="code-block"><pre>helm upgrade --install aisensoredgecomp ./helm/aisensoredgecomp \
+  --namespace production --create-namespace --wait</code></pre>
+<h2>Production sizing</h2>
+<table><thead><tr><th>Component</th><th>Replicas</th><th>CPU/Mem</th></tr></thead><tbody>
+<tr><td>Kafka</td><td>5 brokers</td><td>4 CPU / 16Gi</td></tr>
+<tr><td>Flink TM</td><td>8</td><td>2 CPU / 4Gi</td></tr>
+<tr><td>TimescaleDB</td><td>3 (HA)</td><td>4 CPU / 8Gi</td></tr>
+<tr><td>ClickHouse</td><td>3 (sharded)</td><td>8 CPU / 16Gi</td></tr>
+</tbody></table>
+<p><strong>Total:</strong> ~120 vCPU, ~256 GiB RAM, ~10 TiB storage.</p>
+<h2>Air-gapped deployment</h2>
+<pre><code>helm upgrade --install aisensoredgecomp ./helm/aisensoredgecomp \
   --values ./helm/values-airgapped.yaml \
   --set global.imageRegistry=registry.internal \
-  --set global.airgapped=true</pre></div>
-     
-    </section>
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
-      <a href="index.html" class="btn btn-ghost btn-sm">← Back to docs</a>
+  --set global.airgapped=true</code></pre>
+
     </div>
-  </div>
+    <div class="docs-footer-meta">
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/edit/main/docs/deployment.md" target="_blank" rel="noopener" class="docs-edit-link">📝 Edit this page on GitHub</a>
+      <span class="docs-last-updated">Last updated: Sep 5, 2026</span>
+    </div>
+    <div class="docs-nav">
+<a href="schemas.html" class="docs-nav-prev">← Data Schemas</a>
+<a href="onboarding.html" class="docs-nav-next">Design Partner Onboarding →</a>
 </div>
 
+  </div>
+</div>
+</div>
 <footer>
   <div class="footer-links">
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
@@ -83,17 +330,8 @@ helm upgrade --install aisensoredgecomp ./helm/aisensoredgecomp \
     <a href="../contact.html">Contact</a>
     <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
   </div>
-  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+  &copy; 2026 AISensorEdgeComp &middot; Documentation v0.4 &middot; <a href="#top">Back to top</a>
 </footer>
-<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
-  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
-</div>
-<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
-  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
-</div>
-<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
 <script src="../assets/app.js"></script>
 </body>
 </html>

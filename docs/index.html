@@ -3,18 +3,244 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AISensorEdgeComp — Documentation</title>
-<meta name="description" content="Documentation portal for AISensorEdgeComp. API reference, SDK guides, deployment, onboarding." />
+<title>Documentation — AISensorEdgeComp Docs</title>
+<meta name="description" content="API reference, SDK guides, deployment, and onboarding for AISensorEdgeComp." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/styles.css" />
+
+<style>
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+  .docs-sidebar {
+    background: var(--bg-2);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .docs-version-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    margin: 0 16px 12px;
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--cyan) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+  }
+  .docs-search {
+    margin: 0 16px 16px;
+  }
+  .docs-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .docs-search input:focus { border-color: var(--cyan); }
+  .docs-sidebar-category {
+    padding: 8px 16px 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    font-weight: 600;
+  }
+  .docs-sidebar-link {
+    display: block;
+    padding: 7px 16px 7px 28px;
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .docs-sidebar-link:hover {
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    color: var(--text);
+  }
+  .docs-sidebar-link.active {
+    color: var(--cyan);
+    border-left-color: var(--cyan);
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    font-weight: 500;
+  }
+  .docs-main {
+    padding: 40px;
+    max-width: 900px;
+  }
+  .docs-breadcrumb {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .docs-breadcrumb a { color: var(--text-mute); text-decoration: none; }
+  .docs-breadcrumb a:hover { color: var(--cyan); }
+  .docs-breadcrumb span { color: var(--text-mute); }
+  .docs-content h1 {
+    font-size: 36px;
+    margin-bottom: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .docs-description {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+  .docs-content h2 {
+    font-size: 24px;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+  }
+  .docs-content h3 {
+    font-size: 18px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .docs-content p {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .docs-content ul, .docs-content ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+  }
+  .docs-content li {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .docs-content code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 2px 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+  .docs-content pre {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    margin: 16px 0;
+  }
+  .docs-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+  .docs-content th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mute);
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .docs-content td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .docs-footer-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .docs-edit-link {
+    font-size: 13px;
+    color: var(--text-mute);
+    text-decoration: none;
+  }
+  .docs-edit-link:hover { color: var(--cyan); }
+  .docs-last-updated {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .docs-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding: 20px 0;
+  }
+  .docs-nav-prev, .docs-nav-next {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .docs-nav-prev:hover, .docs-nav-next:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-sidebar { display: none; }
+  }
+</style>
+<script>
+function filterDocs(event) {
+  const query = event.target.value.toLowerCase();
+  document.querySelectorAll('.docs-sidebar-link').forEach(link => {
+    const title = link.dataset-title || link.textContent;
+    if (title.toLowerCase().includes(query)) {
+      link.style.display = 'block';
+    } else {
+      link.style.display = 'none';
+    }
+  });
+}
+</script>
 </head>
 <body id="docs-index">
 <nav>
   <a href="../index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
   <div class="nav-links">
-    <a href="../index.html">← Back</a>
+    <a href="../index.html">← Home</a>
+    <a href="index.html">Docs</a>
     <a href="../engineering.html">Engineering</a>
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
   </div>
@@ -27,79 +253,135 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       <span class="label">Live Dashboard</span>
     </a>
-    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="../contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
 </nav>
+<div style="padding-top: 60px;">
+<div class="docs-layout">
+  <nav class="docs-sidebar">
+<div class="docs-version-badge">v0.4 · Sep 2026</div>
+<div class="docs-search"><input type="text" placeholder="Search docs..." id="docs-search" oninput="filterDocs(event)" /></div>
+<div class="docs-sidebar-category">Getting Started</div>
+<a href="quickstart.html" class="docs-sidebar-link " data-title="Quickstart">Quickstart</a>
+<a href="onboarding.html" class="docs-sidebar-link " data-title="Design Partner Onboarding">Design Partner Onboarding</a>
+<div class="docs-sidebar-category">API</div>
+<a href="api.html" class="docs-sidebar-link " data-title="API Reference">API Reference</a>
+<div class="docs-sidebar-category">SDKs</div>
+<a href="sdk-python.html" class="docs-sidebar-link " data-title="Python SDK">Python SDK</a>
+<a href="sdk-javascript.html" class="docs-sidebar-link " data-title="JavaScript SDK">JavaScript SDK</a>
+<div class="docs-sidebar-category">Data</div>
+<a href="schemas.html" class="docs-sidebar-link " data-title="Data Schemas">Data Schemas</a>
+<div class="docs-sidebar-category">Deployment</div>
+<a href="deployment.html" class="docs-sidebar-link " data-title="Deployment">Deployment</a>
+<div class="docs-sidebar-category">Reference</div>
+<a href="troubleshooting.html" class="docs-sidebar-link " data-title="Troubleshooting">Troubleshooting</a>
+</nav>
 
-<div style="min-height: 100vh; padding-top: 100px;">
-  <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
-    <div class="breadcrumb"><a href="../index.html">Home</a><span class="sep">/</span><span>Documentation</span></div>
-    <div class="page-hero-badge" style="margin-bottom: 24px;"><span class="dot"></span>docs.aisensoredgecomp.ai</div>
-    <h1 style="font-size: 42px; margin-bottom: 16px;">Documentation</h1>
-    <p style="font-size: 18px; color: var(--text-dim); margin-bottom: 40px;">Everything engineers need to evaluate, integrate, and deploy AISensorEdgeComp. API reference, SDK guides, integration tutorials, design partner onboarding.</p>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-
-      <a href="quickstart.html" style="text-decoration: none; color: inherit;">
-        <div class="card" style="border-color: var(--border-strong); background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card));">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">🚀 Quickstart</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Get the platform running locally in 5 minutes with docker compose.</p>
-        </div>
-      </a>
-
-      <a href="api.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">📖 API Reference</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Full REST API documentation. 15 endpoints, OpenAPI 3.1 spec, Swagger UI.</p>
-        </div>
-      </a>
-
-      <a href="sdk-python.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">🐍 Python SDK</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Install, authenticate, query sensors, submit inference requests.</p>
-        </div>
-      </a>
-
-      <a href="sdk-javascript.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">🟨 JavaScript SDK</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Browser and Node.js. Same API, different runtime.</p>
-        </div>
-      </a>
-
-      <a href="schemas.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">📐 Data Schemas</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Avro + Protobuf schemas for telemetry, alerts, assets, maintenance.</p>
-        </div>
-      </a>
-
-      <a href="deployment.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">⚙️ Deployment</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Local dev, staging, production. Docker Compose, Kubernetes, Helm.</p>
-        </div>
-      </a>
-
-      <a href="onboarding.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">🤝 Design Partner Onboarding</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">60-day pilot walkthrough. What to expect, timelines, support.</p>
-        </div>
-      </a>
-
-      <a href="troubleshooting.html" style="text-decoration: none; color: inherit;">
-        <div class="card">
-          <h3 style="font-size: 18px; margin-bottom: 8px;">🔧 Troubleshooting</h3>
-          <p style="font-size: 14px; color: var(--text-dim);">Common issues, FAQs, debugging tips, how to reach support.</p>
-        </div>
-      </a>
-
+  <div class="docs-main">
+    <div class="docs-breadcrumb">
+      <a href="../index.html">Home</a> <span>/</span>
+      <a href="index.html">Docs</a> <span>/</span>
+      <span>Docs</span> <span>/</span>
+      <span>Documentation</span>
     </div>
+    <div class="docs-content">
+      <h1>Documentation</h1>
+      <p class="docs-description">API reference, SDK guides, deployment, and onboarding for AISensorEdgeComp.</p>
+      
+<div class="docs-content">
+  <h1>AISensorEdgeComp Documentation</h1>
+  <p class="docs-description">Everything engineers need to evaluate, integrate, and deploy AISensorEdgeComp. API reference, SDK guides, deployment guides, and design partner onboarding.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin: 32px 0;">
+
+    <a href="quickstart.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Getting Started</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Quickstart</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Get the platform running locally in 5 minutes</p>
+      </div>
+    </a>
+
+    <a href="api.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">API</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">API Reference</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">15 endpoints, OpenAPI 3.1, Swagger UI</p>
+      </div>
+    </a>
+
+    <a href="sdk-python.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">SDKs</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Python SDK</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Install, authenticate, query sensors, inference</p>
+      </div>
+    </a>
+
+    <a href="sdk-javascript.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">SDKs</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">JavaScript SDK</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Browser and Node.js SDK</p>
+      </div>
+    </a>
+
+    <a href="schemas.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Data</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Data Schemas</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Avro + Protobuf, versioning, codegen</p>
+      </div>
+    </a>
+
+    <a href="deployment.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Deployment</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Deployment</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Local, staging, production, air-gapped</p>
+      </div>
+    </a>
+
+    <a href="onboarding.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Getting Started</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Design Partner Onboarding</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">60-day pilot walkthrough</p>
+      </div>
+    </a>
+
+    <a href="troubleshooting.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Reference</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Troubleshooting</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Common issues, FAQs, support</p>
+      </div>
+    </a>
+
+    <a href="index.html" style="text-decoration: none; color: inherit;">
+      <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Docs</div>
+        <h3 style="font-size: 17px; margin-bottom: 6px; color: var(--text);">Documentation Home</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Docs hub with links to all pages</p>
+      </div>
+    </a>
+
   </div>
 </div>
 
+    </div>
+    <div class="docs-footer-meta">
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/edit/main/docs/index.md" target="_blank" rel="noopener" class="docs-edit-link">📝 Edit this page on GitHub</a>
+      <span class="docs-last-updated">Last updated: Sep 5, 2026</span>
+    </div>
+    <div class="docs-nav">
+<a href="troubleshooting.html" class="docs-nav-prev">← Troubleshooting</a>
+<span></span>
+</div>
+
+  </div>
+</div>
+</div>
 <footer>
   <div class="footer-links">
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
@@ -108,17 +390,8 @@
     <a href="../contact.html">Contact</a>
     <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
   </div>
-  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+  &copy; 2026 AISensorEdgeComp &middot; Documentation v0.4 &middot; <a href="#top">Back to top</a>
 </footer>
-<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
-  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
-</div>
-<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
-  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
-</div>
-<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
 <script src="../assets/app.js"></script>
 </body>
 </html>

@@ -209,6 +209,36 @@
       <a href="roi-calculator.html" class="btn btn-ghost">Calculate ROI</a>
     </div>
 
+    
+    <!-- Welcome email preview -->
+    <div style="margin-top: 20px; padding: 20px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">📧 Welcome email (sent to your inbox)</div>
+      <div style="background: var(--card); border-radius: 8px; padding: 20px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text-dim); line-height: 1.6;">
+        <div style="font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Welcome to AISensorEdgeComp! 🚀</div>
+        <p>Hi <strong id="welcome-name">there</strong>,</p>
+        <p>Your sandbox tenant has been provisioned. Here's everything you need to get started:</p>
+        <ul style="padding-left: 20px; margin: 12px 0;">
+          <li><strong>Tenant ID:</strong> <code id="welcome-tenant" style="font-family: 'JetBrains Mono', monospace; color: var(--cyan);">—</code></li>
+          <li><strong>API Key:</strong> <code id="welcome-key" style="font-family: 'JetBrains Mono', monospace; color: var(--cyan);">—</code></li>
+          <li><strong>API Endpoint:</strong> <code id="welcome-api" style="font-family: 'JetBrains Mono', monospace; color: var(--cyan);">—</code></li>
+          <li><strong>Trial expires:</strong> <span id="welcome-expires" style="color: var(--text);">—</span> (60 days)</li>
+        </ul>
+        <p><strong>Next steps:</strong></p>
+        <ol style="padding-left: 20px; margin: 12px 0;">
+          <li>Read the <a href="docs/quickstart.html" style="color: var(--cyan);">Quickstart Guide</a></li>
+          <li>Install the <a href="docs/sdk-python.html" style="color: var(--cyan);">Python SDK</a> and run your first query</li>
+          <li>Open the <a href="tenant-dashboard.html" style="color: var(--cyan);">Tenant Dashboard</a> to see your sensor readings</li>
+          <li>Schedule your kickoff call: <a href="mailto:design@aisensoredgecomp.ai?subject=Kickoff%20Call" style="color: var(--cyan);">design@aisensoredgecomp.ai</a></li>
+        </ol>
+        <p>Questions? Reply to this email or join our <a href="#" style="color: var(--cyan);">Slack channel</a> (invite link in a separate email).</p>
+        <p style="margin-top: 16px; color: var(--text-mute); font-size: 12px;">— The AISensorEdgeComp Team</p>
+      </div>
+      <a href="#" id="welcome-email-link" class="btn btn-ghost btn-sm" style="margin-top: 12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+        Resend welcome email
+      </a>
+    </div>
+
     <p style="color: var(--text-mute); font-size: 12px; margin-top: 24px; font-family: 'JetBrains Mono', monospace;">
       Demo mode — no real sandbox is provisioned. This is a UI prototype for the design partner portal flow. Email design@aisensoredgecomp.ai for actual access.
     </p>
@@ -330,6 +360,33 @@ function provisionSandbox() {
     apiKeyLine.innerHTML = '<strong style="color: var(--text-mute);">API Key:</strong> ' + data.apiKey;
     provisionedDiv.querySelector('.provisioned-info') || provisionedDiv.insertBefore(apiKeyLine, provisionedDiv.children[3]);
 
+    // Populate welcome email preview
+    document.getElementById('welcome-name').textContent = name;
+    document.getElementById('welcome-tenant').textContent = data.tenantId;
+    document.getElementById('welcome-key').textContent = data.apiKey.substring(0, 12) + '...';
+    document.getElementById('welcome-api').textContent = data.apiEndpoint;
+    document.getElementById('welcome-expires').textContent = new Date(data.trialExpiresAt).toLocaleDateString('en-GB');
+
+    // Set mailto link for resend
+    const emailBody = encodeURIComponent(
+      'Welcome to AISensorEdgeComp!\n\n' +
+      'Hi ' + name + ',\n\n' +
+      'Your sandbox tenant has been provisioned:\n' +
+      'Tenant ID: ' + data.tenantId + '\n' +
+      'API Key: ' + data.apiKey + '\n' +
+      'API Endpoint: ' + data.apiEndpoint + '\n' +
+      'Trial expires: ' + new Date(data.trialExpiresAt).toLocaleDateString('en-GB') + ' (60 days)\n\n' +
+      'Next steps:\n' +
+      '1. Read the Quickstart Guide\n' +
+      '2. Install the Python SDK\n' +
+      '3. Open the Tenant Dashboard\n' +
+      '4. Schedule your kickoff call\n\n' +
+      'Questions? Reply to this email.\n\n' +
+      '— The AISensorEdgeComp Team'
+    );
+    document.getElementById('welcome-email-link').href =
+      'mailto:' + email + '?subject=' + encodeURIComponent('Welcome to AISensorEdgeComp — Your Sandbox is Ready') + '&body=' + emailBody;
+
     goToStep(4);
 
     // Reset button
@@ -349,6 +406,33 @@ function provisionSandbox() {
     document.getElementById('provisioned-sensors').textContent = parseInt(sensorCount).toLocaleString() + ' synthetic sensors (' + selectedVertical + ' config)';
     document.getElementById('provisioned-expires').textContent = expires + ' (synthetic)';
     document.getElementById('provisioned-dashboard-link').href = API_BASE + '/#sensors';
+
+    // Populate welcome email preview
+    document.getElementById('welcome-name').textContent = name;
+    document.getElementById('welcome-tenant').textContent = data.tenantId;
+    document.getElementById('welcome-key').textContent = data.apiKey.substring(0, 12) + '...';
+    document.getElementById('welcome-api').textContent = data.apiEndpoint;
+    document.getElementById('welcome-expires').textContent = new Date(data.trialExpiresAt).toLocaleDateString('en-GB');
+
+    // Set mailto link for resend
+    const emailBody = encodeURIComponent(
+      'Welcome to AISensorEdgeComp!\n\n' +
+      'Hi ' + name + ',\n\n' +
+      'Your sandbox tenant has been provisioned:\n' +
+      'Tenant ID: ' + data.tenantId + '\n' +
+      'API Key: ' + data.apiKey + '\n' +
+      'API Endpoint: ' + data.apiEndpoint + '\n' +
+      'Trial expires: ' + new Date(data.trialExpiresAt).toLocaleDateString('en-GB') + ' (60 days)\n\n' +
+      'Next steps:\n' +
+      '1. Read the Quickstart Guide\n' +
+      '2. Install the Python SDK\n' +
+      '3. Open the Tenant Dashboard\n' +
+      '4. Schedule your kickoff call\n\n' +
+      'Questions? Reply to this email.\n\n' +
+      '— The AISensorEdgeComp Team'
+    );
+    document.getElementById('welcome-email-link').href =
+      'mailto:' + email + '?subject=' + encodeURIComponent('Welcome to AISensorEdgeComp — Your Sandbox is Ready') + '&body=' + emailBody;
 
     goToStep(4);
 

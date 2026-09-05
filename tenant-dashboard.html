@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Tenant Dashboard</title>
+<meta name="description" content="View your provisioned sandbox tenant: sensor readings, trial status, API key, and audit log." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .td-container { max-width: 1000px; margin: 0 auto; padding: 100px 40px 60px; }
+  .td-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin: 16px 0; }
+  .td-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .td-status-active { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .td-status-expired { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .td-countdown { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; color: var(--cyan); text-align: center; margin: 16px 0; }
+  .td-readings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .td-reading-card { padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; border-left: 3px solid var(--green); }
+  .td-reading-card.warning { border-left-color: var(--gold); }
+  .td-reading-card.critical { border-left-color: var(--magenta); }
+  .td-reading-sensor { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-bottom: 4px; }
+  .td-reading-value { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; }
+  .td-reading-unit { font-size: 13px; color: var(--text-dim); }
+  .td-lookup-form { display: flex; gap: 10px; margin: 20px 0; }
+  .td-lookup-form input { flex: 1; padding: 12px 14px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+  .td-lookup-form input:focus { outline: none; border-color: var(--cyan); }
+  .td-empty { text-align: center; padding: 40px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+</style>
+</head>
+<body id="tenant-dashboard">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="portal.html">Sign Up</a>
+    <a href="tenant-dashboard.html" class="active">Tenant Dashboard</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+  </div>
+</nav>
+
+<div class="td-container">
+  <h1 style="font-size: 36px; margin-bottom: 16px;">Tenant <span class="accent" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Dashboard</span></h1>
+  <p style="color: var(--text-dim); font-size: 16px; margin-bottom: 24px;">Enter your tenant ID to view your sandbox status, sensor readings, API key, and trial countdown. You received your tenant ID when you provisioned via the <a href="portal.html" style="color: var(--cyan);">portal</a>.</p>
+
+  <div class="td-lookup-form">
+    <input type="text" id="tenant-id-input" placeholder="sbx_xxxxxxxxxxxx" />
+    <button class="btn btn-primary" onclick="loadTenant()">Load tenant →</button>
+  </div>
+
+  <div id="tenant-content">
+    <div class="td-empty">
+      Enter your tenant ID above (e.g., sbx_933ec0e915eb) and click "Load tenant" to see your sandbox details.
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="portal.html">Sign Up</a>
+    <a href="docs/index.html">Docs</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Tenant Dashboard &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const API_BASE = "https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors".replace("/#sensors", "");
+
+async function loadTenant() {
+  const tenantId = document.getElementById('tenant-id-input').value.trim();
+  if (!tenantId || !tenantId.startsWith('sbx_')) {
+    alert('Please enter a valid tenant ID (starts with sbx_)');
+    return;
+  }
+
+  const container = document.getElementById('tenant-content');
+  container.innerHTML = '<div class="td-empty">Loading tenant data...</div>';
+
+  try {
+    const res = await fetch(API_BASE + '/api/tenant/' + tenantId);
+    const data = await res.json();
+
+    if (data.error) {
+      container.innerHTML = '<div class="td-empty" style="color: var(--magenta);">Error: ' + data.error + '</div>';
+      return;
+    }
+
+    const statusClass = data.status === 'active' ? 'td-status-active' : 'td-status-expired';
+    const readingsHtml = (data.sensorReadings || []).map(r => `
+      <div class="td-reading-card ${r.status}">
+        <div class="td-reading-sensor">${r.sensorId}</div>
+        <div class="td-reading-value">${r.value.toFixed(2)} <span class="td-reading-unit">${r.unit}</span></div>
+        <div style="font-family: JetBrains Mono, monospace; font-size: 10px; color: var(--text-mute); margin-top: 4px;">${new Date(r.timestamp).toLocaleString()}</div>
+      </div>
+    `).join('');
+
+    const auditHtml = (data.auditLog || []).map(a => `
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-dim);">
+        <span style="color: var(--cyan); font-family: JetBrains Mono, monospace; font-size: 11px;">${new Date(a.timestamp).toLocaleString()}</span> — ${a.action}: ${a.details || '—'}
+      </div>
+    `).join('');
+
+    container.innerHTML = `
+      <div class="td-card">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+          <div>
+            <h3 style="font-size: 20px; margin-bottom: 4px;">${data.name}</h3>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 12px; color: var(--text-mute);">${data.email} · ${data.organization}</div>
+          </div>
+          <span class="td-status-badge ${statusClass}">${data.status}</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 20px;">
+          <div>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase;">Trial Days Remaining</div>
+            <div class="td-countdown">${data.daysRemaining}</div>
+          </div>
+          <div>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase;">Tenant ID</div>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 14px; color: var(--text); margin-top: 8px;">${data.tenantId}</div>
+          </div>
+          <div>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase;">API Key</div>
+            <div style="font-family: JetBrains Mono, monospace; font-size: 12px; color: var(--cyan); margin-top: 8px; word-break: break-all;">${data.apiKey}</div>
+          </div>
+        </div>
+        <div style="margin-top: 20px; padding: 12px; background: var(--bg-2); border-radius: 8px; font-family: JetBrains Mono, monospace; font-size: 12px; color: var(--text-dim);">
+          <strong style="color: var(--text);">Vertical:</strong> ${data.vertical} · <strong style="color: var(--text);">Sensors:</strong> ${data.sensorCount.toLocaleString()} · <strong style="color: var(--text);">Types:</strong> ${data.sensorTypes.join(', ')}
+        </div>
+      </div>
+
+      <div class="td-card">
+        <h3 style="font-size: 18px; margin-bottom: 16px;">Live Sensor Readings (${(data.sensorReadings || []).length})</h3>
+        ${readingsHtml || '<div class="td-empty">No readings yet.</div>'}
+      </div>
+
+      <div class="td-card">
+        <h3 style="font-size: 18px; margin-bottom: 16px;">Audit Log</h3>
+        ${auditHtml || '<div class="td-empty">No audit entries yet.</div>'}
+      </div>
+
+      <div class="td-card">
+        <h3 style="font-size: 18px; margin-bottom: 12px;">API Access</h3>
+        <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 12px;">Use your API key to authenticate with the platform API:</p>
+        <pre style="background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text); overflow-x: auto;">curl ${data.apiEndpoint || API_BASE}/api/v1/sensors \
+  -H "Authorization: Bearer ${data.apiKey}"</pre>
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = '<div class="td-empty" style="color: var(--magenta);">Failed to load tenant data: ' + err.message + '</div>';
+  }
+}
+
+// Auto-load if tenant ID is in URL params
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('tenant')) {
+  document.getElementById('tenant-id-input').value = urlParams.get('tenant');
+  loadTenant();
+}
+</script>
+
+</body>
+</html>
