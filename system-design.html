@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — System Design</title>
+<meta name="description" content="Full end-to-end system design document for engineering teams: components, data flow, schemas, ML design, security, operations, failure modes, sizing." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — System Design" />
+<meta property="og:description" content="Full end-to-end system design document for engineering teams: components, data flow, schemas, ML design, security, operations, failure modes, sizing." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/system-design.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — System Design" />
+<meta name="twitter:description" content="Full end-to-end system design document for engineering teams: components, data flow, schemas, ML design, security, operations, failure modes, sizing." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="system-design">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="engineering.html" style="color: var(--cyan);">Engineering</a>
+    <a href="sectors.html" style="color: var(--violet);">Sectors</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="#">Engineering</a><span class="sep">/</span><span>System Design</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Engineering · System Design</div>
+    <h1>End-to-end system design. <span class='accent'>Engineering-grade.</span></h1>
+    <p class="lead">Full system design document for engineering teams: components, data flow, schemas, ML design, security, operations, failure modes. Suitable for technical due diligence or platform team onboarding.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener" class="btn btn-ghost">Platform Source Code</a>
+    </div>
+  </div>
+</section>
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#overview">Overview</a><a href="#hot-path">Hot path</a><a href="#cold-path">Cold path</a><a href="#components">Components</a><a href="#schemas">Schemas</a><a href="#ml-design">ML design</a><a href="#security">Security</a><a href="#ops">Operations</a><a href="#failures">Failure modes</a><a href="#sizing">Sizing</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="overview">
+  <div class="section-label">1. Overview</div>
+  <h2>Four layers. <span class="accent'>One substrate.</span></h2>
+  <p>The AISensorEdgeComp platform is a four-layer substrate that any sensor, any protocol, any vertical can plug into — and any operator can query in natural language. This document describes the production system end-to-end.</p>
+
+  <div class="diagram">
+    <div class="diagram-title">Four-Layer Stack</div>
+    <div class="flow-diagram" style="flex-direction: column; align-items: stretch; gap: 8px;">
+      <div class="flow-node accent" style="padding: 16px 24px;">Layer 04: Intelligence (TS-FM + Graph RAG + Causal + LLM Query)</div>
+      <div class="flow-node" style="padding: 16px 24px;">Layer 03: Edge Compute (KubeEdge + Liquid Placement + TinyML + WASM)</div>
+      <div class="flow-node" style="padding: 16px 24px;">Layer 02: Connectivity (Protocol-agnostic bridge + LLM-assisted ontology)</div>
+      <div class="flow-node accent" style="padding: 16px 24px;">Layer 01: Sensing (Sensor ontology + Self-calibration mesh)</div>
+    </div>
+  </div>
+
+  <p>Each layer has its own dedicated deep-dive page:</p>
+  <ul>
+    <li><a href="layer-sensing.html">Layer 01 · Sensing</a> — sensor ontology, canonical schema, self-calibration mesh</li>
+    <li><a href="layer-connectivity.html">Layer 02 · Connectivity</a> — 12 ingest protocols, LLM-assisted semantic normalization</li>
+    <li><a href="layer-edge.html">Layer 03 · Edge Compute</a> — 7 silicon options, liquid placement scheduler, 72h edge autonomy</li>
+    <li><a href="layer-intelligence.html">Layer 04 · Intelligence</a> — TS-FM (350M params), Graph RAG, causal inference, LLM query, PINN</li>
+  </ul>
+</section>
+
+<section class="doc-section" id="hot-path">
+  <div class="section-label">2. Hot path (real-time)</div>
+  <h2>Sensor → ingest → Kafka → Flink → <span class="accent'>TimescaleDB → API.</span></h2>
+  <p>The hot path handles real-time ingest and inference. End-to-end latency target: < 5 seconds from sensor reading to alert emission.</p>
+
+  <div class="diagram">
+    <div class="diagram-title">Hot Path Data Flow</div>
+    <div class="flow-diagram">
+      <div class="flow-node">Sensor</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">MQTT/OPC-UA</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">ingest (FastAPI)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Kafka (telemetry.raw)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Flink (30s window)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">TS-FM inference</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">TimescaleDB</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">API</div>
+    </div>
+    <div class="flow-diagram" style="margin-top: 12px;">
+      <div class="flow-node">Flink</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">anomaly token (if conf > 0.85)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">alerts.processed</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">API + Alertmanager</div>
+    </div>
+  </div>
+
+  <h3>Stage by stage</h3>
+  <ol>
+    <li><strong>Sensor</strong> samples physics (vibration, temperature, pressure, gas, vision, etc.) and sends readings over MQTT or OPC-UA. Sample rates vary by modality (10 kHz for vibration, 1 Hz for temperature, etc.).</li>
+    <li><strong>Edge gateway</strong> (Hailo-8 or Jetson Orin) decodes the protocol, normalizes to the canonical measurement schema (see <code>schemas/avro/telemetry.avsc</code>), buffers 72 hours locally for WAN-loss resilience.</li>
+    <li><strong>ingest</strong> (FastAPI service, 12 replicas in production) consumes the MQTT/OPC-UA stream, publishes normalized canonical records to Kafka topic <code>telemetry.raw</code>. Idempotent producer, acks=all, zstd compression.</li>
+    <li><strong>Kafka</strong> (5 brokers, KRaft mode, 12 partitions for <code>telemetry.raw</code>) provides the stream backbone. 7-day retention for replay. Schema Registry enforces Avro backward compatibility.</li>
+    <li><strong>Flink</strong> (8 task managers, parallelism 12) consumes <code>telemetry.raw</code>, windows into 30-second tumbling windows per <code>sensor_id</code>, runs <strong>TS-FM anomaly detection</strong> via ONNX Runtime, emits anomaly tokens (when confidence > 0.85) to <code>alerts.processed</code>.</li>
+    <li><strong>TimescaleDB</strong> (3-node HA cluster via Patroni) stores all canonical measurements as a hypertable, partitioned by day, 30-day retention with continuous aggregates for 1-minute rollups. Queried by the API for hot reads.</li>
+    <li><strong>API</strong> (8 replicas) exposes REST + GraphQL. p99 < 100ms for hot reads. Rate limited at 1000 req/min per IP. JWT auth for write endpoints.</li>
+  </ol>
+
+  <div class="callout"><strong>Bandwidth optimization</strong><p>Anomaly token emission cuts WAN bandwidth by 99.7%. Flink only emits to <code>alerts.processed</code> when TS-FM confidence > 0.85 — most windows produce no output. Raw measurements stay in TimescaleDB for querying; only anomaly events flow downstream.</p></div>
+</section>
+
+<section class="doc-section" id="cold-path">
+  <div class="section-label">3. Cold path (batch + OLAP)</div>
+  <h2>Flink → Iceberg → <span class="accent'>ClickHouse.</span></h2>
+  <p>The cold path handles long-term storage and OLAP queries. After 30 days, data ages out of TimescaleDB and is archived to Iceberg (Parquet on S3). ClickHouse ingests from Iceberg for fast analytical queries across the full historical record.</p>
+
+  <div class="diagram">
+    <div class="diagram-title">Cold Path Data Flow</div>
+    <div class="flow-diagram">
+      <div class="flow-node">Flink</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Iceberg (S3 + Parquet)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">ClickHouse (3 shards)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">API (OLAP queries)</div>
+    </div>
+  </div>
+
+  <h3>Why Iceberg?</h3>
+  <ul>
+    <li><strong>Open table format</strong> — no vendor lock-in. Works with Flink, Spark, Trino, Athena, BigQuery, Snowflake.</li>
+    <li><strong>Schema evolution</strong> — add columns without rewriting partitions.</li>
+    <li><strong>Time travel</strong> — query historical snapshots for debugging or audit.</li>
+    <li><strong>Maintenance operations</strong> — compaction, snapshot expiry, branch pruning.</li>
+  </ul>
+
+  <h3>Why ClickHouse for OLAP?</h3>
+  <ul>
+    <li><strong>Sub-second queries on billions of rows</strong> — columnar storage + aggressive compression.</li>
+    <li><strong>Materialized views</strong> — pre-aggregated hourly/daily rollups.</li>
+    <li><strong>TTL</strong> — automatic expiry at the partition level.</li>
+    <li><strong>SQL interface</strong> — familiar to BI teams, integrates with Grafana, Metabase, Superset.</li>
+  </ul>
+</section>
+
+<section class="doc-section" id="components">
+  <div class="section-label">4. Component inventory</div>
+  <h2>13 services in production.</h2>
+  <table class="data-table">
+    <thead><tr><th>Component</th><th>Image</th><th>Purpose</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MQTT broker</strong></td><td>eclipse-mosquitto:2.0</td><td>Sensor ingest endpoint</td><td>Open source</td></tr>
+      <tr><td><strong>Kafka</strong></td><td>bitnami/kafka:3.7 (KRaft)</td><td>Stream backbone</td><td>Open source</td></tr>
+      <tr><td><strong>Schema Registry</strong></td><td>bitnami/schema-registry:7.6</td><td>Avro schema validation + evolution</td><td>Confluent open source</td></tr>
+      <tr><td><strong>TimescaleDB</strong></td><td>timescale/timescaledb:2.14-pg16</td><td>Hot storage (30 days)</td><td>Open source</td></tr>
+      <tr><td><strong>Iceberg REST</strong></td><td>tabulario/iceberg-rest:latest</td><td>Cold storage catalog</td><td>Apache Iceberg</td></tr>
+      <tr><td><strong>MinIO</strong></td><td>minio/minio:latest</td><td>S3-compatible storage (dev)</td><td>Open source</td></tr>
+      <tr><td><strong>ClickHouse</strong></td><td>clickhouse/clickhouse-server:24-alpine</td><td>OLAP queries</td><td>Open source</td></tr>
+      <tr><td><strong>Flink</strong></td><td>flink:1.19-scala_2.12-java17</td><td>Stream processing + ML inference</td><td>Apache Flink</td></tr>
+      <tr><td><strong>Ingest</strong></td><td>ghcr.io/.../aisensoredgecomp-ingest</td><td>MQTT subscriber + Kafka producer (FastAPI)</td><td><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/services/ingest">Our code</a></td></tr>
+      <tr><td><strong>API</strong></td><td>ghcr.io/.../aisensoredgecomp-api</td><td>REST + GraphQL API (FastAPI)</td><td><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/services/api">Our code</a></td></tr>
+      <tr><td><strong>ML</strong></td><td>ghcr.io/.../aisensoredgecomp-ml</td><td>ONNX inference server (FastAPI + onnxruntime)</td><td><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/services/ml">Our code</a></td></tr>
+      <tr><td><strong>Prometheus</strong></td><td>prom/prometheus:latest</td><td>Metrics collection</td><td>Open source</td></tr>
+      <tr><td><strong>Grafana</strong></td><td>grafana/grafana:latest</td><td>Dashboards</td><td>Open source</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="schemas">
+  <div class="section-label">5. Data schemas</div>
+  <h2>Avro (Kafka) + Protobuf (gRPC + storage).</h2>
+  <p>Both formats express the same logical contracts. Avro is used for Kafka wire format (with Schema Registry for evolution). Protobuf is used for gRPC services and storage (more compact, better for streaming).</p>
+
+  <h3>Canonical telemetry schema</h3>
+  <p>The contract between ingest and all downstream consumers. Every sensor reading — regardless of source protocol — normalizes to this schema at the edge gateway.</p>
+  <div class="code-block-label">schemas/avro/telemetry.avsc (abridged)</div>
+  <div class="code-block">
+<pre>{
+  <span class="key">"type"</span>: <span class="str">"record"</span>,
+  <span class="key">"name"</span>: <span class="str">"Telemetry"</span>,
+  <span class="key">"namespace"</span>: <span class="str">"com.aisensoredgecomp.v1"</span>,
+  <span class="key">"fields"</span>: [
+    {<span class="key">"name"</span>: <span class="str">"measurement_id"</span>, <span class="key">"type"</span>: <span class="str">"string"</span>},
+    {<span class="key">"name"</span>: <span class="str">"sensor_id"</span>, <span class="key">"type"</span>: <span class="str">"string"</span>},
+    {<span class="key">"name"</span>: <span class="str">"sensor_kind"</span>, <span class="key">"type"</span>: {<span class="key">"type"</span>: <span class="str">"enum"</span>, <span class="key">"name"</span>: <span class="str">"SensorKind"</span>, <span class="key">"symbols"</span>: [
+      <span class="str">"vibration"</span>, <span class="str">"temperature"</span>, <span class="str">"pressure"</span>, <span class="str">"flow"</span>, <span class="str">"gas"</span>,
+      <span class="str">"humidity"</span>, <span class="str">"vision"</span>, <span class="str">"hyperspectral"</span>, <span class="str">"mmwave"</span>,
+      <span class="str">"soil"</span>, <span class="str">"weather"</span>, <span class="str">"ais"</span>, <span class="str">"earth_observation"</span>, <span class="str">"unknown"</span>
+    ]}},
+    {<span class="key">"name"</span>: <span class="str">"physical_quantity"</span>, <span class="key">"type"</span>: <span class="str">"string"</span>},
+    {<span class="key">"name"</span>: <span class="str">"unit"</span>, <span class="key">"type"</span>: <span class="str">"string"</span>},
+    {<span class="key">"name"</span>: <span class="str">"value"</span>, <span class="key">"type"</span>: <span class="str">"double"</span>},
+    {<span class="key">"name"</span>: <span class="str">"timestamp_ns"</span>, <span class="key">"type"</span>: <span class="str">"long"</span>},
+    {<span class="key">"name"</span>: <span class="str">"location"</span>, <span class="key">"type"</span>: [<span class="str">"null"</span>, <span class="str">"GeoLocation"</span>]},
+    {<span class="key">"name"</span>: <span class="str">"lineage"</span>, <span class="key">"type"</span>: <span class="str">"Lineage"</span>},
+    {<span class="key">"name"</span>: <span class="str">"calibration_confidence"</span>, <span class="key">"type"</span>: <span class="str">"double"</span>}
+  ]
+}</pre>
+  </div>
+  <p><a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/schemas">Full schemas on GitHub →</a> (Avro: telemetry, alert, asset, maintenance. Protobuf: same four.)</p>
+</section>
+
+<section class="doc-section" id="ml-design">
+  <div class="section-label">6. ML design</div>
+  <h2>TS-FM + RUL + monitoring.</h2>
+  <p>See <a href="ai-stack.html">AI/ML Stack page</a> for the design and <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/ml">ml/</a> in the platform repo for the implementation.</p>
+
+  <h3>Training pipeline</h3>
+  <ul>
+    <li><strong>Dataset:</strong> IndustrialTSDataset loads Parquet files from public corpora (NASA bearings, Case Western Reserve, SECOM, UCI gas turbine, ARPA-E GRIDDATA, UCR/UEA archive), windows into 512-sample chunks with stride 64.</li>
+    <li><strong>Model:</strong> 350M-parameter causal transformer (24 layers, 1024 hidden, 16 attention heads). Cross-attention for sensor fusion. Causal-aware loss (PC algorithm validity test).</li>
+    <li><strong>Trainer:</strong> AdamW with cosine LR schedule + warmup. Mixed precision (FP16). Gradient accumulation (4 steps). Checkpoints every 1000 steps.</li>
+    <li><strong>Export:</strong> PyTorch → ONNX for edge inference (Hailo-8, Jetson Orin).</li>
+  </ul>
+
+  <h3>Inference pipeline</h3>
+  <ul>
+    <li><strong>Server:</strong> FastAPI + ONNX Runtime. Loads model from S3 at startup (cold start < 30s).</li>
+    <li><strong>SLA:</strong> p99 < 100ms per inference, batch 32 on Hailo-8.</li>
+    <li><strong>Routing:</strong> Liquid placement scheduler routes each inference job to optimal site (edge or cloud) based on latency, bandwidth, drift, battery, carbon.</li>
+  </ul>
+
+  <h3>Monitoring</h3>
+  <ul>
+    <li><strong>Feature drift (PSI):</strong> Population Stability Index per feature. Threshold 0.2 triggers retraining.</li>
+    <li><strong>Confidence distribution:</strong> Tracks output confidence over time. Significant shifts indicate data drift or model degradation.</li>
+    <li><strong>Ground-truth feedback:</strong> When actual failures occur, compares against predictions, updates per-asset-class confusion matrix. Precision/recall drops trigger targeted retraining.</li>
+  </ul>
+</section>
+
+<section class="doc-section" id="security">
+  <div class="section-label">7. Security model</div>
+  <h2>Per-customer isolation. <span class="accent'>Federated learning only.</span></h2>
+  <ul>
+    <li><strong>TLS everywhere</strong> — all inter-service traffic uses mTLS via Istio sidecars.</li>
+    <li><strong>Per-customer encryption keys</strong> — KMS-derived, rotated quarterly. No employee access to raw sensor data.</li>
+    <li><strong>Per-customer K8s namespaces</strong> — strict RBAC, network policies.</li>
+    <li><strong>Federated learning only</strong> — raw data never crosses customer boundaries. Only DP-noised gradients.</li>
+    <li><strong>Secure aggregation</strong> — gradients aggregated in Intel SGX enclaves. Platform operator can't see individual gradients.</li>
+    <li><strong>SOC 2 Type II</strong> in flight (Q1 2027). <strong>ISO 27001</strong> Q2 2027. <strong>IEC 62443</strong> Q3 2027. <strong>GDPR</strong> live at GA.</li>
+  </ul>
+  <p>See <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/docs/SECURITY.md">docs/SECURITY.md</a> for the full threat model and <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/docs/OPERATIONS.md">docs/OPERATIONS.md</a> for incident response.</p>
+</section>
+
+<section class="doc-section" id="ops">
+  <div class="section-label">8. Operations</div>
+  <h2>Daily, weekly, incident runbooks.</h2>
+  <p>See <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/docs/OPERATIONS.md">docs/OPERATIONS.md</a> for the full runbook. Highlights:</p>
+  <ul>
+    <li><strong>Daily checks:</strong> pod status, Kafka lag, disk usage, replica lag, drift scores, alert queue.</li>
+    <li><strong>Weekly checks:</strong> backup restore test, federated round, audit log review, CVE patches, model performance regression.</li>
+    <li><strong>Incident response:</strong> Kafka lag spike, ML drift alarm, edge cluster offline, customer data breach (immediate key revocation).</li>
+  </ul>
+</section>
+
+<section class="doc-section" id="failures">
+  <div class="section-label">9. Failure modes</div>
+  <h2>What breaks, how we detect, how we recover.</h2>
+  <table class="data-table">
+    <thead><tr><th>Failure</th><th>Detection</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MQTT broker down</strong></td><td>paho-mqtt reconnect</td><td>Automatic reconnect, no message loss</td></tr>
+      <tr><td><strong>Kafka broker down</strong></td><td>Strimzi alerts</td><td>Consumer rebalance, replicas survive 2-broker loss</td></tr>
+      <tr><td><strong>Flink job fail</strong></td><td>Checkpoint + savepoint</td><td>Auto-restart from last checkpoint (RTO < 1 min)</td></tr>
+      <tr><td><strong>TimescaleDB down</strong></td><td>Patroni + etcd</td><td>Automatic failover (RTO < 30s, RPO 0)</td></tr>
+      <tr><td><strong>ClickHouse down</strong></td><td>Replica lag alerts</td><td>Read from replica, write to surviving shards</td></tr>
+      <tr><td><strong>ML OOM</strong></td><td>Liveness probe</td><td>Pod restart, model reloads from S3 (<30s)</td></tr>
+      <tr><td><strong>Edge WAN loss</strong></td><td>Edge buffer 72h</td><td>Edge continues running, resyncs on WAN return</td></tr>
+      <tr><td><strong>Region outage</strong></td><td>Cross-region replication lag</td><td>Fully failover to DR region (RTO < 30 min, RPO 5 min)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="sizing">
+  <div class="section-label">10. Production sizing</div>
+  <h2>120 vCPU. 256 GiB RAM. <span class="accent'>10 TiB storage.</span></h2>
+  <table class="data-table">
+    <thead><tr><th>Component</th><th>Replicas</th><th>CPU / Memory</th><th>Storage</th></tr></thead>
+    <tbody>
+      <tr><td>Kafka</td><td>5 brokers</td><td>4 CPU / 16Gi each</td><td>1Ti / broker</td></tr>
+      <tr><td>Flink task managers</td><td>8</td><td>2 CPU / 4Gi each</td><td>—</td></tr>
+      <tr><td>TimescaleDB</td><td>3 (HA)</td><td>4 CPU / 8Gi each</td><td>1Ti</td></tr>
+      <tr><td>ClickHouse</td><td>3 (sharded)</td><td>8 CPU / 16Gi each</td><td>5Ti</td></tr>
+      <tr><td>Ingest</td><td>12</td><td>1 CPU / 1Gi each</td><td>—</td></tr>
+      <tr><td>API</td><td>8</td><td>2 CPU / 2Gi each</td><td>—</td></tr>
+      <tr><td>ML</td><td>4 (+GPU)</td><td>4 CPU / 8Gi + nvidia</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Sustained throughput targets:</strong></p>
+  <ul>
+    <li>1M telemetry messages / second ingested</li>
+    <li>100B rows in cold storage</li>
+    <li>1B-row TimescaleDB query under 2s</li>
+    <li>10B-row ClickHouse query under 5s</li>
+    <li>API p99 latency under 100ms with 1000 concurrent users</li>
+    <li>ML inference p99 under 100ms with batch 32 on Hailo-8</li>
+    <li>72 hours of edge autonomy on WAN loss</li>
+  </ul>
+</section>
+
+
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Try the live MVP — the design, running <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>Every component described above is live in the MVP dashboard: sensor ingest, Flink-style windowing, TS-FM anomaly detection, edge/cloud inference routing, LLM query. Watch it run.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="sectors.html">Sectors</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Repo</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">Site Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;">
+      <div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div>
+      <div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+      <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p>
+    </form></div>
+  </div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body">
+      <div class="search-box"><input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What sectors do you support?'; handleSearch();">What sectors do you support?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Where is the platform source code?'; handleSearch();">Where is the platform source code?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

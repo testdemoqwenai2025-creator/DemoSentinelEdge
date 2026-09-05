@@ -1,0 +1,129 @@
+# =====================================================================
+# sync-preview.yml
+# ---------------------------------------------------------------------
+# One-way mirror: private `sentinel-edge` -> public `DemoSentinelEdge`
+#
+# Purpose:
+#   Investors and interested clients can view the curated preview
+#   (index.html + approved assets) at the public repo, WITHOUT an NDA
+#   and WITHOUT seeing your proprietary source. This workflow runs on
+#   every push to the default branch of the private repo, copies only
+#   the files inside ./preview/ to the public repo, and force-pushes
+#   them as a single commit. No source code, no secrets, no history
+#   leak from the private repo.
+#
+# Setup (one-time, ~90 seconds):
+#   1. Create the public repo `DemoSentinelEdge` on GitHub
+#      (Settings -> New repository -> Public -> Create)
+#   2. Generate a fine-grained PAT at:
+#      https://github.com/settings/personal-access-tokens/new
+#        - Resource owner: <your org or username>
+#        - Repository access: Only select repositories -> DemoSentinelEdge
+#        - Permissions:
+#            Contents: Read & Write
+#            Metadata: Read (auto-required)
+#        - Expiry: 90 days (renew on rotation)
+#   3. In your PRIVATE `sentinel-edge` repo:
+#      Settings -> Secrets and variables -> Actions -> New repository secret
+#        Name:  PUBLIC_REPO_PAT
+#        Value: <paste the fine-grained PAT from step 2>
+#   4. Put the curated investor preview files under `preview/` in the
+#      private repo (e.g. preview/index.html, preview/assets/...).
+#   5. Commit & push. The workflow mirrors `preview/*` to the public
+#      repo's root on every push to the default branch.
+#
+# Notes:
+#   - The public repo receives a SINGLE squashed commit per mirror run.
+#     Its history is intentional: a clean, linear preview log.
+#   - Files removed from `preview/` in the private repo are also
+#     removed from the public repo on the next run (true mirror).
+#   - The workflow does NOT have access to any other part of the
+#     private repo. Only the `preview/` directory is read.
+# =====================================================================
+
+name: Sync Investor Preview
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'preview/**'
+  workflow_dispatch:        # allow manual trigger from Actions tab
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mirror-preview:
+    name: Mirror preview/ to public DemoSentinelEdge
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout private repo (sparse, preview/ only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            preview
+          sparse-checkout-cone-mode: false
+
+      - name: Verify preview/ exists
+        id: check
+        run: |
+          if [ ! -d preview ]; then
+            echo "::warning::preview/ directory not found in private repo. Nothing to mirror."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "Preview contents:"
+            (cd preview && find . -type f | head -50)
+          fi
+
+      - name: Stage preview files
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          mkdir -p staging
+          cp -r preview/. staging/
+          # Remove any .github subfolder from preview (don't allow workflow injection)
+          rm -rf staging/.github
+          echo "Mirroring $(find staging -type f | wc -l) files"
+
+      - name: Push to public DemoSentinelEdge
+        if: steps.check.outputs.skip != 'true'
+        env:
+          PAT: ${{ secrets.PUBLIC_REPO_PAT }}
+          PUBLIC_REPO: ${{ vars.PUBLIC_REPO || 'testdemoqwenai2025-creator/DemoSentinelEdge' }}
+        run: |
+          set -euo pipefail
+          if [ -z "$PAT" ]; then
+            echo "::error::PUBLIC_REPO_PAT secret is missing. Add it under Settings -> Secrets -> Actions."
+            exit 1
+          fi
+          # Clone the public repo (empty if just created)
+          git clone --depth 1 "https://x-access-token:${PAT}@github.com/${PUBLIC_REPO}.git" public 2>&1 | sed "s/${PAT}/***/g"
+          cd public
+
+          # Mirror: remove tracked files no longer in preview, then copy new ones
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp -r ../staging/. .
+
+          # Commit
+          git config user.name  "preview-mirror-bot"
+          git config user.email "preview-mirror-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to mirror."
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+            git commit -m "chore(preview): auto-mirror from sentinel-edge @ ${TIMESTAMP}
+
+            Source: ${{ github.repository }}@${{ github.sha }}
+            Ref:    ${{ github.ref_name }}
+            Run:    ${{ github.run_id }}"
+            git push origin HEAD:main 2>&1 | sed "s/${PAT}/***/g"
+            echo "Mirror pushed to ${PUBLIC_REPO}"
+          fi

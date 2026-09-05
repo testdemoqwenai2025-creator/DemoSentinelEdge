@@ -665,6 +665,8 @@
     <a href="verticals.html">Verticals</a>
     <a href="roadmap.html">Roadmap</a>
     <a href="team.html">Team</a>
+    <a href="engineering.html" style="color: var(--cyan);">Engineering</a>
+    <a href="sectors.html" style="color: var(--violet);">Sectors</a>
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan); font-weight: 600;">
       <span class="live-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); margin-right:6px; animation: pulse 2s ease-in-out infinite;"></span>Live MVP
     </a>
@@ -1263,6 +1265,51 @@
       </div>
     </div>
 
+    <!-- Engineering + Sectors -->
+    <div class="reveal" style="margin-bottom: 32px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Engineering &amp; Sectors</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        <a href="engineering.html" style="display: block; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 10%, var(--card)), var(--card)); border: 1px solid var(--border-strong); text-decoration: none; color: var(--text); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--cyan), var(--violet), transparent);"></div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; color: var(--bg);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 16px; font-weight: 600;">Engineering Artifacts</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;">platform repo + system design</div>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim);">87-file deployable platform scaffold (FastAPI + MQTT + Kafka + TimescaleDB + Docker Compose), production architecture (Kafka + Flink + Iceberg + ClickHouse + Kubernetes), Avro/Protobuf schemas, 130+ test scenarios, ML design, 7 sector configs.</div>
+        </a>
+        <a href="system-design.html" style="display: block; padding: 22px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text);" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: color-mix(in srgb, var(--cyan) 15%, transparent); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 16px; font-weight: 600;">System Design Document</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">for engineering teams</div>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim);">Full end-to-end system design: hot path, cold path, 13 components, schemas, ML design, security model, operations, failure modes, production sizing.</div>
+        </a>
+        <a href="sectors.html" style="display: block; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, var(--card)), var(--card)); border: 1px solid var(--border-strong); text-decoration: none; color: var(--text); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--violet), var(--cyan));"></div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--violet), var(--cyan)); display: flex; align-items: center; justify-content: center; color: var(--bg);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 16px; font-weight: 600;">Sector Configurations</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--violet); text-transform: uppercase; letter-spacing: 0.08em;">7 verticals · compliance + ROI</div>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim);">Oil &amp; gas, chemical plant, hospital ICU, autonomous vehicles, smart grid, mining, water treatment — each with compliance regime, ROI benchmarks, buyer profile, reference architecture.</div>
+        </a>
+      </div>
+    </div>
+
     <!-- Live MVP + briefing -->
     <div class="reveal" style="margin-bottom: 32px;">
       <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Try it live</div>
@@ -1316,6 +1363,8 @@
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
     <a href="problem.html">Problem</a>
     <a href="architecture.html">Architecture</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="sectors.html">Sectors</a>
     <a href="architecture-deep.html">Technical Deep Dive</a>
     <a href="team.html">Team</a>
     <a href="contact.html">Contact</a>
