@@ -3,23 +3,49 @@
   <channel>
     <title>AISensorEdgeComp — Engineering Blog</title>
     <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog.html</link>
-    <description>Technical deep dives on TS-FM, federated learning, edge-cloud workload placement, and causal inference. Written by the founding team.</description>
+    <description>Technical deep dives on TS-FM, federated learning, edge-cloud workload placement, causal inference, and design-partner postmortems.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 Sep 2026 08:10:32 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 05 Sep 2026 08:32:13 GMT</lastBuildDate>
     <atom:link href="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/feed.xml" rel="self" type="application/rss+xml" />
-
     <item>
       <title>The TS-FM Architecture: How a 350M-Parameter Transformer Beats Chronos-B1 by 0.07 AUC-ROC</title>
       <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/ts-fm-architecture.html</link>
       <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/ts-fm-architecture.html</guid>
-      <description>A deep dive into the time-series foundation model that powers AISensorEdgeComp's zero-shot anomaly detection. Architecture, pretraining corpus, three deltas vs Chronos-B1, and benchmarks.</description>
-      <author>Dr. Jian Liu (platform@aisensoredgecomp.ai)</author>
-      <pubDate>Thu, 05 Sep 2026 09:00:00 GMT</pubDate>
-      <category>time-series foundation model</category>
-      <category>anomaly detection</category>
-      <category>industrial IoT</category>
-      <category>transformer</category>
+      <description>A deep dive into the time-series foundation model.</description>
+      <pubDate>2026-09-05 09:00:00 GMT</pubDate>
+      <category>time-series</category><category>anomaly detection</category><category>industrial IoT</category><category>transformer</category>
     </item>
-
+    <item>
+      <title>Causal Inference in Industrial IoT: From Correlation to Cause</title>
+      <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/causal-inference.html</link>
+      <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/causal-inference.html</guid>
+      <description>How we lifted the TS-FM from descriptive to prescriptive.</description>
+      <pubDate>2026-09-15 09:00:00 GMT</pubDate>
+      <category>causal inference</category><category>PC algorithm</category><category>do-calculus</category>
+    </item>
+    <item>
+      <title>Liquid Workload Placement: How We Cut Inference Cost by 63%</title>
+      <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/liquid-workload-placement.html</link>
+      <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/liquid-workload-placement.html</guid>
+      <description>The scheduler that dynamically routes inference between edge and cloud.</description>
+      <pubDate>2026-09-22 09:00:00 GMT</pubDate>
+      <category>edge computing</category><category>workload placement</category><category>KubeEdge</category>
+    </item>
+    <item>
+      <title>The Sensor Ontology: Turning Bytes into Meaning</title>
+      <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/sensor-ontology.html</link>
+      <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/sensor-ontology.html</guid>
+      <description>How LLM-assisted normalization cuts onboarding from 6 months to 3 weeks.</description>
+      <pubDate>2026-09-29 09:00:00 GMT</pubDate>
+      <category>sensor ontology</category><category>semantic normalization</category><category>LLM</category>
+    </item>
+    <item>
+      <title>Design Partner Postmortem: 3 Farms, 60 Days, +18% Yield</title>
+      <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/design-partner-postmortem.html</link>
+      <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/design-partner-postmortem.html</guid>
+      <description>Transparent postmortem of agriculture v1 deployment.</description>
+      <pubDate>2026-10-06 09:00:00 GMT</pubDate>
+      <category>design partner</category><category>agriculture</category><category>postmortem</category>
+    </item>
   </channel>
 </rss>

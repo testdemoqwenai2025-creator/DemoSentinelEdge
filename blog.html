@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AISensorEdgeComp — Engineering Blog</title>
 <meta name="description" content="Technical deep dives on TS-FM, federated learning, edge-cloud workload placement, and causal inference." />
-<meta name="theme-color" content="#050810" />
-<meta property="og:type" content="article" />
-<meta property="og:site_name" content="AISensorEdgeComp" />
-<meta property="og:title" content="AISensorEdgeComp — Engineering Blog" />
-<meta property="og:description" content="Technical deep dives on TS-FM, federated learning, edge-cloud workload placement, and causal inference." />
-<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -22,7 +16,7 @@
   <div class="nav-links">
     <a href="index.html">← Back</a>
     <a href="engineering.html">Engineering</a>
-    <a href="blog.html">Blog</a>
+    <a href="blog.html" class="active">Blog</a>
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
   </div>
   <div class="nav-actions">
@@ -38,81 +32,96 @@
   </div>
 </nav>
 
-<!-- PAGE HERO -->
-<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+<section class="page-hero" style="min-height: 30vh; padding-top: 100px;">
   <div class="page-hero-grid"></div>
   <div class="page-hero-glow"></div>
   <div class="page-hero-content">
     <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Blog</span></div>
-    <div class="page-hero-badge"><span class="dot"></span>Engineering deep dives · Thought leadership</div>
+    <div class="page-hero-badge"><span class="dot"></span>5 posts · 1 per week · No marketing, just engineering</div>
     <h1>Engineering <span class="accent">Blog</span></h1>
-    <p class="lead">Technical deep dives on the AISensorEdgeComp platform — TS-FM architecture, federated learning, edge-cloud workload placement, causal inference. Written by the founding team for engineers, ML researchers, and design partners.</p>
+    <p class="lead">Technical deep dives on the AISensorEdgeComp platform — TS-FM architecture, causal inference, liquid workload placement, sensor ontology, and honest postmortems from design-partner deployments.</p>
   </div>
 </section>
 
 <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
-
-  <!-- Featured post -->
   <section class="doc-section">
-    <div class="section-label">Latest post</div>
-    <a href="blog/ts-fm-architecture.html" style="text-decoration: none; color: inherit;">
-      <div class="card" style="background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), color-mix(in srgb, var(--violet) 8%, var(--card))); border-color: var(--border-strong); cursor: pointer;">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-09-05 · 18 min read · Dr. Jian Liu</div>
-        <h2 style="font-size: 24px; margin-bottom: 12px; color: var(--text);">The TS-FM Architecture: How a 350M-Parameter Transformer Beats Chronos-B1 by 0.07 AUC-ROC on Industrial Anomaly Detection</h2>
-        <p style="color: var(--text-dim); font-size: 15px; line-height: 1.6;">A deep dive into the time-series foundation model that powers AISensorEdgeComp's zero-shot anomaly detection. We cover the architecture (causal transformer + sensor fusion + causal-aware loss), the pretraining corpus (50M hours of public industrial data), the three deltas vs. Chronos-B1, and the benchmarks that prove the design works.</p>
-        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-          <span class="tag">time-series foundation model</span>
-          <span class="tag">anomaly detection</span>
-          <span class="tag">industrial IoT</span>
-          <span class="tag">transformer</span>
-        </div>
-        <div style="margin-top: 20px; color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
-      </div>
-    </a>
-  </section>
-
-  <!-- Coming soon -->
-  <section class="doc-section">
-    <div class="section-label">Coming soon</div>
-    <h2>In the pipeline</h2>
+    <div class="section-label">All posts</div>
+    <h2>5 engineering deep dives</h2>
     <div style="display: flex; flex-direction: column; gap: 16px;">
-      <div class="card" style="opacity: 0.7;">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">2026-09-15 · Dr. Jian Liu</div>
-        <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Causal Inference in Industrial IoT: From Correlation to Cause</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">How we lifted the TS-FM from descriptive (vibration correlates with failure) to prescriptive (vibration caused failure) using the PC algorithm + do-calculus. The difference between chasing ghosts and recommending interventions.</p>
-      </div>
-      <div class="card" style="opacity: 0.7;">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">2026-09-22 · Maya Rodriguez</div>
-        <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Liquid Workload Placement: How We Cut Inference Cost by 63%</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">The scheduler that dynamically routes inference jobs between edge and cloud based on bandwidth cost, latency need, model accuracy drift, and battery state. The four axes, the scoring function, and why hardcoded placement leaves 30-50% on the table.</p>
-      </div>
-      <div class="card" style="opacity: 0.7;">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">2026-09-29 · Dr. Aarav Kapoor</div>
-        <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">The Sensor Ontology: Turning Bytes into Meaning</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">Why we built a canonical schema for industrial measurements, how LLM-assisted semantic normalization cuts new-factory onboarding from 6 months to 3 weeks, and why the 6-month number was the hardest thing we ever automated.</p>
-      </div>
-      <div class="card" style="opacity: 0.7;">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">2026-10-06 · Sofia Costa</div>
-        <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Design Partner Postmortem: 3 Farms, 60 Days, +18% Yield</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">A transparent write-up of the agriculture v1 deployment with 3 design-partner farms. What worked, what didn't, what surprised us, and how the lessons are shaping v2.</p>
-      </div>
+      
+      <a href="blog/ts-fm-architecture.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-left: 3px solid #00d4ff;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #00d4ff; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-09-05 · 18 min read · Dr. Jian Liu</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">The TS-FM Architecture: How a 350M-Parameter Transformer Beats Chronos-B1 by 0.07 AUC-ROC</h3>
+          <p style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">A deep dive into the time-series foundation model that powers AISensorEdgeComp's zero-shot anomaly detection.</p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tag">time-series foundation model</span><span class="tag">anomaly detection</span><span class="tag">industrial IoT</span><span class="tag">transformer</span>
+          </div>
+          <div style="margin-top: 12px; color: #00d4ff; font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
+        </div>
+      </a>
+      
+      <a href="blog/causal-inference.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-left: 3px solid #22c55e;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #22c55e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-09-15 · 15 min read · Dr. Jian Liu</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Causal Inference in Industrial IoT: From Correlation to Cause</h3>
+          <p style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">How we lifted the TS-FM from descriptive (vibration correlates with failure) to prescriptive (vibration caused failure).</p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tag">causal inference</span><span class="tag">PC algorithm</span><span class="tag">do-calculus</span><span class="tag">industrial IoT</span>
+          </div>
+          <div style="margin-top: 12px; color: #22c55e; font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
+        </div>
+      </a>
+      
+      <a href="blog/liquid-workload-placement.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-left: 3px solid #fbbf24;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-09-22 · 14 min read · Maya Rodriguez</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Liquid Workload Placement: How We Cut Inference Cost by 63%</h3>
+          <p style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">The scheduler that dynamically routes inference jobs between edge and cloud based on five axes.</p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tag">edge computing</span><span class="tag">workload placement</span><span class="tag">KubeEdge</span><span class="tag">carbon-aware</span>
+          </div>
+          <div style="margin-top: 12px; color: #fbbf24; font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
+        </div>
+      </a>
+      
+      <a href="blog/sensor-ontology.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-left: 3px solid #a855f7;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #a855f7; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-09-29 · 12 min read · Dr. Aarav Kapoor</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">The Sensor Ontology: Turning Bytes into Meaning</h3>
+          <p style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">How LLM-assisted semantic normalization cuts new-factory onboarding from 6 months to 3 weeks.</p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tag">sensor ontology</span><span class="tag">semantic normalization</span><span class="tag">LLM</span><span class="tag">industrial IoT</span>
+          </div>
+          <div style="margin-top: 12px; color: #a855f7; font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
+        </div>
+      </a>
+      
+      <a href="blog/design-partner-postmortem.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-left: 3px solid #22c55e;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #22c55e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">2026-10-06 · 10 min read · Sofia Costa</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text);">Design Partner Postmortem: 3 Farms, 60 Days, +18% Yield</h3>
+          <p style="color: var(--text-dim); font-size: 14px; line-height: 1.6;">A transparent write-up of the agriculture v1 deployment. What worked, what didn't, what surprised us.</p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tag">design partner</span><span class="tag">agriculture</span><span class="tag">postmortem</span><span class="tag">field deployment</span>
+          </div>
+          <div style="margin-top: 12px; color: #22c55e; font-family: 'JetBrains Mono', monospace; font-size: 13px;">Read more →</div>
+        </div>
+      </a>
+      
     </div>
   </section>
 
-  <!-- RSS + subscribe -->
   <section class="doc-section">
     <div class="section-label">Stay updated</div>
-    <h2>Get notified when we publish</h2>
+    <h2>Get notified</h2>
     <p style="color: var(--text-dim); font-size: 15px;">We publish one deep-dive per week. No marketing — just engineering.</p>
     <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
-      <a href="mailto:press@aisensoredgecomp.ai?subject=Subscribe%20to%20engineering%20blog&body=Please%20add%20me%20to%20the%20engineering%20blog%20notifications." class="btn btn-primary btn-sm">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
-        Subscribe via email
-      </a>
-      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Star on GitHub</a>
+      <a href="mailto:press@aisensoredgecomp.ai?subject=Subscribe%20to%20engineering%20blog&body=Please%20add%20me%20to%20the%20engineering%20blog%20notifications." class="btn btn-primary btn-sm">Subscribe via email</a>
+      <a href="feed.xml" class="btn btn-ghost btn-sm">RSS feed</a>
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/blog" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Markdown on GitHub</a>
     </div>
   </section>
-
 </div>
 
 <footer>
@@ -127,11 +136,11 @@
 </footer>
 <div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
   <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
 </div>
 <div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
   <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
-  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
 </div>
 <button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
 <script src="assets/app.js"></script>
