@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layer 03 · Edge Compute — AISensorEdgeComp</title>
+<meta name="description" content="Liquid workload placement: KubeEdge, TinyML, WASM, and a scheduler that dynamically routes inference between edge and cloud." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Layer 03 · Edge Compute — AISensorEdgeComp" />
+<meta property="og:description" content="Liquid workload placement: KubeEdge, TinyML, WASM, and a scheduler that dynamically routes inference between edge and cloud." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/layer-edge.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="Layer 03 · Edge Compute — AISensorEdgeComp" />
+<meta name="twitter:description" content="Liquid workload placement: KubeEdge, TinyML, WASM, and a scheduler that dynamically routes inference between edge and cloud." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="layer-edge">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="#">Layers</a><span class="sep">/</span><span>Layer 03 · Edge Compute</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Layer 03 · Compute</div>
+    <h1>Edge compute — <span class='accent'>liquid workload placement.</span></h1>
+    <p class="lead">The frontier is not 'edge vs cloud' — it's that the optimal placement changes minute to minute. Our scheduler runs every 30s and dynamically reassigns inference jobs based on bandwidth, latency, accuracy drift, battery, and carbon.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#silicon">Supported silicon</a><a href="#placement">Liquid placement</a><a href="#scoring">Scoring function</a><a href="#autonomy">Edge autonomy</a><a href="#benchmarks">Benchmarks</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="silicon">
+  <div class="section-label">Supported silicon</div>
+  <h2>From $1 MCUs to 100-TOPS accelerators.</h2>
+  <p>The edge compute layer supports the full spectrum of edge silicon. The liquid placement scheduler routes each inference job to the right silicon — TinyML on a $1 MCU for a vibration anomaly flag, a Hailo-8 for vision, a Jetson Orin NX for multimodal fusion, or the cloud for cross-customer federated learning.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Silicon</th><th>TOPS</th><th>Power</th><th>Use case</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>NVIDIA Jetson Orin Nano</strong></td><td>40 TOPS</td><td>15 W</td><td>Vision, audio (medium)</td><td>Production</td></tr>
+      <tr><td><strong>NVIDIA Jetson Orin NX</strong></td><td>100 TOPS</td><td>25 W</td><td>Vision, audio (heavy)</td><td>Production</td></tr>
+      <tr><td><strong>Hailo-8</strong></td><td>26 TOPS</td><td>2.5 W</td><td>Vision (low-power)</td><td>Production</td></tr>
+      <tr><td><strong>Google Coral Edge TPU</strong></td><td>4 TOPS</td><td>2 W</td><td>Tiny vision models</td><td>Production</td></tr>
+      <tr><td><strong>Qualcomm QCS6490</strong></td><td>12 TOPS</td><td>5 W</td><td>Mixed modalities</td><td>Beta</td></tr>
+      <tr><td><strong>RPi 5 + Coral</strong></td><td>4 TOPS</td><td>8 W</td><td>Low-cost pilot</td><td>Production</td></tr>
+      <tr><td><strong>STM32H7 + TinyML</strong></td><td>0.1 TOPS</td><td>0.2 W</td><td>$1 MCU class</td><td>Production</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="placement">
+  <div class="section-label">Liquid placement scheduler</div>
+  <h2>Not "edge or cloud." <span class="accent">"Edge and cloud, fluidly."</span></h2>
+  <p>Every 30 seconds, the placement scheduler scores each pending inference job across five axes and routes accordingly. The scheduler runs as a control loop on every edge cluster, federated across the customer's fleet. Routing decisions are persisted for audit. Operators can override with hard rules (e.g., "safety-critical inferences always run on-device").</p>
+  <div class="diagram">
+    <div class="diagram-title">Liquid Placement Decision Loop (30-second cycle)</div>
+    <div class="flow-diagram">
+      <div class="flow-node">Observe fleet state</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Score each pending job × candidate site</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Reassign inference jobs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Verify SLA</div>
+      <div class="flow-arrow">↺</div>
+      <div class="flow-node">Persist decision (audit log)</div>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section" id="scoring">
+  <div class="section-label">Scoring function</div>
+  <h2>Five axes, <span class="accent'>weighted sum.</span></h2>
+  <div class="code-block-label">placement-score.py (simplified)</div>
+  <div class="code-block">
+<pre><span class="comment"># Score = weighted sum of normalized metrics; route to highest-scoring site.</span>
+<span class="key">def</span> placement_score(job, site):
+    <span class="key">return</span> (
+        0.35 * latency_score(job, site)         <span class="comment"># end-to-end RTT</span>
+      + 0.25 * bandwidth_score(job, site)       <span class="comment"># $/GB right now</span>
+      + 0.20 * accuracy_score(job, site)       <span class="comment"># model drift vs. gold</span>
+      + 0.15 * battery_score(job, site)         <span class="comment"># device SoC + recharge ETA</span>
+      + 0.05 * carbon_score(job, site)         <span class="comment"># grid carbon intensity</span>
+    )
+
+<span class="key">def</span> route(job, candidate_sites):
+    scored = [(placement_score(job, s), s) <span class="key">for</span> s <span class="key">in</span> candidate_sites]
+    scored.sort(reverse=<span class="val">True</span>, key=<span class="key">lambda</span> x: x[0])
+    <span class="key">return</span> scored[0][1]   <span class="comment"># highest-scoring site</span></pre>
+  </div>
+  <p>The weights are configurable per customer. A utility with substation monitoring might weight latency at 0.60 (safety-critical). An agri co-op might weight bandwidth at 0.45 (cellular is expensive). The scheduler supports hard overrides — "always on-device for safety-critical" — that bypass the scoring function entirely.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Axis</th><th>Default weight</th><th>What it measures</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Latency</strong></td><td>0.35</td><td>End-to-end RTT for inference + response</td></tr>
+      <tr><td><strong>Bandwidth</strong></td><td>0.25</td><td>Current $/GB on the WAN path</td></tr>
+      <tr><td><strong>Accuracy drift</strong></td><td>0.20</td><td>Model accuracy delta vs. gold standard (when did we last retrain?)</td></tr>
+      <tr><td><strong>Battery</strong></td><td>0.15</td><td>Device state-of-charge + recharge ETA (for battery-powered edge nodes)</td></tr>
+      <tr><td><strong>Carbon intensity</strong></td><td>0.05</td><td>Grid carbon intensity at the candidate site (karma — opt into low-carbon compute when flexible)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="autonomy">
+  <div class="section-label">Edge autonomy</div>
+  <h2>72 hours without WAN. <span class="accent">No degradation.</span></h2>
+  <p>Every edge cluster runs for 72 hours without WAN connectivity. If your plant loses internet, your TS-FM still flags anomalies, your operator still gets alerts, your maintenance log still records. The cloud is a co-processor, not a dependency.</p>
+  <p>How: each edge cluster has 72 hours of local buffer for sensor data, a local copy of the TS-FM weights, a local Graph RAG index (synced from cloud every 4 hours), and a fallback LLM (smaller, distilled, runs on Jetson class silicon). When WAN returns, the cluster resyncs the cloud with all locally-recorded events.</p>
+  <div class="callout"><strong>Why this matters</strong><p>Industrial buyers will not deploy AI that breaks when the network does. Edge autonomy is the difference between "AI for the office" and "AI for the plant floor." It's also why we win against cloud-only platforms (AWS IoT, Azure IoT) in industrial.</p></div>
+</section>
+
+<section class="doc-section" id="benchmarks">
+  <div class="section-label">Benchmarks</div>
+  <h2>What liquid placement actually buys you.</h2>
+  <p>Internal simulation: 200 edge devices, 6 cloud regions, 30-day trace of inference jobs. Compared against three baselines: cloud-only, edge-only, and "50/50 hardcoded split."</p>
+  <div class="benchmark-grid">
+    <div class="benchmark-card">
+      <div class="label">Inference cost reduction</div>
+      <div class="value">−63%</div>
+      <div class="sub">vs. hardcoded cloud-only</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">p99 latency</div>
+      <div class="value">4×</div>
+      <div class="sub">lower than cloud-only</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">Edge autonomy</div>
+      <div class="value">72 h</div>
+      <div class="sub">graceful degraded mode on WAN loss</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">WAN bandwidth cut</div>
+      <div class="value">−99.7%</div>
+      <div class="sub">via on-edge anomaly token emission</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">Carbon footprint</div>
+      <div class="value">−22%</div>
+      <div class="sub">vs cloud-only (carbon-aware routing)</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">Decision latency</div>
+      <div class="value">30 s</div>
+      <div class="sub">scheduler cycle, full fleet rescore</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>See the liquid placement scheduler live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard shows edge vs cloud inference counts updating every 3 seconds — watch the scheduler route jobs based on confidence and modality.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Who are the founders and what is their background?'; handleSearch();">Who are the founders and what is their background?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your moat vs AWS IoT or Azure IoT?'; handleSearch();">What is your moat vs AWS IoT or Azure IoT?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

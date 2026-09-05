@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layer 02 · Connectivity — AISensorEdgeComp</title>
+<meta name="description" content="The protocol-agnostic bridge: ingest from any industrial protocol, transport over any WAN, semantic normalization via LLM." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Layer 02 · Connectivity — AISensorEdgeComp" />
+<meta property="og:description" content="The protocol-agnostic bridge: ingest from any industrial protocol, transport over any WAN, semantic normalization via LLM." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/layer-connectivity.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="Layer 02 · Connectivity — AISensorEdgeComp" />
+<meta name="twitter:description" content="The protocol-agnostic bridge: ingest from any industrial protocol, transport over any WAN, semantic normalization via LLM." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="layer-connectivity">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="#">Layers</a><span class="sep">/</span><span>Layer 02 · Connectivity</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Layer 02 · Transport</div>
+    <h1>Connectivity — the <span class='accent'>protocol-agnostic bridge.</span></h1>
+    <p class="lead">A real factory floor runs Modbus, OPC-UA, Profinet, EtherCAT, MQTT, CoAP and proprietary serial — frequently all at once. We ingest from any, normalize to a canonical schema, transport over any WAN.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#ingest">Ingest protocols</a><a href="#wan">WAN transport</a><a href="#semantic">Semantic normalization</a><a href="#llm-mapping">LLM-assisted mapping</a><a href="#throughput">Throughput</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="ingest">
+  <div class="section-label">Ingest protocols</div>
+  <h2>Bridge any industrial protocol, <span class="accent'>past or present.</span></h2>
+  <p>The connectivity layer ingests from the eleven protocols below. Each has its own open-source edge gateway (`aseco-*-gw`), all producing the canonical measurement schema. The gateways are stateless, horizontally scalable, and run on any k8s node or standalone device.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Protocol</th><th>Transport</th><th>Edge gateway</th><th>Throughput (per gateway)</th><th>Latency</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>OPC-UA</strong></td><td>TCP / WebSocket</td><td>aseco-opcua-gw</td><td>50k tags/sec</td><td>~50 ms</td><td>Production</td></tr>
+      <tr><td><strong>Modbus TCP/RTU</strong></td><td>TCP / Serial</td><td>aseco-modbus-gw</td><td>10k registers/sec</td><td>~100 ms</td><td>Production</td></tr>
+      <tr><td><strong>MQTT 5.0</strong></td><td>TCP / TLS</td><td>aseco-mqtt-broker</td><td>200k msgs/sec</td><td>~20 ms</td><td>Production</td></tr>
+      <tr><td><strong>CoAP</strong></td><td>UDP / DTLS</td><td>aseco-coap-gw</td><td>50k msgs/sec</td><td>~30 ms</td><td>Production</td></tr>
+      <tr><td><strong>Profinet</strong></td><td>RT Ethernet</td><td>aseco-profinet-gw</td><td>100k tags/sec</td><td>&lt;1 ms (RT)</td><td>Production</td></tr>
+      <tr><td><strong>EtherCAT</strong></td><td>RT Ethernet</td><td>aseco-ethercat-gw</td><td>100k tags/sec</td><td>&lt;100 μs</td><td>Production</td></tr>
+      <tr><td><strong>LoRaWAN</strong></td><td>LoRa modulation</td><td>chirpstack-gw</td><td>~1k msgs/sec</td><td>1–10 s</td><td>Production</td></tr>
+      <tr><td><strong>NB-IoT</strong></td><td>LPWAN cellular</td><td>carrier-handled</td><td>~100 msgs/sec</td><td>1–10 s</td><td>Production</td></tr>
+      <tr><td><strong>5G mMTC</strong></td><td>Cellular</td><td>carrier-handled</td><td>10k msgs/sec</td><td>~50 ms</td><td>Beta</td></tr>
+      <tr><td><strong>Wi-Fi HaLow (802.11ah)</strong></td><td>Wi-Fi sub-GHz</td><td>aseco-wifi-halow-gw</td><td>5k msgs/sec</td><td>~50 ms</td><td>Beta</td></tr>
+      <tr><td><strong>TSN (Time-Sensitive Networking)</strong></td><td>Deterministic Ethernet</td><td>aseco-tsn-gw</td><td>50k tags/sec</td><td>&lt;10 ms (deterministic)</td><td>Beta</td></tr>
+      <tr><td><strong>Direct-to-satellite IoT (Skylo, Swarm)</strong></td><td>Satellite</td><td>aseco-sat-gw</td><td>~10 msgs/sec</td><td>30 s – 5 min</td><td>Roadmap</td></tr>
+      <tr><td><strong>STAC (Earth Observation)</strong></td><td>HTTPS / S3</td><td>aseco-stac-poller</td><td>scenes/hour</td><td>hours</td><td>Production</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn"><strong>Engineering note</strong><p>The gateways are stateless and horizontally scalable — you can scale ingest by adding k8s nodes, not by re-architecting. Each gateway exports OpenTelemetry traces and Prometheus metrics out of the box.</p></div>
+</section>
+
+<section class="doc-section" id="wan">
+  <div class="section-label">WAN transport</div>
+  <h2>Any WAN. <span class="accent">Anywhere.</span></h2>
+  <p>Once the gateway has normalized raw bytes into the canonical measurement schema, the data is transported over whatever WAN the deployment uses. The platform is WAN-agnostic — we ride on customer-existing networks rather than competing with telcos.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>WAN</th><th>Typical use case</th><th>Throughput</th><th>Cost</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>LoRaWAN</strong></td><td>Wide-area, low-power (agri, environmental)</td><td>0.1-50 kbps</td><td>$0.05-$0.50/device/mo</td></tr>
+      <tr><td><strong>NB-IoT</strong></td><td>Carrier LPWAN (utility, smart city)</td><td>0.1-100 kbps</td><td>$0.20-$1.00/device/mo</td></tr>
+      <tr><td><strong>5G mMTC</strong></td><td>Dense cellular IoT (industrial, transport)</td><td>1-10 Mbps</td><td>$1-$5/device/mo</td></tr>
+      <tr><td><strong>Wi-Fi HaLow</strong></td><td>Industrial Wi-Fi sub-GHz (factory floor)</td><td>0.1-1 Mbps</td><td>Free (on-prem)</td></tr>
+      <tr><td><strong>TSN</strong></td><td>Deterministic factory floor (motion control)</td><td>1 Gbps</td><td>Free (on-prem)</td></tr>
+      <tr><td><strong>Direct-to-satellite</strong></td><td>Remote / offshore (oil, maritime, mining)</td><td>0.01-1 kbps</td><td>$5-$50/device/mo</td></tr>
+      <tr><td><strong>Standard broadband / fiber</strong></td><td>Plant + cloud backhaul</td><td>1-100 Gbps</td><td>Varies</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="semantic">
+  <div class="section-label">Semantic normalization</div>
+  <h2>Raw bytes → semantic meaning.</h2>
+  <p>A four-stage pipeline runs at every edge gateway. The first two stages are deterministic protocol decoders (one per protocol). The third stage is where we innovate — LLM-assisted ontology mapping. The fourth stage produces the canonical record.</p>
+  <div class="diagram">
+    <div class="diagram-title">Semantic Normalization Pipeline</div>
+    <div class="flow-diagram">
+      <div class="flow-node">Raw bytes</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Protocol decode</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Ontology mapping (LLM-assisted)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Canonical measurement</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Edge AI / Cloud stream</div>
+    </div>
+  </div>
+  <p>The first stage handles the wire protocol — TCP framing, OPC-UA binary encoding, Modbus register layout, MQTT packet structure. The second stage produces a typed record with the protocol-specific tags (e.g., <code>ns=2;s=Line3.CompressorA.OutletPressure</code> for OPC-UA, register <code>40001</code> for Modbus). The third stage is where the LLM proposes a canonical mapping — turning <code>ns=2;s=Line3.CompressorA.OutletPressure</code> into <code>physical_quantity="compressor_outlet_pressure", unit="Pa"</code> with a confidence score. The fourth stage emits the final canonical record.</p>
+</section>
+
+<section class="doc-section" id="llm-mapping">
+  <div class="section-label">LLM-assisted mapping</div>
+  <h2>The frontier: <span class="accent'>6 months → 3 weeks.</span></h2>
+  <p>The ontology-mapping stage is the frontier. Most platforms require manual mapping tables — one row per tag — built by 30-person SI teams over 6 months. We use a fine-tuned LLM that consumes the source's metadata (OPC-UA node descriptions, Modbus register names, MQTT topic strings) and proposes a canonical mapping with confidence scores.</p>
+
+  <div class="code-block-label">llm-mapping-example.json</div>
+  <div class="code-block">
+<pre>{
+  <span class="key">"source_tag"</span>: <span class="str">"ns=2;s=Line3.CompressorA.OutletPressure"</span>,
+  <span class="key">"source_metadata"</span>: {
+    <span class="key">"description"</span>: <span class="str">"Outlet pressure of Compressor A on Line 3"</span>,
+    <span class="key">"data_type"</span>: <span class="str">"Double"</span>,
+    <span class="key">"engineering_unit"</span>: <span class="str">"Pa"</span>,
+    <span class="key">"eu_range"</span>: { <span class="key">"low"</span>: <span class="val">0</span>, <span class="key">"high"</span>: <span class="val">300000</span> }
+  },
+  <span class="key">"proposed_mapping"</span>: {
+    <span class="key">"sensor_kind"</span>: <span class="str">"pressure"</span>,
+    <span class="key">"physical_quantity"</span>: <span class="str">"compressor_outlet_pressure"</span>,
+    <span class="key">"unit"</span>: <span class="str">"Pa"</span>,
+    <span class="key">"sample_rate_hz"</span>: <span class="val">1.0</span>
+  },
+  <span class="key">"confidence"</span>: <span class="val">0.96</span>,
+  <span class="key">"alternatives_considered"</span>: [
+    { <span class="key">"physical_quantity"</span>: <span class="str">"pipe_pressure"</span>, <span class="key">"confidence"</span>: <span class="val">0.32</span> }
+  ],
+  <span class="key">"requires_human_approval"</span>: <span class="val">true</span>
+}</pre>
+  </div>
+
+  <p>Engineers approve; the LLM learns from corrections. Time-to-onboard a new factory drops from <strong>6 months to ~3 weeks</strong>. The LLM never writes to the live tag mapping without human approval. All proposals are logged with full provenance for audit (SOC 2 evidence package included).</p>
+
+  <div class="callout warn"><strong>Engineering note</strong><p>The LLM is fine-tuned on a corpus of OPC-UA information models, Modbus register conventions, and 200+ customer tag mappings (anonymized). It runs on the customer's own infrastructure — no raw tag metadata leaves the customer boundary. Federated learning only.</p></div>
+</section>
+
+<section class="doc-section" id="throughput">
+  <div class="section-label">Throughput benchmarks</div>
+  <h2>How fast can we ingest?</h2>
+  <p>Benchmarks from a 4-node k8s cluster (c5.2xlarge), single gateway each. Production deployments scale horizontally by adding nodes.</p>
+  <div class="benchmark-grid">
+    <div class="benchmark-card">
+      <div class="label">OPC-UA sustained</div>
+      <div class="value">50k tags/s</div>
+      <div class="sub">per gateway, ~50 ms p99 latency</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">MQTT 5.0 sustained</div>
+      <div class="value">200k msg/s</div>
+      <div class="sub">per broker, ~20 ms p99</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">Horizontal scale</div>
+      <div class="value">linear</div>
+      <div class="sub">add k8s nodes, no re-architect</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Try the protocol-agnostic bridge live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP ingests from 8 sensors across MQTT and HTTP, normalizes to the canonical schema, and exposes the data via /api/sensors — watch the semantic normalization in action.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Who are the founders and what is their background?'; handleSearch();">Who are the founders and what is their background?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your moat vs AWS IoT or Azure IoT?'; handleSearch();">What is your moat vs AWS IoT or Azure IoT?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

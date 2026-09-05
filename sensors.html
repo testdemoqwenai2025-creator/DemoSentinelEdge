@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Sensor Modalities Deep Dive</title>
+<meta name="description" content="The 8 multi-modal sensor types we ingest, with sample rates, edge devices, calibration intervals, and use cases." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Sensor Modalities Deep Dive" />
+<meta property="og:description" content="The 8 multi-modal sensor types we ingest, with sample rates, edge devices, calibration intervals, and use cases." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/sensors.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — Sensor Modalities Deep Dive" />
+<meta name="twitter:description" content="The 8 multi-modal sensor types we ingest, with sample rates, edge devices, calibration intervals, and use cases." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="sensors">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><span>Sensor Modalities</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Catalog · Sensors</div>
+    <h1>Eight modalities. <span class='accent'>One schema.</span></h1>
+    <p class="lead">The 8 multi-modal sensor types we ingest, with sample rates, edge devices, calibration intervals, use cases, and sample data shapes. Every modality normalizes to the same canonical measurement record.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#vibration">Vibration</a><a href="#gas">Gas & chemical</a><a href="#vision">Vision & hyperspectral</a><a href="#mmwave">mmWave radar</a><a href="#soil">Soil probes</a><a href="#weather">Weather</a><a href="#ais">AIS maritime</a><a href="#eo">Earth observation</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="vibration">
+  <div class="section-label">Modality 01</div>
+  <h2>Vibration <span class="accent">(MEMS tri-axial)</span></h2>
+  <p>The most widely deployed industrial sensor modality. Tri-axial MEMS accelerometers sample up to 25.6 kHz, compute features (RMS, kurtosis, FFT peaks) on-device, and stream 1 Hz feature vectors over MQTT or OPC-UA. Used for rotating machinery health, bearing fault detection, structural integrity monitoring.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sample rate</td><td>up to 25.6 kHz (raw), 1 Hz (feature stream)</td></tr>
+      <tr><td>Range</td><td>±16g / ±50g / ±200g (depends on sensor)</td></tr>
+      <tr><td>Resolution</td><td>16-24 bit</td></tr>
+      <tr><td>Axes</td><td>3 (X, Y, Z) simultaneously</td></tr>
+      <tr><td>Edge device</td><td>Hailo-8 (typical) / Jetson Orin Nano (heavy)</td></tr>
+      <tr><td>Calibration interval</td><td>180 days</td></tr>
+      <tr><td>Use cases</td><td>Bearing faults, gear faults, imbalance, misalignment, structural integrity</td></tr>
+    </tbody>
+  </table>
+  <h3>Sample canonical record</h3>
+  <div class="code-block">
+<pre>{
+  <span class="key">"sensor_id"</span>: <span class="str">"sen_vib_a3_line3"</span>,
+  <span class="key">"sensor_kind"</span>: <span class="str">"vibration"</span>,
+  <span class="key">"physical_quantity"</span>: <span class="str">"bearing_rms"</span>,
+  <span class="key">"unit"</span>: <span class="str">"mm/s RMS"</span>,
+  <span class="key">"value"</span>: <span class="val">4.38</span>,
+  <span class="key">"sample_rate_hz"</span>: <span class="val">1.0</span>,
+  <span class="key">"edge_device"</span>: <span class="str">"Hailo-8 · Bay 4"</span>,
+  <span class="key">"ts_fm_confidence"</span>: <span class="val">0.85</span>,
+  <span class="key">"inferred_at"</span>: <span class="str">"edge"</span>
+}</pre>
+  </div>
+</section>
+
+<section class="doc-section" id="gas">
+  <div class="section-label">Modality 02</div>
+  <h2>Gas / chemical <span class="accent">(multi-pixel)</span></h2>
+  <p>Multi-pixel gas sensors (Sensirion, ScioSense) provide a chemical fingerprint rather than a single ppm reading. Used for industrial emissions, air quality, leak detection, process chemistry fingerprinting.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sample rate</td><td>1 Hz typical</td></tr>
+      <tr><td>Pixels</td><td>4-8 (depending on model)</td></tr>
+      <tr><td>Detection range</td><td>0-1000 ppm (typical), varies by gas</td></tr>
+      <tr><td>Edge device</td><td>RPi 5 + Coral (low-power)</td></tr>
+      <tr><td>Calibration interval</td><td>90 days</td></tr>
+      <tr><td>WAN</td><td>LoRaWAN / NB-IoT typical</td></tr>
+      <tr><td>Use cases</td><td>Industrial emissions, air quality, leak detection, process chemistry, food freshness</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="vision">
+  <div class="section-label">Modality 03</div>
+  <h2>Vision / hyperspectral <span class="accent">(RGB + thermal + 31-band)</span></h2>
+  <p>Vision runs the gamut from $50 RGB cameras for defect detection to $20k hyperspectral imagers for material identification. The platform ingests frames as gRPC streams and runs CV models at the edge — typically YOLO-class for object detection, ResNet-class for classification, and custom transformers for hyperspectral.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>RGB + thermal</th><th>Hyperspectral</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frame rate</td><td>30 fps</td><td>10 fps</td></tr>
+      <tr><td>Resolution</td><td>1920×1080 typical</td><td>640×480 × 31 bands</td></tr>
+      <tr><td>Edge device</td><td>Jetson Orin NX (heavy)</td><td>Jetson Orin NX + custom FPGA</td></tr>
+      <tr><td>Calibration</td><td>Intrinsics (camera optics)</td><td>180 days (spectral)</td></tr>
+      <tr><td>Use cases</td><td>Defect detection, safety, OEE</td><td>Material ID, food quality, crop stress, pharmaceutical QC</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="mmwave">
+  <div class="section-label">Modality 04</div>
+  <h2>mmWave radar <span class="accent">(60 GHz)</span></h2>
+  <p>Non-contact micro-motion detection through walls and obstructions. Used for vital signs monitoring, occupancy, gesture recognition, and micro-motion in industrial settings (vibration in places where accelerometers can't reach).</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frequency</td><td>60 GHz (typical) — also 77 GHz automotive</td></tr>
+      <tr><td>Sample rate</td><td>20 Hz (range-Doppler frames)</td></tr>
+      <tr><td>Range</td><td>0.2 - 5 m typical (depends on antenna)</td></tr>
+      <tr><td>Edge device</td><td>Coral Edge TPU (low-power)</td></tr>
+      <tr><td>Calibration</td><td>365 days (very stable)</td></tr>
+      <tr><td>Use cases</td><td>Vital signs, occupancy, gesture, micro-motion through walls</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="soil">
+  <div class="section-label">Modality 05</div>
+  <h2>Soil probes <span class="accent">(NPK + pH + EC)</span></h2>
+  <p>Precision agriculture's primary ground truth. Multi-parameter probes measure nitrogen (N), phosphorus (P), potassium (K), pH, and electrical conductivity at multiple depths. Sampled every 15 minutes (battery conservation), transported over LoRaWAN.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sample rate</td><td>Every 15 min</td></tr>
+      <tr><td>Parameters</td><td>N, P, K, pH, EC, soil moisture, temperature</td></tr>
+      <tr><td>Probe depths</td><td>15, 30, 60 cm typical (multi-depth)</td></tr>
+      <tr><td>Edge device</td><td>RPi 5 + LoRaWAN gateway</td></tr>
+      <tr><td>Calibration</td><td>30 days (high drift)</td></tr>
+      <tr><td>Use cases</td><td>Precision agriculture, irrigation optimization, contamination tracking</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><strong>Soil probes drift fast</strong><p>Soil probes are one of the highest-drift sensors we handle — 30-day calibration interval is typical. This is where the self-calibration mesh pays off most: using neighboring probes + physics (water flow models) to keep drift in check.</p></div>
+</section>
+
+<section class="doc-section" id="weather">
+  <div class="section-label">Modality 06</div>
+  <h2>Weather stations <span class="accent">(12 parameters)</span></h2>
+  <p>Microclimate grids for severe weather nowcasting, renewable generation forecasting, and agricultural decision support. The platform ingests from any weather station that speaks Modbus or LoRaWAN.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sample rate</td><td>1 minute typical</td></tr>
+      <tr><td>Parameters</td><td>Temperature, humidity, pressure, wind speed/direction, precipitation, solar radiation, UV, dew point, etc.</td></tr>
+      <tr><td>Edge device</td><td>RPi 5 + LoRaWAN gateway (typical)</td></tr>
+      <tr><td>Calibration</td><td>365 days (very stable)</td></tr>
+      <tr><td>Use cases</td><td>Microclimate, severe weather nowcasting, solar forecasting, irrigation scheduling</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="ais">
+  <div class="section-label">Modality 07</div>
+  <h2>AIS maritime <span class="accent">(vessel tracking)</span></h2>
+  <p>Automatic Identification System — VHF-broadcast vessel position reports every 2 seconds for equipped vessels. Combined with satellite AIS for ocean coverage. Used for vessel tracking, illegal fishing detection, supply chain disruption signals.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Spec</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sample rate</td><td>2 s (VHF), 1 min (satellite)</td></tr>
+      <tr><td>Fields</td><td>MMSI, lat/lon, SOG, COG, heading, status, vessel type, destination</td></tr>
+      <tr><td>Edge device</td><td>Cloud (no edge needed)</td></tr>
+      <tr><td>Calibration</td><td>n/a (self-reported by vessels)</td></tr>
+      <tr><td>Use cases</td><td>Fishing legality, supply chain disruption, port congestion, maritime safety</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="eo">
+  <div class="section-label">Modality 08</div>
+  <h2>Earth observation <span class="accent'>(Sentinel-1/2/5P)</span></h2>
+  <p>The cheapest "sensor" we ingest — the data is free. Sentinel-2 (10m optical, 5-day revisit), Sentinel-1 (10m SAR, 6-day revisit), Sentinel-5P (air quality), Landsat 8/9 (30m optical, 16-day), plus commercial PlanetScope (3m, daily) for paid customers. Used for crop health, deforestation, urban growth, supply chain monitoring, environmental compliance.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Source</th><th>Resolution</th><th>Revisit</th><th>Cost</th><th>Use case</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Sentinel-2</strong></td><td>10m optical</td><td>5 days</td><td>Free</td><td>Crop health, deforestation, urban</td></tr>
+      <tr><td><strong>Sentinel-1</strong></td><td>10m SAR</td><td>6 days</td><td>Free</td><td>Cloud-penetrating, subsidence, flooding</td></tr>
+      <tr><td><strong>Sentinel-5P</strong></td><td>5.5km</td><td>Daily</td><td>Free</td><td>NO₂, SO₂, aerosols (air quality)</td></tr>
+      <tr><td><strong>Landsat 8/9</strong></td><td>30m optical</td><td>16 days</td><td>Free</td><td>Long-baseline change detection</td></tr>
+      <tr><td><strong>PlanetScope</strong></td><td>3m optical</td><td>Daily</td><td>Paid</td><td>Daily coverage of landmass</td></tr>
+    </tbody>
+  </table>
+  <p>EO is the only modality where the "sensor" is a satellite. We fuse EO with ground sensors — Sentinel-2 crop stress signals anchored by soil probe ground truth, Sentinel-5P air quality calibrated by ground-level PM2.5 sensors. This fusion is what makes our agriculture and environment verticals work.</p>
+</section>
+
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Watch the sensor mesh live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP streams 8 sensors (one per modality above, except AIS and EO which are too low-frequency for live demo) — watch the canonical schema in action, with confidence scores and edge/cloud inference routing.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Who are the founders and what is their background?'; handleSearch();">Who are the founders and what is their background?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your moat vs AWS IoT or Azure IoT?'; handleSearch();">What is your moat vs AWS IoT or Azure IoT?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

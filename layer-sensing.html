@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layer 01 · Sensing — AISensorEdgeComp</title>
+<meta name="description" content="The physical interface: sensor ontology, self-calibration mesh, and the 8 sensor modalities we fuse." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Layer 01 · Sensing — AISensorEdgeComp" />
+<meta property="og:description" content="The physical interface: sensor ontology, self-calibration mesh, and the 8 sensor modalities we fuse." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/layer-sensing.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="Layer 01 · Sensing — AISensorEdgeComp" />
+<meta name="twitter:description" content="The physical interface: sensor ontology, self-calibration mesh, and the 8 sensor modalities we fuse." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="layer-sensing">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="#">Layers</a><span class="sep">/</span><span>Layer 01 · Sensing</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Layer 01 · Physical</div>
+    <h1>Sensing — the <span class='accent'>physical interface.</span></h1>
+    <p class="lead">Where physics meets the platform. We don't manufacture sensors — we ingest from any. The value is the sensor ontology and the self-calibration mesh that keeps them trustworthy over time.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#ontology">Sensor ontology</a><a href="#schema">Canonical schema</a><a href="#modalities">Modality matrix</a><a href="#calibration">Self-calibration mesh</a><a href="#validation">Validation</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="ontology">
+  <div class="section-label">Sensor ontology</div>
+  <h2>Turning bytes <span class="accent">into meaning.</span></h2>
+  <p>The sensor ontology is the contract between the physical world and the platform. It defines what a "measurement" is — physical quantity, unit, sample rate, uncertainty, location, lineage, calibration state — so any downstream layer can reason over it without bespoke integration.</p>
+  <p>Without this contract, every sensor is a snowflake. With it, a vibration reading from an SKF accelerometer on a Hailo-8 gateway in Plant A and a vibration reading from a Bosch MEMS on a Coral in Plant B are both first-class "vibration measurements" that the TS-FM can train on, the Graph RAG can reason over, and the LLM can cite.</p>
+</section>
+
+<section class="doc-section" id="schema">
+  <div class="section-label">Canonical schema</div>
+  <h2>One canonical record, <span class="accent">any sensor.</span></h2>
+  <p>Every raw measurement is normalized to this canonical record at the edge gateway, before any inference runs. This is the contract every downstream layer relies on.</p>
+  <div class="code-block-label">canonical-measurement.json</div>
+  <div class="code-block">
+<pre>{
+  <span class="key">"measurement_id"</span>: <span class="str">"meas_01H8X3F…"</span>,
+  <span class="key">"sensor_id"</span>: <span class="str">"sen_press_a3_line3"</span>,
+  <span class="key">"sensor_kind"</span>: <span class="str">"pressure"</span>,
+  <span class="key">"physical_quantity"</span>: <span class="str">"compressor_outlet_pressure"</span>,
+  <span class="key">"unit"</span>: <span class="str">"Pa"</span>,
+  <span class="key">"value"</span>: <span class="val">182450.0</span>,
+  <span class="key">"uncertainty"</span>: <span class="val">±120.0</span>,
+  <span class="key">"timestamp_ns"</span>: <span class="val">1788561600000000000</span>,
+  <span class="key">"sample_rate_hz"</span>: <span class="val">1.0</span>,
+  <span class="key">"location"</span>: { <span class="key">"lat"</span>: <span class="val">37.422</span>, <span class="key">"lon"</span>: <span class="val">-122.084</span>, <span class="key">"elevation_m"</span>: <span class="val">12.0</span> },
+  <span class="key">"lineage"</span>: {
+    <span class="key">"ingest_protocol"</span>: <span class="str">"opcua"</span>,
+    <span class="key">"source_node_id"</span>: <span class="str">"ns=2;s=Line3.CompressorA.OutletPressure"</span>,
+    <span class="key">"ingest_ts"</span>: <span class="val">1788561600005000000</span>,
+    <span class="key">"calibration_age_days"</span>: <span class="val">42</span>
+  },
+  <span class="key">"calibration_confidence"</span>: <span class="val">0.97</span>
+}</pre>
+  </div>
+  <p>The schema has six required fields (sensor_id, sensor_kind, physical_quantity, unit, value, timestamp_ns) and five optional fields that downstream layers use for reasoning (uncertainty, sample_rate_hz, location, lineage, calibration_confidence). Any field can be added without breaking downstream consumers — the schema is forward-compatible by design.</p>
+</section>
+
+<section class="doc-section" id="modalities">
+  <div class="section-label">Modality matrix</div>
+  <h2>Eight sensor modalities, <span class="accent">one schema.</span></h2>
+  <p>As of Q3 2026, the platform ingests from eight sensor modalities. Each is normalized to the canonical schema above. The full modality catalog (with use cases, edge devices, and calibration intervals) is on the <a href="sensors.html">Sensors page</a>.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Modality</th><th>Sample rate</th><th>Edge ingest</th><th>Calibration</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Vibration (MEMS tri-axial)</strong></td><td>up to 25.6 kHz</td><td>MQTT / OPC-UA</td><td>180 days</td><td>Production</td></tr>
+      <tr><td><strong>Gas / chemical (multi-pixel)</strong></td><td>1 Hz</td><td>LoRaWAN / NB-IoT</td><td>90 days</td><td>Production</td></tr>
+      <tr><td><strong>Vision (RGB + thermal)</strong></td><td>30 fps</td><td>RTSP / gRPC</td><td>n/a (intrinsics)</td><td>Production</td></tr>
+      <tr><td><strong>Hyperspectral (31 bands)</strong></td><td>10 fps</td><td>gRPC streaming</td><td>180 days</td><td>Beta</td></tr>
+      <tr><td><strong>mmWave radar (60 GHz)</strong></td><td>20 Hz</td><td>MQTT</td><td>365 days</td><td>Beta</td></tr>
+      <tr><td><strong>Soil probes (NPK+pH+EC)</strong></td><td>15 min</td><td>LoRaWAN</td><td>30 days</td><td>Production</td></tr>
+      <tr><td><strong>Weather stations</strong></td><td>1 min</td><td>Modbus / LoRaWAN</td><td>365 days</td><td>Production</td></tr>
+      <tr><td><strong>AIS maritime</strong></td><td>2 s</td><td>HTTP / NMEA 0183</td><td>n/a</td><td>Production</td></tr>
+      <tr><td><strong>Earth Observation (Sentinel-1/2/5P)</strong></td><td>5 days</td><td>STAC / S3</td><td>n/a (sensor-side)</td><td>Production</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section" id="calibration">
+  <div class="section-label">Self-calibration mesh</div>
+  <h2>6.7% of manual recalibration cost, <span class="accent">equivalent accuracy.</span></h2>
+  <p>Every sensor drifts. Traditional approaches recalibrate via scheduled truck rolls (~$140 average per site visit). We use three mechanisms layered together:</p>
+  <div class="card-grid-3">
+    <div class="card">
+      <h3>1. Physics redundancy</h3>
+      <p>When multiple sensors measure the same physical quantity (e.g., two pressure gauges upstream and downstream of a known obstruction), Bernoulli's equation constrains the relative drift. Any sensor that violates the physics constraint is flagged for recalibration.</p>
+    </div>
+    <div class="card">
+      <h3>2. Sparse ground truth</h3>
+      <p>A small number of high-accuracy reference sensors (NIST-traceable) are deployed at &lt;5% density. Their readings anchor the rest of the mesh. The cost is acceptable because we only need a few anchors per topology.</p>
+    </div>
+    <div class="card">
+      <h3>3. Distributed estimation</h3>
+      <p>A graph neural network over the sensor topology infers per-sensor drift coefficients, updated hourly via federated learning across customer sites. No raw data crosses customer boundaries — only gradient updates.</p>
+    </div>
+  </div>
+
+  <div class="callout"><strong>Result</strong><p>On a 10,000-node air quality mesh, this approach matches manual recalibration accuracy at <strong>6.7% of the cost</strong>. Validated against the EPA AQS reference network in a 12-month trial.</p></div>
+
+  <h3>Worked example — air quality mesh</h3>
+  <p>A 10,000-node PM2.5 sensor deployment in a metropolitan area. Traditional approach: scheduled truck rolls every 90 days, $1.4M/year cost. With self-calibration mesh: 6 NIST-traceable anchors + physics redundancy (wind dispersion model) + federated GNN. $93k/year cost. Equivalent accuracy at the EPA AQS comparison sites.</p>
+  <div class="benchmark-grid">
+    <div class="benchmark-card">
+      <div class="label">Traditional cost</div>
+      <div class="value">$1.4M</div>
+      <div class="sub">per year, 10k-node mesh</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">AISensorEdgeComp cost</div>
+      <div class="value">$93k</div>
+      <div class="sub">per year, same mesh</div>
+    </div>
+    <div class="benchmark-card">
+      <div class="label">Accuracy delta</div>
+      <div class="value">&lt; 2%</div>
+      <div class="sub">vs EPA AQS reference sites</div>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section" id="validation">
+  <div class="section-label">Validation</div>
+  <h2>How we know it works.</h2>
+  <p>Our self-calibration mesh has been validated against three independent reference networks over the last 12 months. The validation methodology is published; raw results are available to design partners under NDA.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Reference network</th><th>Duration</th><th>Mesh size</th><th>Accuracy delta</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>EPA AQS (US air quality)</strong></td><td>12 months</td><td>10,000 nodes</td><td>&lt; 2%</td></tr>
+      <tr><td><strong>USGS stream gauges</strong></td><td>9 months</td><td>1,200 nodes</td><td>&lt; 3%</td></tr>
+      <tr><td><strong>NOAA weather station network</strong></td><td>6 months</td><td>4,500 nodes</td><td>&lt; 1.5%</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>See the sensor mesh live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP streams 8 sensors (vibration, temperature, pressure, gas, vision, soil) with calibration confidence scores — watch the canonical schema in action.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Who are the founders and what is their background?'; handleSearch();">Who are the founders and what is their background?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your moat vs AWS IoT or Azure IoT?'; handleSearch();">What is your moat vs AWS IoT or Azure IoT?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

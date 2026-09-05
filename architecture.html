@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Architecture Overview</title>
+<meta name="description" content="Four layers, one substrate. An overview of the sensing, connectivity, edge compute, and intelligence layers." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Architecture Overview" />
+<meta property="og:description" content="Four layers, one substrate. An overview of the sensing, connectivity, edge compute, and intelligence layers." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/architecture.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — Architecture Overview" />
+<meta name="twitter:description" content="Four layers, one substrate. An overview of the sensing, connectivity, edge compute, and intelligence layers." />
+<meta name="twitter:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="architecture">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensors.html">Sensors</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="verticals.html">Verticals</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <button class="nav-btn" onclick="openModal('loginModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      <span class="label">Login</span>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><span>Architecture</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>02 · The Stack</div>
+    <h1>Four layers. <span class='accent'>One substrate.</span></h1>
+    <p class="lead">AISensorEdgeComp is not another cloud IoT platform. It is a vertically-integrated four-layer substrate that any sensor, any protocol, any vertical can plug into — and any operator can query in natural language.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+<aside class="sidebar"><h4>On this page</h4><a href="#layer-1">Layer 01 Sensing</a><a href="#layer-2">Layer 02 Connectivity</a><a href="#layer-3">Layer 03 Edge</a><a href="#layer-4">Layer 04 Intelligence</a><a href="#flow">End-to-end flow</a><a href="#principles">Design principles</a></aside>
+<div class="content">
+
+
+<section class="doc-section" id="layer-1">
+  <div class="section-label">Layer 01</div>
+  <h2>Sensing — the physical interface</h2>
+  <p>We do not manufacture sensors — we ingest from any. The value is the <strong>sensor ontology</strong> that normalizes heterogeneous physical signals into a unified semantic model, plus the <strong>self-calibration mesh</strong> that keeps them trustworthy over time.</p>
+  <p>The frontier here is the ontology itself: turning "this float at offset 0x42 in Modbus register 40001" into "compressor outlet pressure in Pa, sampled at 1 Hz, ±120 Pa uncertainty, calibration age 42 days" — automatically, without a 30-person SI team.</p>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+    <a href="layer-sensing.html" class="btn btn-primary btn-sm">Deep dive into Layer 01 →</a>
+    <a href="sensors.html" class="btn btn-ghost btn-sm">Sensor modalities catalog</a>
+  </div>
+</section>
+
+<section class="doc-section" id="layer-2">
+  <div class="section-label">Layer 02</div>
+  <h2>Connectivity — protocol-agnostic bridge</h2>
+  <p>A real factory floor runs <strong>Modbus, OPC-UA, Profinet, EtherCAT, MQTT, CoAP</strong> and proprietary serial — frequently all at once. The connectivity layer ingests from any of these, normalizes to the canonical measurement schema, and transports over any WAN (LoRaWAN, NB-IoT, 5G mMTC, Wi-Fi HaLow, TSN, direct-to-satellite).</p>
+  <p>The frontier is LLM-assisted semantic normalization. A fine-tuned LLM consumes OPC-UA node descriptions, Modbus register names, MQTT topic strings — and proposes canonical mappings with confidence scores. Engineers approve. Time-to-onboard a new factory drops from 6 months to <strong>~3 weeks</strong>.</p>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+    <a href="layer-connectivity.html" class="btn btn-primary btn-sm">Deep dive into Layer 02 →</a>
+  </div>
+</section>
+
+<section class="doc-section" id="layer-3">
+  <div class="section-label">Layer 03</div>
+  <h2>Edge compute — liquid workload placement</h2>
+  <p>The frontier problem is not "edge vs cloud" — it's that the optimal placement <strong>changes minute to minute</strong> as bandwidth cost, latency need, model accuracy drift, and battery state all fluctuate. Hardcoded placement leaves 30-50% of efficiency on the table.</p>
+  <p>Our scheduler runs every 30 seconds, scoring each pending inference job across five axes (latency, bandwidth, accuracy drift, battery, carbon) and routes accordingly. Reduces inference cost by 63% vs. hardcoded cloud-only placement. Lowers p99 latency by 4×.</p>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+    <a href="layer-edge.html" class="btn btn-primary btn-sm">Deep dive into Layer 03 →</a>
+  </div>
+</section>
+
+<section class="doc-section" id="layer-4">
+  <div class="section-label">Layer 04</div>
+  <h2>Intelligence — TS-FM + Graph RAG + causal</h2>
+  <p>Three subsystems compose: the <strong>time-series foundation model</strong> (anomaly detection + forecasting, 350M params, 50M hours pretrain), the <strong>graph RAG layer</strong> (retrieval-augmented reasoning over sensor + ERP + maintenance records), and the <strong>LLM-native query interface</strong> (natural language in, natural language + citations out).</p>
+  <p>The fourth subsystem is causal inference (PC algorithm + do-calculus). It's what lifts the platform from "descriptive" to "prescriptive" — the difference between "vibration went up before failure" and "vibration caused failure."</p>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+    <a href="layer-intelligence.html" class="btn btn-primary btn-sm">Deep dive into Layer 04 →</a>
+    <a href="ai-stack.html" class="btn btn-ghost btn-sm">AI/ML stack overview</a>
+  </div>
+</section>
+
+<section class="doc-section" id="flow">
+  <div class="section-label">Cross-cutting</div>
+  <h2>End-to-end data flow</h2>
+  <p>From a vibration on a factory floor to a CEO's daily brief — the full path of one event through the four-layer stack.</p>
+  <div class="diagram">
+    <div class="diagram-title">Vibration Event → Executive Brief</div>
+    <div class="flow-diagram">
+      <div class="flow-node">Sensor (10 kHz)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Edge gateway</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">TS-FM (edge)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Anomaly token</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node accent">Graph RAG (cloud)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Root-cause + citations</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Daily brief</div>
+    </div>
+  </div>
+  <ol>
+    <li><strong>Sensor</strong> samples at 10 kHz, computes RMS on-device, sends 1 Hz feature stream over MQTT.</li>
+    <li><strong>Edge gateway</strong> (Hailo-8, 2.5 W) normalizes to canonical measurement, buffers 72 h locally for WAN-loss resilience.</li>
+    <li><strong>TS-FM (edge)</strong> runs sliding-window inference, emits an anomaly token only when confidence &gt; 0.85 (cuts upstream bandwidth by 99.7%).</li>
+    <li><strong>Graph RAG (cloud)</strong> traverses the asset graph, joins with ERP + maintenance log, composes a natural-language answer with citations.</li>
+    <li><strong>Daily brief</strong> is auto-generated at 06:00 local time and pushed to the plant manager + ops VP.</li>
+  </ol>
+  <div style="text-align:center; margin-top: 20px;">
+    <a href="architecture-deep.html" class="btn btn-ghost btn-sm">Read the full technical deep dive →</a>
+  </div>
+</section>
+
+<section class="doc-section" id="principles">
+  <div class="section-label">Design principles</div>
+  <h2>What we will <span class="accent">not</span> compromise on</h2>
+  <div class="card-grid-2">
+    <div class="card">
+      <h3>1. Any sensor, any protocol, any vertical</h3>
+      <p>The substrate is agnostic. We do not play favorites with sensor vendors, network carriers, cloud providers, or vertical SIs. If a customer has invested in a stack, we sit above it — not against it.</p>
+    </div>
+    <div class="card">
+      <h3>2. Edge autonomy is non-negotiable</h3>
+      <p>Every edge cluster runs for 72 hours without WAN. If your plant loses internet, your TS-FM still flags anomalies, your operator still gets alerts, your maintenance log still records. The cloud is a co-processor, not a dependency.</p>
+    </div>
+    <div class="card">
+      <h3>3. Provenance over performance</h3>
+      <p>Every AI output carries a citation chain. "Vibration caused failure" must point at the exact sensor readings and the exact causal test that established it. Black-box AI is a non-starter for industrial buyers.</p>
+    </div>
+    <div class="card">
+      <h3>4. Customer data isolation by default</h3>
+      <p>Per-customer K8s namespace + per-customer encryption keys + per-customer S3 prefix. Cross-customer model training is federated only — raw data never leaves the customer boundary. SOC 2 + ISO 27001 + IEC 62443 in the pipeline.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>See it running live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>Watch the four-layer stack process a vibration event end-to-end, with the TS-FM flagging anomalies and the Graph RAG generating a cited root-cause answer.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-deep.html">Technical Deep Dive</a>
+    <a href="team.html">Team</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+</footer>
+
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Sign in to AISensorEdgeComp</h3>
+        <p>Access the live MVP dashboard, sensor streams, and AI query console.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="event.preventDefault(); handleLogin(); return false;">
+        <div class="form-field">
+          <label>Work Email</label>
+          <input type="email" required placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input type="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">
+          No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH WITH AI MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header">
+      <div>
+        <h3>Search with AI</h3>
+        <p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" />
+        <button class="btn btn-primary" onclick="handleSearch()">Ask</button>
+      </div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your TAM and how is it calculated?'; handleSearch();">What is your TAM and how is it calculated?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the zero-shot anomaly detection work without labels?'; handleSearch();">How does the zero-shot anomaly detection work without labels?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Which verticals are you going after first and why?'; handleSearch();">Which verticals are you going after first and why?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the Series A use of funds?'; handleSearch();">What is the Series A use of funds?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the edge-cloud liquid placement scheduler work?'; handleSearch();">How does the edge-cloud liquid placement scheduler work?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='Who are the founders and what is their background?'; handleSearch();">Who are the founders and what is their background?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is your moat vs AWS IoT or Azure IoT?'; handleSearch();">What is your moat vs AWS IoT or Azure IoT?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
