@@ -587,6 +587,67 @@
   .float-search:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 40px color-mix(in srgb, var(--cyan) 60%, transparent); }
   .float-search svg { width: 22px; height: 22px; }
   @media (max-width: 768px) { .float-search { bottom: 20px; right: 20px; width: 48px; height: 48px; } }
+
+  /* === LIVE MVP BANNER === */
+  .live-banner {
+    margin: -20px auto 0;
+    max-width: 1200px;
+    padding: 0 40px;
+    position: relative;
+    z-index: 5;
+  }
+  .live-banner-card {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 12%, var(--card)) 0%, color-mix(in srgb, var(--violet) 12%, var(--card)) 100%);
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--cyan) 12%, transparent);
+    position: relative; overflow: hidden;
+  }
+  .live-banner-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
+  }
+  .live-banner-left { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 280px; }
+  .live-banner-icon {
+    width: 56px; height: 56px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 40%, transparent);
+    flex-shrink: 0;
+  }
+  .live-banner-text h3 {
+    font-size: 19px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .live-banner-text h3 .live-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 3px 8px; border-radius: 4px;
+    background: color-mix(in srgb, var(--green) 15%, transparent);
+    color: var(--green);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
+    font-weight: 500;
+  }
+  .live-banner-text p { font-size: 14px; color: var(--text-dim); line-height: 1.5; max-width: 600px; }
+  .live-banner-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 24px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    text-decoration: none; cursor: pointer; transition: all 0.25s; border: none;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 25%, transparent);
+    flex-shrink: 0;
+  }
+  .live-banner-cta:hover { transform: translateY(-2px); box-shadow: 0 0 36px color-mix(in srgb, var(--cyan) 45%, transparent); }
+  @media (max-width: 768px) {
+    .live-banner { padding: 0 20px; margin-top: -30px; }
+    .live-banner-card { padding: 20px; flex-direction: column; align-items: stretch; }
+    .live-banner-left { flex-direction: row; }
+  }
 </style>
 </head>
 <body>
@@ -604,12 +665,19 @@
     <a href="#verticals">Verticals</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#team">Team</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan); font-weight: 600;">
+      <span class="live-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); margin-right:6px; animation: pulse 2s ease-in-out infinite;"></span>Live MVP
+    </a>
   </div>
   <div class="nav-actions">
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn" style="border-color: var(--cyan); color: var(--cyan);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
     <button class="nav-btn" onclick="openModal('loginModal')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
       <span class="label">Login</span>
@@ -634,7 +702,10 @@
       bridging the physical world and reasoning AI.
     </p>
     <div class="hero-ctas">
-      <a href="#contact" class="btn btn-primary">Get Started &rarr;</a>
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
       <a href="architecture-deep.html" class="btn btn-ghost">Technical Deep Dive</a>
       <button class="btn btn-ghost" onclick="openModal('searchModal')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -661,6 +732,25 @@
     </div>
   </div>
 </section>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Live MVP Dashboard <span class="live-pill"><span class="dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--green); margin-right:4px; box-shadow:0 0 6px var(--green); animation: pulse 2s ease-in-out infinite;"></span>running now</span></h3>
+        <p>Real-time sensor mesh (8 multi-modal sensors), edge AI inference routing, live time-series chart, and AI-powered Q&A — all running in a deployable Next.js app.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
 
 <!-- PROBLEM & MARKET -->
 <section id="problem">
@@ -1059,10 +1149,18 @@
         founding team — or explore the live MVP dashboard.
       </p>
       <div class="contact-actions">
-        <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-primary">Request Briefing &rarr;</a>
+        <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Open Live MVP Dashboard &rarr;
+        </a>
+        <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-ghost">Request Briefing</a>
         <a href="mailto:design@aisensoredgecomp.ai?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
       </div>
       <div class="contact-meta">
+        <div class="contact-meta-block">
+          <div class="label">Live MVP Dashboard</div>
+          <div class="value"><a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener">preview-chat-beeb4b2b-…space-z.ai</a></div>
+        </div>
         <div class="contact-meta-block">
           <div class="label">Investor Relations</div>
           <div class="value"><a href="mailto:partners@aisensoredgecomp.ai">partners@aisensoredgecomp.ai</a></div>
@@ -1082,6 +1180,7 @@
 
 <footer>
   <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
     <a href="#problem">Problem</a>
     <a href="architecture-deep.html">Technical Deep Dive</a>
     <a href="#team">Team</a>

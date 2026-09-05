@@ -5,7 +5,8 @@
 > Confidential. For invited investors and design partners only.
 > Public preview: https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/
 > Technical deep dive: https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/architecture-deep.html
-> Live MVP dashboard: (in development — design partners get early access)
+> **Live MVP dashboard: https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors**
+> Live MVP source: https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-MVP
 > Contact: partners@aisensoredgecomp.ai
 
 ---
@@ -67,7 +68,8 @@ We go horizontal-platform, vertical-wedge. Each wedge compounds the foundation m
 - **TS-FM v1** in production eval — 0.89 AUC-ROC zero-shot anomaly detection, beating Chronos-B1 baseline of 0.82
 - **Edge runtime v1** deployed on Hailo-8 + Jetson Orin — running at 7 customer pilot sites
 - **Public-preview demo** live (see URLs at top of this document)
-- **Live MVP dashboard** in development; design partners get early access
+- **Live MVP dashboard** live at https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors — real-time sensor mesh, edge AI inference, AI-powered Q&A (uses z-ai-web-dev-sdk server-side)
+- **MVP source code** published at https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-MVP — deployable Next.js 16 app
 
 ## 7. The team
 
