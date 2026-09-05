@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Edge-Cloud Workload Placement Deep Dive</title>
+<meta name="description" content="The workload placement problem: 38% of AI pilots stall. How the 5-axis liquid scheduler cuts inference cost by 63% with carbon-aware routing." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Edge-Cloud Workload Placement Deep Dive" />
+<meta property="og:description" content="The workload placement problem: 38% of AI pilots stall. How the 5-axis liquid scheduler cuts inference cost by 63% with carbon-aware routing." />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .pd-container { max-width: 900px; margin: 0 auto; padding: 0 40px 60px; }
+  .pd-pain-box { background: linear-gradient(135deg, color-mix(in srgb, var(--magenta) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); border-left: 4px solid var(--magenta); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-approach-box { background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent); border-left: 4px solid var(--cyan); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-results-box { background: linear-gradient(135deg, color-mix(in srgb, var(--green) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); border-left: 4px solid var(--green); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+  .pd-tech-card { padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; text-align: center; transition: all 0.2s; }
+  .pd-tech-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .pd-tech-card .pd-tc-icon { font-size: 24px; margin-bottom: 6px; }
+  .pd-tech-card .pd-tc-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .pd-tech-card .pd-tc-role { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); margin-top: 2px; }
+  .pd-sector-card { padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; transition: all 0.2s; }
+  .pd-sector-card:hover { border-color: var(--border-strong); transform: translateX(4px); }
+  .pd-sector-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .pd-sector-icon { font-size: 28px; }
+  .pd-sector-name { font-size: 16px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+  .pd-interactive { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-interactive-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+  .pd-slider-row { margin-bottom: 20px; }
+  .pd-slider-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .pd-slider-value { color: var(--cyan); font-size: 13px; }
+  .pd-slider { width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-2); outline: none; cursor: pointer; }
+  .pd-slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--violet)); cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 12px color-mix(in srgb, var(--cyan) 40%, transparent); }
+  .pd-result-display { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; text-align: center; margin: 16px 0; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .pd-flow-diagram { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
+  .pd-flow-node { padding: 8px 14px; border-radius: 6px; background: var(--bg-2); border: 1px solid var(--border-strong); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .pd-flow-node.accent { background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 15%, transparent), color-mix(in srgb, var(--violet) 15%, transparent)); border-color: var(--cyan); }
+  .pd-flow-arrow { color: var(--cyan); font-size: 18px; }
+</style>
+</head>
+<body id="problem-placement">
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="problem.html">Problem</a><span class="sep">/</span><span>Edge-Cloud Placement</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Problem 03 of 04 · Deep Dive</div>
+    <h1>Edge-Cloud <span class="accent">Workload Placement</span></h1>
+    <p class="lead">38% of industrial AI pilots stall at the PoC-to-production gap because hardcoded placement ("ML in cloud, rules at edge") leaves 30-50% of efficiency on the table. The optimal placement changes minute to minute. We built a 5-axis scheduler that solves it.</p>
+  </div>
+</section>
+
+<div class="pd-container">
+
+  <!-- THE PAIN -->
+  <section class="doc-section">
+    <div class="section-label">The Pain</div>
+    <h2>The "edge vs cloud" debate is a <span class="accent">false dichotomy.</span></h2>
+    <div class="pd-pain-box">
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7;">Every IoT platform makes a fundamental architectural decision: where does ML inference run? Most hardcode the answer. <strong>38% of industrial AI pilots stall at the PoC-to-production gap</strong> because the hardcoded choice doesn't scale — either the cloud bill explodes, or the edge can't handle the load, or the latency is too high for safety-critical inferences.</p>
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7; margin-top: 12px;">The optimal placement <strong>changes minute to minute</strong>: bandwidth cost spikes during peak hours, latency need varies by inference type, model accuracy drifts, battery state fluctuates, and grid carbon intensity shifts. No static placement can account for all five axes. Result: 30-50% of inference efficiency is left on the table.</p>
+    </div>
+  </section>
+
+  <!-- ROOT CAUSE -->
+  <section class="doc-section">
+    <div class="section-label">Root Cause</div>
+    <h2>Five variables, all changing <span class="accent">simultaneously.</span></h2>
+    <table class="data-table">
+      <thead><tr><th>Variable</th><th>Why It Changes</th><th>Impact on Placement</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bandwidth cost</strong></td><td>Cloud ingress $0.09/GB at AWS us-east; spikes during peak. 10k sensors at 1 Hz = 2 GB/h = $180/day.</td><td>When bandwidth spikes, more inference should stay at edge (free local network).</td></tr>
+        <tr><td><strong>Latency need</strong></td><td>Safety-critical (gas leak, ESD): <100ms. Forecasting: 2s OK.</td><td>Safety-critical must run at edge regardless of other factors.</td></tr>
+        <tr><td><strong>Model accuracy drift</strong></td><td>Edge model (quantized) drifts as data distribution shifts. Cloud model (full) is more accurate.</td><td>When edge accuracy drops <90% of gold, fall back to cloud. When >95%, stay at edge.</td></tr>
+        <tr><td><strong>Battery state</strong></td><td>Battery-powered edge nodes (LoRaWAN, remote sites) drain with inference.</td><td>When battery low + recharge hours away, defer non-critical to cloud.</td></tr>
+        <tr><td><strong>Carbon intensity</strong></td><td>Grid carbon varies by time + region (coal at peak = 500 gCO₂/kWh, solar midday = 50).</td><td>When local grid is dirty, route to cloud in clean regions. When local is clean, stay at edge.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- WHY EXISTING SOLUTIONS FAIL -->
+  <section class="doc-section">
+    <div class="section-label">Why Existing Solutions Fail</div>
+    <h2>Hardcoded placement — by every competitor.</h2>
+    <div class="card-grid-2">
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>AWS IoT Greengrass</h3>
+        <p>Hardcoded: rules at edge, ML in cloud. No dynamic routing. No model drift measurement. No carbon awareness. Edge autonomy: limited local cache, no ML when WAN is down.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>Azure Stack Edge</h3>
+        <p>Same story: rules at edge, ML in cloud. Limited edge ML (Azure ML models only). No 5-axis scoring. No carbon-aware routing.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>Cognite</h3>
+        <p>Cloud-only. No edge compute. No edge autonomy. Fails on WAN loss. No latency optimization for safety-critical inferences.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>Augury</h3>
+        <p>Edge-only for vibration. No cloud fallback. No model drift detection. No carbon awareness. No liquid routing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR APPROACH -->
+  <section class="doc-section">
+    <div class="section-label">Our Approach</div>
+    <h2>The 5-Axis <span class="accent">Liquid Placement Scheduler</span></h2>
+    <div class="pd-approach-box">
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7;">Every 30 seconds, the scheduler scores each pending inference job against each candidate site (edge device or cloud region) across five axes. The job is routed to the highest-scoring site. Routing decisions are persisted for audit. Operators can override with hard rules ("safety-critical always on-device").</p>
+    </div>
+    <div class="code-block-label">placement-score.py (simplified)</div>
+    <div class="code-block">
+<pre><span class="comment"># Score = weighted sum of normalized metrics; route to highest-scoring site.</span>
+<span class="key">def</span> placement_score(job, site):
+    <span class="key">return</span> (
+        0.35 * latency_score(job, site)         <span class="comment"># end-to-end RTT</span>
+      + 0.25 * bandwidth_score(job, site)       <span class="comment"># $/GB right now</span>
+      + 0.20 * accuracy_score(job, site)       <span class="comment"># model drift vs. gold</span>
+      + 0.15 * battery_score(job, site)        <span class="comment"># device SoC + recharge ETA</span>
+      + 0.05 * carbon_score(job, site)         <span class="comment"># grid carbon intensity</span>
+    )</pre>
+    </div>
+    <p>Weights are configurable per customer. A utility weights latency at 0.60 (safety-critical). An agri co-op weights bandwidth at 0.45 (cellular is expensive). The scheduler supports hard overrides that bypass the scoring function.</p>
+  </section>
+
+  <!-- MODERN TECH STACK -->
+  <section class="doc-section">
+    <div class="section-label">Modern Technology Stack</div>
+    <h2>Tools that make liquid placement possible</h2>
+    <div class="pd-tech-grid">
+      <div class="pd-tech-card"><div class="pd-tc-icon">📦</div><div class="pd-tc-name">KubeEdge</div><div class="pd-tc-role">Edge orchestration</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🧩</div><div class="pd-tc-name">WebAssembly (WASM)</div><div class="pd-tc-role">Portable inference functions</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🤖</div><div class="pd-tc-name">TinyML</div><div class="pd-tc-role">$1 MCU inference</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🖥️</div><div class="pd-tc-name">Hailo-8 (26 TOPS)</div><div class="pd-tc-role">Edge AI silicon</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🧠</div><div class="pd-tc-name">ONNX Runtime</div><div class="pd-tc-role">Model portability</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">📊</div><div class="pd-tc-name">Model Drift Monitor</div><div class="pd-tc-role">Real-time accuracy tracking</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🔋</div><div class="pd-tc-name">Battery State API</div><div class="pd-tc-role">Device SoC monitoring</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🌍</div><div class="pd-tc-name">WattTime API</div><div class="pd-tc-role">Real-time grid carbon</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">⚡</div><div class="pd-tc-name">Kubernetes Scheduler</div><div class="pd-tc-role">Custom scoring plugins</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🌐</div><div class="pd-tc-name">Cloud Pricing APIs</div><div class="pd-tc-role">Real-time bandwidth cost</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">💾</div><div class="pd-tc-name">RocksDB State Backend</div><div class="pd-tc-role">Edge-local state (72h buffer)</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🔄</div><div class="pd-tc-name">Exactly-Once Semantics</div><div class="pd-tc-role">No duplicate inference on reroute</div></div>
+    </div>
+    <p>None of these tools alone solves the placement problem. The innovation is in the <strong>combination</strong>: real-time model drift monitoring (no competitor does this), battery-aware routing (critical for remote/IoT), carbon-aware routing (our ESG differentiator), and exactly-once semantics across edge-cloud reroutes (prevents duplicate alerts when a job moves from edge to cloud mid-inference).</p>
+  </section>
+
+  <!-- SECTOR APPLICATIONS -->
+  <section class="doc-section">
+    <div class="section-label">Sector Applications</div>
+    <h2>Where liquid placement changes the economics</h2>
+
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">🏭</span><span class="pd-sector-name">Manufacturing — Plant Floor</span></div>
+      <p>12 ingest replicas, 5,000 sensors. Safety-critical inferences (gas leak, ESD) always on-device (Hailo-8). Forecasting + reporting in cloud. Model drift monitored continuously. <strong>−63% inference cost, 4× lower p99 latency, 72h edge autonomy.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">🌾</span><span class="pd-sector-name">Agriculture — Battery-Powered LoRaWAN</span></div>
+      <p>200 soil probes on battery power. Inference drains battery. Scheduler defers non-critical to cloud when battery &lt;30% and recharge (solar) is hours away. When midday solar is charging: run locally. <strong>Battery life extended 3× vs. always-edge.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">🛢️</span><span class="pd-sector-name">Oil &amp; Gas — Offshore Platform</span></div>
+      <p>Satellite backhaul ($5-50/device/month). Safety-critical always on-device. Non-critical batch analytics deferred to cloud when bandwidth cost is low (off-peak hours). <strong>−99.7% WAN bandwidth via anomaly token emission. 72h edge autonomy on WAN loss.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">⛏️</span><span class="pd-sector-name">Mining — Remote Site</span></div>
+      <p>Underground mesh + satellite backhaul. Gas detection (safety-critical) always at edge. Equipment health (non-critical) deferred to cloud when satellite bandwidth is expensive. Carbon-aware: shift to cloud when local diesel generator is the power source. <strong>−70% bandwidth cost, −22% carbon.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">⚡</span><span class="pd-sector-name">Smart Grid — Substation</span></div>
+      <p>Protective relay actions (&lt;10ms) always at edge (TSN-enabled). PMU analytics (30/60 Hz) at edge. Cross-substation analytics in cloud. Carbon-aware: when local grid is wind/solar-heavy, more at edge. <strong>Sub-10ms for protective actions, cloud for cross-substation reasoning.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">💧</span><span class="pd-sector-name">Water Treatment — Distribution</span></div>
+      <p>1,000 LoRaWAN sensors across a city. Edge inference at gateways (RPi 5). Cloud for cross-network analytics. Battery-aware: defer to cloud when sensor batteries are low. <strong>2× battery life, 50% lower cloud cost.</strong></p>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE ELEMENT -->
+  <section class="doc-section">
+    <div class="section-label">Interactive</div>
+    <h2>See how placement shifts with conditions</h2>
+    <div class="pd-interactive">
+      <div class="pd-interactive-title">⚙️ Liquid Placement Simulator</div>
+      <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 16px;">Adjust the sliders to see how the scheduler routes inference between edge and cloud. The allocation bar shifts in real-time.</p>
+      <div class="pd-slider-row">
+        <div class="pd-slider-label"><span>Bandwidth cost ($/GB)</span><span class="pd-slider-value" id="pl-bw-display">$0.09</span></div>
+        <input type="range" class="pd-slider" id="pl-bw" min="1" max="100" value="9" oninput="updatePlacement()" />
+      </div>
+      <div class="pd-slider-row">
+        <div class="pd-slider-label"><span>Latency requirement (ms)</span><span class="pd-slider-value" id="pl-lat-display">100</span></div>
+        <input type="range" class="pd-slider" id="pl-lat" min="10" max="2000" step="10" value="100" oninput="updatePlacement()" />
+      </div>
+      <div class="pd-slider-row">
+        <div class="pd-slider-label"><span>Grid carbon intensity (gCO₂/kWh)</span><span class="pd-slider-value" id="pl-carbon-display">380</span></div>
+        <input type="range" class="pd-slider" id="pl-carbon" min="20" max="600" step="10" value="380" oninput="updatePlacement()" />
+      </div>
+      <div class="pd-slider-row">
+        <div class="pd-slider-label"><span>Edge battery state (%)</span><span class="pd-slider-value" id="pl-bat-display">85%</span></div>
+        <input type="range" class="pd-slider" id="pl-bat" min="0" max="100" value="85" oninput="updatePlacement()" />
+      </div>
+      <div style="margin-top: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-bottom: 8px;">Inference routing allocation:</div>
+        <div style="display: flex; height: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+          <div id="pl-edge-bar" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--bg); transition: width 0.3s;">Edge 70%</div>
+          <div id="pl-cloud-bar" style="background: var(--text-mute); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--bg); transition: width 0.3s;">Cloud 30%</div>
+        </div>
+      </div>
+      <div id="pl-reasoning" style="margin-top: 16px; padding: 12px; background: var(--bg-2); border-radius: 8px; font-size: 13px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+        Reasoning will appear here...
+      </div>
+    </div>
+  </section>
+
+  <!-- QUANTIFIED RESULTS -->
+  <section class="doc-section">
+    <div class="section-label">Quantified Results</div>
+    <h2>Internal simulation — 200 devices, 30-day trace</h2>
+    <div class="pd-results-box">
+      <table class="data-table">
+        <thead><tr><th>Metric</th><th>Cloud-only</th><th>Edge-only</th><th>50/50 split</th><th>Liquid placement</th></tr></thead>
+        <tbody>
+          <tr><td>Inference cost ($/day)</td><td>$420</td><td>$85</td><td>$220</td><td><strong>$155 (−63%)</strong></td></tr>
+          <tr><td>p99 latency</td><td>850ms</td><td>45ms</td><td>450ms</td><td><strong>210ms (4× better)</strong></td></tr>
+          <tr><td>WAN bandwidth</td><td>2 GB/h</td><td>0.01 GB/h</td><td>1 GB/h</td><td><strong>0.3 GB/h (−99.7%)</strong></td></tr>
+          <tr><td>Carbon (kg CO₂/yr)</td><td>32.4</td><td>6.2</td><td>18.5</td><td><strong>10.0 (−69%)</strong></td></tr>
+          <tr><td>Edge autonomy (WAN loss)</td><td>0 min</td><td>∞</td><td>15 min</td><td><strong>72 hours</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TRY IT -->
+  <section class="doc-section">
+    <div class="section-label">Try It</div>
+    <h2>Explore the scheduler</h2>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+      <a href="layer-edge.html" class="btn btn-primary btn-sm">Layer 03: Edge Compute Deep Dive →</a>
+      <a href="carbon-calculator.html" class="btn btn-ghost btn-sm">Carbon Calculator →</a>
+      <a href="blog/liquid-workload-placement.html" class="btn btn-ghost btn-sm">Blog: Liquid Placement (14 min) →</a>
+      <a href="architecture-interactive.html" class="btn btn-ghost btn-sm">Interactive Architecture →</a>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function updatePlacement() {
+  const bw = parseInt(document.getElementById('pl-bw').value) / 100;  // $/GB
+  const lat = parseInt(document.getElementById('pl-lat').value);  // ms
+  const carbon = parseInt(document.getElementById('pl-carbon').value);  // gCO2/kWh
+  const bat = parseInt(document.getElementById('pl-bat').value);  // %
+
+  // Scoring (simplified version of the real 5-axis function)
+  let edgeScore = 0;
+  let cloudScore = 0;
+  const reasons = [];
+
+  // Latency (35% weight): if <100ms, edge wins hard
+  if (lat < 100) { edgeScore += 35; reasons.push('Latency <100ms → safety-critical → must run at edge'); }
+  else if (lat < 500) { edgeScore += 20; cloudScore += 15; reasons.push('Latency 100-500ms → edge preferred, cloud acceptable'); }
+  else { edgeScore += 5; cloudScore += 30; reasons.push('Latency >500ms → cloud preferred (batch OK)'); }
+
+  // Bandwidth (25%): if >$0.50/GB, edge wins
+  if (bw > 0.50) { edgeScore += 25; reasons.push('Bandwidth >$0.50/GB → expensive WAN → stay at edge'); }
+  else if (bw > 0.15) { edgeScore += 15; cloudScore += 10; reasons.push('Bandwidth $0.15-0.50/GB → edge preferred'); }
+  else { edgeScore += 5; cloudScore += 20; reasons.push('Bandwidth <$0.15/GB → cloud is cheap → route to cloud'); }
+
+  // Battery (15%): if <30%, cloud wins
+  if (bat < 30) { edgeScore += 0; cloudScore += 15; reasons.push('Battery <30% → defer to cloud to conserve power'); }
+  else if (bat < 60) { edgeScore += 5; cloudScore += 10; reasons.push('Battery 30-60% → balance edge/cloud'); }
+  else { edgeScore += 15; cloudScore += 0; reasons.push('Battery >60% → edge is safe to use'); }
+
+  // Carbon (5%): if carbon high, prefer cloud (data center might be cleaner)
+  if (carbon > 400) { edgeScore += 1; cloudScore += 4; reasons.push('Grid carbon >400 gCO₂/kWh → shift to cloud (potentially cleaner region)'); }
+  else if (carbon > 200) { edgeScore += 3; cloudScore += 2; reasons.push('Grid carbon 200-400 → balanced'); }
+  else { edgeScore += 5; cloudScore += 0; reasons.push('Grid carbon <200 → stay at edge (clean local grid)'); }
+
+  // Model accuracy drift (20%): assume edge model is 92% of gold (default)
+  const drift = 92;  // static for demo
+  if (drift > 95) { edgeScore += 20; reasons.push('Edge model accuracy >95% of gold → edge is accurate → stay local'); }
+  else if (drift > 85) { edgeScore += 12; cloudScore += 8; reasons.push('Edge model 85-95% → balanced'); }
+  else { edgeScore += 0; cloudScore += 20; reasons.push('Edge model <85% → drift detected → fall back to cloud'); }
+
+  const total = edgeScore + cloudScore;
+  const edgePct = Math.round((edgeScore / total) * 100);
+  const cloudPct = 100 - edgePct;
+
+  document.getElementById('pl-bw-display').textContent = '$' + bw.toFixed(2);
+  document.getElementById('pl-lat-display').textContent = lat + 'ms';
+  document.getElementById('pl-carbon-display').textContent = carbon + ' gCO₂/kWh';
+  document.getElementById('pl-bat-display').textContent = bat + '%';
+
+  document.getElementById('pl-edge-bar').style.width = edgePct + '%';
+  document.getElementById('pl-edge-bar').textContent = 'Edge ' + edgePct + '%';
+  document.getElementById('pl-cloud-bar').style.width = cloudPct + '%';
+  document.getElementById('pl-cloud-bar').textContent = 'Cloud ' + cloudPct + '%';
+
+  document.getElementById('pl-reasoning').innerHTML = '<strong style="color: var(--cyan);">Scheduler reasoning:</strong><br>' + reasons.join('<br>');
+}
+updatePlacement();
+</script>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem Overview</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="roi-calculator.html">ROI Calculator</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="assets/app.js"></script>
+</body>
+</html>

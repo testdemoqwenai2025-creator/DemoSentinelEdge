@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Protocol Heterogeneity Deep Dive</title>
+<meta name="description" content="The protocol heterogeneity problem: 16 protocols, zero semantic agreement. How AISensorEdgeComp uses LLM-assisted normalization to cut onboarding from 6 months to 3 weeks." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Protocol Heterogeneity Deep Dive" />
+<meta property="og:description" content="The protocol heterogeneity problem: 16 protocols, zero semantic agreement. How AISensorEdgeComp uses LLM-assisted normalization to cut onboarding from 6 months to 3 weeks." />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .pd-container { max-width: 900px; margin: 0 auto; padding: 0 40px 60px; }
+  .pd-pain-box { background: linear-gradient(135deg, color-mix(in srgb, var(--magenta) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); border-left: 4px solid var(--magenta); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-approach-box { background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent); border-left: 4px solid var(--cyan); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-results-box { background: linear-gradient(135deg, color-mix(in srgb, var(--green) 8%, var(--card)), var(--card)); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); border-left: 4px solid var(--green); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+  .pd-tech-card { padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; text-align: center; transition: all 0.2s; }
+  .pd-tech-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .pd-tech-card .pd-tc-icon { font-size: 24px; margin-bottom: 6px; }
+  .pd-tech-card .pd-tc-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .pd-tech-card .pd-tc-role { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); margin-top: 2px; }
+  .pd-sector-card { padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; transition: all 0.2s; }
+  .pd-sector-card:hover { border-color: var(--border-strong); transform: translateX(4px); }
+  .pd-sector-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .pd-sector-icon { font-size: 28px; }
+  .pd-sector-name { font-size: 16px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+  .pd-interactive { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .pd-interactive-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+  .pd-slider-row { margin-bottom: 20px; }
+  .pd-slider-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .pd-slider-value { color: var(--cyan); font-size: 13px; }
+  .pd-slider { width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-2); outline: none; cursor: pointer; }
+  .pd-slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--violet)); cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 12px color-mix(in srgb, var(--cyan) 40%, transparent); }
+  .pd-result-display { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; text-align: center; margin: 16px 0; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .pd-flow-diagram { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
+  .pd-flow-node { padding: 8px 14px; border-radius: 6px; background: var(--bg-2); border: 1px solid var(--border-strong); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .pd-flow-node.accent { background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 15%, transparent), color-mix(in srgb, var(--violet) 15%, transparent)); border-color: var(--cyan); }
+  .pd-flow-arrow { color: var(--cyan); font-size: 18px; }
+</style>
+</head>
+<body id="problem-protocol">
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="problem.html">Problem</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="problem.html">Problem</a><span class="sep">/</span><span>Protocol Heterogeneity</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Problem 01 of 04 · Deep Dive</div>
+    <h1>Protocol <span class="accent">Heterogeneity</span></h1>
+    <p class="lead">A single factory floor runs Modbus, OPC-UA, Profinet, EtherCAT, MQTT, CoAP, and proprietary serial — all at once. Bridging them with semantic understanding has historically required 30-person SI teams and 6 months per site, at $400K-$1.2M. We automated it.</p>
+  </div>
+</section>
+
+<div class="pd-container">
+
+  <!-- THE PAIN -->
+  <section class="doc-section">
+    <div class="section-label">The Pain</div>
+    <h2>16 protocols. Zero semantic agreement.</h2>
+    <div class="pd-pain-box">
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7;"><strong>A typical industrial facility runs 6-12 different communication protocols simultaneously</strong>, each born from a different era, vendor ecosystem, and design philosophy. Modbus (1979) gives you register 40001 — but doesn't tell you if that's temperature, pressure, or motor speed. OPC-UA (2008) gives you rich metadata — but encoded in its own information model. MQTT (1999) gives you a topic string — but the semantic meaning is implicit in naming conventions that vary by vendor.</p>
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7; margin-top: 12px;">The cost of resolving this heterogeneity — turning raw bytes from any protocol into meaning that an AI can reason over — is the single largest barrier to industrial AI deployment. <strong>It is why most industrial AI projects stall at pilot.</strong> They can't afford to onboard the second factory.</p>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Metric</th><th>Traditional Approach</th><th>Industry Average</th></tr></thead>
+      <tbody>
+        <tr><td>Time to onboard a new factory</td><td>4-8 months</td><td>6 months</td></tr>
+        <tr><td>Team required</td><td>20-40 system integrators</td><td>30 people</td></tr>
+        <tr><td>Cost per factory</td><td>$400K - $1.2M</td><td>~$800K</td></tr>
+        <tr><td>Mapping table maintenance</td><td>Manual, breaks on PLC changes</td><td>Continuous</td></tr>
+        <tr><td>Time to first AI inference</td><td>6+ months after onboarding</td><td>Delayed</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ROOT CAUSE -->
+  <section class="doc-section">
+    <div class="section-label">Root Cause</div>
+    <h2>The problem isn't bytes — it's <span class="accent">meaning.</span></h2>
+    <p>The problem isn't just "different protocols on the same floor." It's that each protocol represents data <strong>differently at the semantic level</strong>:</p>
+    <ul>
+      <li><strong>Modbus</strong> gives you register 40001 containing a 16-bit integer. Is that temperature in °C? Pressure in psi? Motor speed in RPM? The protocol doesn't tell you. You need an external mapping document — usually an Excel spreadsheet maintained by hand.</li>
+      <li><strong>OPC-UA</strong> gives you <code>ns=2;s=Line3.CompressorA.OutletPressure</code> with a description, data type, engineering unit, and range. Rich — but encoded in the OPC-UA information model, not a universal format.</li>
+      <li><strong>MQTT</strong> gives you a topic string and JSON payload. The semantic meaning is implicit in the topic structure — but there's no standard for how to structure it.</li>
+      <li><strong>LoRaWAN</strong> gives you raw bytes. Decoding requires a device-specific decoder function. Two different soil probe manufacturers produce completely different payloads for the same physical quantity.</li>
+    </ul>
+  </section>
+
+  <!-- WHY EXISTING SOLUTIONS FAIL -->
+  <section class="doc-section">
+    <div class="section-label">Why Existing Solutions Fail</div>
+    <h2>Three approaches — all insufficient.</h2>
+    <div class="card-grid-3">
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>1. Manual Tag Mapping</h3>
+        <p>30-person SI team creates an Excel spreadsheet mapping every tag. <strong>Brittle</strong>: breaks on PLC tag changes. <strong>Expensive</strong>: $800K per site. <strong>Unscalable</strong>: 2nd factory takes as long as the 1st.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>2. Protocol-Specific Gateways</h3>
+        <p>Each protocol gets its own gateway from a different vendor. <strong>No semantic unification</strong>: the aggregation layer merges bytes, not meanings. <strong>Vendor lock-in</strong>: 12 gateways × 4 vendors = 144 failure modes.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--magenta);">
+        <h3>3. Cloud-Only Normalization</h3>
+        <p>AWS IoT / Azure IoT: send raw data to cloud, normalize there. <strong>Bandwidth cost</strong>: $180/day for 10k sensors. <strong>Latency</strong>: 200-500ms RTT. <strong>No edge autonomy</strong>: blind on WAN loss.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR APPROACH -->
+  <section class="doc-section">
+    <div class="section-label">Our Approach</div>
+    <h2>From byte-level to <span class="accent">semantic-level.</span></h2>
+    <div class="pd-approach-box">
+      <p style="font-size: 16px; color: var(--text); line-height: 1.7;">The fundamental shift is moving the normalization from byte-level translation (Protocol A bytes → Protocol B bytes) to <strong>semantic-level understanding</strong> (any protocol → canonical meaning). The canonical meaning is a single JSON/Avro/Protobuf record that every downstream consumer operates on, regardless of which protocol produced the data.</p>
+    </div>
+
+    <h3>Three pillars</h3>
+    <div class="card-grid-3">
+      <div class="card" style="border-top: 3px solid var(--cyan);">
+        <h3>1. Unified Semantic Data Model</h3>
+        <p>A canonical schema that every measurement normalizes to — regardless of source protocol. Published as Avro + Protobuf, Apache 2.0, versioned with Schema Registry. Reduces integration from O(protocols × consumers) to O(protocols × 1).</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--cyan);">
+        <h3>2. AI-Driven Automation</h3>
+        <p>LLM-assisted ontology mapping replaces 30-person SI teams. Fine-tuned on OPC-UA info models, Modbus conventions, 200+ customer mappings. Human-in-the-loop: LLM proposes, engineers approve. Full audit trail for SOC 2.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--cyan);">
+        <h3>3. Flexible Middleware</h3>
+        <p>Protocol-agnostic edge gateways that ingest from any of 16 protocols and emit canonical records. Stateless, horizontally scalable, 72h edge autonomy. Runs on Hailo-8, Jetson, Coral, RPi, or $1 MCUs.</p>
+      </div>
+    </div>
+
+    <h3>The 4-stage normalization pipeline</h3>
+    <div class="pd-flow-diagram">
+      <div class="pd-flow-node">Raw bytes (sensor)</div>
+      <div class="pd-flow-arrow">→</div>
+      <div class="pd-flow-node">Protocol decode</div>
+      <div class="pd-flow-arrow">→</div>
+      <div class="pd-flow-node accent">Ontology mapping (LLM)</div>
+      <div class="pd-flow-arrow">→</div>
+      <div class="pd-flow-node">Canonical measurement</div>
+      <div class="pd-flow-arrow">→</div>
+      <div class="pd-flow-node">Edge AI / Cloud</div>
+    </div>
+  </section>
+
+  <!-- MODERN TECH STACK -->
+  <section class="doc-section">
+    <div class="section-label">Modern Technology Stack</div>
+    <h2>What we put together</h2>
+    <p>Resolving protocol heterogeneity requires combining modern computational tools across multiple domains — each contributing a specific capability that traditional approaches lack:</p>
+    <div class="pd-tech-grid">
+      <div class="pd-tech-card"><div class="pd-tc-icon">🧠</div><div class="pd-tc-name">LLM (fine-tuned)</div><div class="pd-tc-role">Ontology mapping</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">📐</div><div class="pd-tc-name">Avro + Protobuf</div><div class="pd-tc-role">Canonical schema</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🖥️</div><div class="pd-tc-name">Hailo-8 / Jetson</div><div class="pd-tc-role">Edge normalization</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">⚡</div><div class="pd-tc-name">Apache Kafka</div><div class="pd-tc-role">Stream backbone</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🌊</div><div class="pd-tc-name">Apache Flink</div><div class="pd-tc-role">Stream processing</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">📦</div><div class="pd-tc-name">KubeEdge</div><div class="pd-tc-role">Edge orchestration</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🔐</div><div class="pd-tc-name">Confluent Schema Registry</div><div class="pd-tc-role">Schema evolution</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🔄</div><div class="pd-tc-name">Federated Learning</div><div class="pd-tc-role">Cross-customer LLM improvement</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">📝</div><div class="pd-tc-name">Audit Log (SOC 2)</div><div class="pd-tc-role">Full provenance</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🧩</div><div class="pd-tc-name">WASM</div><div class="pd-tc-role">Portable edge functions</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🤖</div><div class="pd-tc-name">TinyML (MCU)</div><div class="pd-tc-role">$1 device inference</div></div>
+      <div class="pd-tech-card"><div class="pd-tc-icon">🌐</div><div class="pd-tc-name">OPC-UA / Modbus / MQTT / CoAP</div><div class="pd-tc-role">Protocol gateways</div></div>
+    </div>
+    <p>When combined, these tools create a pipeline that <strong>automatically</strong> understands any industrial protocol, normalizes it to a universal schema, and delivers AI-ready data from day one of deployment. Traditional approaches use 2-3 of these; we use all 12.</p>
+  </section>
+
+  <!-- SECTOR APPLICATIONS -->
+  <section class="doc-section">
+    <div class="section-label">Sector Applications</div>
+    <h2>Where this solves real problems</h2>
+
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">🛢️</span><span class="pd-sector-name">Oil &amp; Gas — Offshore Platform</span></div>
+      <p>Protocols: OPC-UA (compressors), Modbus (wellheads), MQTT (gas detectors), LoRaWAN (environmental), proprietary serial (subsea). 10,000-50,000 tags per platform. Traditional onboarding: 6 months, $1.2M. <strong>With AISensorEdgeComp: 3 weeks, $15-50K.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">⚗️</span><span class="pd-sector-name">Chemical Plant</span></div>
+      <p>Protocols: OPC-UA (reactors, DCS), Modbus (legacy), Foundation Fieldbus (valves), HART (transmitters), Profinet (Siemens). 15,000-80,000 tags. Traditional: 8 months. <strong>Ours: 3-4 weeks.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">🏥</span><span class="pd-sector-name">Hospital ICU</span></div>
+      <p>Protocols: HL7 (patient monitors), MQTT (ventilators), proprietary serial (infusion pumps). 500-2,000 tags. Traditional: 4 months. <strong>Ours: 2 weeks.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">⚡</span><span class="pd-sector-name">Smart Grid</span></div>
+      <p>Protocols: IEC 61850 (substation), DNP3 (SCADA), Modbus (meters), PMU (synchrophasor). 5,000-30,000 tags per substation. Traditional: 6 months. <strong>Ours: 3-4 weeks.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">⛏️</span><span class="pd-sector-name">Mining</span></div>
+      <p>Protocols: Modbus (trucks), OPC-UA (conveyors), LoRaWAN (gas sensors), satellite IoT (remote). 3,000-20,000 tags. Traditional: 6 months. <strong>Ours: 2-3 weeks.</strong></p>
+    </div>
+    <div class="pd-sector-card">
+      <div class="pd-sector-header"><span class="pd-sector-icon">💧</span><span class="pd-sector-name">Water Treatment</span></div>
+      <p>Protocols: Modbus (flow meters), OPC-UA (SCADA), LoRaWAN (distribution), HART (chemical dosing). 1,000-8,000 tags. Traditional: 4 months. <strong>Ours: 2 weeks.</strong></p>
+    </div>
+  </section>
+
+  <!-- QUANTIFIED RESULTS -->
+  <section class="doc-section">
+    <div class="section-label">Quantified Results</div>
+    <h2>The numbers — <span class="accent">before and after.</span></h2>
+    <div class="pd-results-box">
+      <table class="data-table">
+        <thead><tr><th>Metric</th><th>Traditional</th><th>AISensorEdgeComp</th><th>Improvement</th></tr></thead>
+        <tbody>
+          <tr><td>Onboarding time</td><td>4-8 months</td><td>2-4 weeks</td><td><strong>87.5% reduction</strong></td></tr>
+          <tr><td>Onboarding cost</td><td>$400K-$1.2M</td><td>$15K-$50K</td><td><strong>96% reduction</strong></td></tr>
+          <tr><td>Team required</td><td>20-40 people</td><td>1-2 engineers + LLM</td><td><strong>95% reduction</strong></td></tr>
+          <tr><td>Time to first AI inference</td><td>6+ months</td><td>3 weeks (parallel)</td><td><strong>95% reduction</strong></td></tr>
+          <tr><td>2nd factory onboarding</td><td>Same as 1st</td><td>1-2 weeks (LLM remembers)</td><td><strong>90% reduction</strong></td></tr>
+          <tr><td>Mapping table breakages/yr</td><td>~12 per facility</td><td>0 (forward-compatible)</td><td><strong>Eliminated</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TRY IT -->
+  <section class="doc-section">
+    <div class="section-label">Try It</div>
+    <h2>See the pipeline in action</h2>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+      <a href="sensor-types.html" class="btn btn-primary btn-sm">12 Sensor Types + Architecture →</a>
+      <a href="architecture-interactive.html" class="btn btn-ghost btn-sm">Interactive Architecture →</a>
+      <a href="docs/protocol-heterogeneity.md" class="btn btn-ghost btn-sm">Full Technical Document (715 lines) →</a>
+      <a href="blog/sensor-ontology.html" class="btn btn-ghost btn-sm">Blog: The Sensor Ontology →</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="problem.html">Problem Overview</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="roi-calculator.html">ROI Calculator</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="assets/app.js"></script>
+</body>
+</html>
