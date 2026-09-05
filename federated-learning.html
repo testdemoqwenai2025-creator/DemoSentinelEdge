@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Federated Learning Visualization</title>
+<meta name="description" content="Interactive visualization of federated learning: 5 customers contributing gradients, global model improving over rounds. The moat against AWS IoT made visible." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Federated Learning — The Moat Made Visible" />
+<meta property="og:description" content="Watch 5 customers contribute gradients, global model improving, DP noise, secure aggregation." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .fl-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px 60px;
+  }
+
+  .fl-viz {
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--card) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+  }
+
+  .fl-viz-grid {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Customer nodes */
+  .fl-customers {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 768px) {
+    .fl-customers { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .fl-customer {
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .fl-customer.active {
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--cyan) 20%, transparent);
+  }
+  .fl-customer.opted-out {
+    opacity: 0.4;
+    border-color: var(--text-mute);
+  }
+  .fl-customer.opted-out::after {
+    content: 'OPTED OUT';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--magenta);
+    background: color-mix(in srgb, var(--magenta) 15%, transparent);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .fl-customer-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .fl-customer-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .fl-customer-data {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-bottom: 6px;
+  }
+  .fl-customer-accuracy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+  }
+  .fl-customer-bar {
+    height: 4px;
+    background: var(--bg);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .fl-customer-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--text-mute), var(--cyan));
+    transition: width 0.5s;
+  }
+
+  /* Gradient flow indicator */
+  .fl-gradient-flow {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    color: var(--cyan);
+    margin: 16px 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Aggregator */
+  .fl-aggregator {
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, var(--card)), var(--card));
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .fl-aggregator::before {
+    content: '🔒 SGX SECURE ENCLAVE';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--violet);
+    background: color-mix(in srgb, var(--violet) 15%, transparent);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .fl-aggregator-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  .fl-aggregator-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .fl-aggregator-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* Global model */
+  .fl-global-model {
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 12%, var(--card)), var(--card));
+    border: 2px solid var(--cyan);
+    border-radius: 12px;
+    position: relative;
+  }
+  .fl-global-model-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+  .fl-global-model-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .fl-global-model-accuracy {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 8px 0;
+  }
+  .fl-global-model-accuracy-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Round counter */
+  .fl-round-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 12px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .fl-round-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--cyan);
+  }
+  .fl-round-epsilon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+
+  /* Controls */
+  .fl-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .fl-control-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .fl-control-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .fl-control-btn.primary {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg);
+    border: none;
+    font-weight: 600;
+  }
+  .fl-control-btn.primary:hover {
+    transform: translateY(-2px);
+  }
+
+  /* DP noise visualization */
+  .fl-dp-noise {
+    padding: 16px;
+    background: color-mix(in srgb, var(--gold) 8%, var(--card));
+    border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+    border-radius: 10px;
+    margin: 16px 0;
+  }
+  .fl-dp-noise-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .fl-dp-noise-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Accuracy chart */
+  .fl-chart {
+    margin: 24px 0;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .fl-chart-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .fl-chart-svg {
+    width: 100%;
+    height: 200px;
+  }
+
+  /* Customer opt-out buttons */
+  .fl-customer-toggle {
+    margin-top: 8px;
+    padding: 4px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .fl-customer-toggle:hover {
+    border-color: var(--magenta);
+    color: var(--magenta);
+  }
+</style>
+</head>
+<body id="federated-learning">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="federated-learning.html" class="active">Federated Learning</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 40vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="ai-stack.html">AI Stack</a><span class="sep">/</span>
+      <span>Federated Learning</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>Interactive · 5 customers · The moat made visible</div>
+    <h1>Federated Learning — <span class="accent">The Moat</span></h1>
+    <p class="lead">
+      The structural advantage against AWS IoT, Azure IoT, and every horizontal platform:
+      every customer's data improves the model for all customers. AWS IoT can't copy this
+      — they would have to convince their customers to share gradients. Watch 5 customers
+      contribute gradients in real time, see the global model improve, and toggle opt-out
+      to see what happens when one leaves.
+    </p>
+  </div>
+</section>
+
+<div class="fl-container">
+
+  <!-- Controls -->
+  <div class="fl-round-counter">
+    <div>
+      <span class="fl-round-number">Round: <span id="round-num">0</span></span>
+      <span style="margin-left: 16px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+        Participating: <span id="participating-count">5</span>/5
+      </span>
+    </div>
+    <div class="fl-round-epsilon">
+      Privacy budget: ε = 1.0 / round · cumulative: ε = <span id="cum-epsilon">0.0</span>
+    </div>
+  </div>
+
+  <div class="fl-controls">
+    <button class="fl-control-btn primary" id="run-round-btn" onclick="runRound()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+      Run federated round
+    </button>
+    <button class="fl-control-btn" onclick="runMultipleRounds(10)">
+      Run 10 rounds
+    </button>
+    <button class="fl-control-btn" onclick="resetSimulation()">
+      ↺ Reset
+    </button>
+  </div>
+
+  <!-- Main visualization -->
+  <div class="fl-viz">
+    <div class="fl-viz-grid">
+
+      <!-- Customer nodes -->
+      <div class="fl-customers" id="customers-container">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Gradient flow -->
+      <div class="fl-gradient-flow" id="gradient-flow">
+        ↓ encrypted + DP-noised gradients ↓
+      </div>
+
+      <!-- Secure aggregator -->
+      <div class="fl-aggregator">
+        <div class="fl-aggregator-icon">🔐</div>
+        <div class="fl-aggregator-name">Secure Aggregator (Intel SGX)</div>
+        <div class="fl-aggregator-desc">
+          Sums <span id="gradient-count">0</span> gradients in a secure enclave.
+          Platform operator <strong>cannot see</strong> individual gradients — only the aggregate.
+        </div>
+      </div>
+
+      <!-- Updated model -->
+      <div class="fl-gradient-flow" id="model-update-flow">
+        ↓ global model update ↓
+      </div>
+
+      <!-- Global model -->
+      <div class="fl-global-model">
+        <div class="fl-global-model-icon">🧠</div>
+        <div class="fl-global-model-name">Global TS-FM Model</div>
+        <div class="fl-global-model-accuracy" id="global-accuracy">0.82</div>
+        <div class="fl-global-model-accuracy-label">anomaly detection AUC-ROC</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DP noise explainer -->
+  <div class="fl-dp-noise">
+    <div class="fl-dp-noise-title">Differential privacy — what's happening</div>
+    <div class="fl-dp-noise-text">
+      Each customer computes a gradient on their local data (raw sensor readings never leave their boundary).
+      Gaussian noise is added to the gradient (ε=1.0 per round). The noised gradient is sent to the
+      secure aggregator, which sums all gradients inside an Intel SGX enclave. The platform operator
+      cannot see individual gradients — only the aggregate sum. The global model is updated and broadcast
+      back to all customers. After <span id="rounds-to-budget">100</span> rounds, the cumulative privacy
+      budget is exhausted and training pauses (or ε resets with consent).
+    </div>
+  </div>
+
+  <!-- Accuracy chart -->
+  <div class="fl-chart">
+    <div class="fl-chart-title">Global model accuracy over rounds (AUC-ROC)</div>
+    <svg class="fl-chart-svg" id="accuracy-chart" viewBox="0 0 800 200" preserveAspectRatio="none">
+      <!-- Rendered by JS -->
+    </svg>
+  </div>
+
+  <!-- How it works -->
+  <section class="doc-section" style="margin-top: 40px;">
+    <div class="section-label">Why this is the moat</div>
+    <h2>AWS IoT can't copy this.</h2>
+    <div class="card-grid-2">
+      <div class="card">
+        <h3>Why AWS IoT / Azure IoT can't compete</h3>
+        <p>Horizontal cloud platforms sell infrastructure. They cannot ask their customers to share data — even as gradients — because customers don't trust them. AWS makes money from customer lock-in; we make money from customer data compounding. These are opposite incentives.</p>
+      </div>
+      <div class="card">
+        <h3>Why vertical specialists can't compete</h3>
+        <p>Augury, Cognite, Satelligence — each goes deep in one vertical. They have great models for one domain. But our federated model learns across all customers, in all verticals. After 36 months of compounding, our cross-vertical accuracy will be unreachable by any single-vertical player.</p>
+      </div>
+      <div class="card">
+        <h3>Why the customer says yes</h3>
+        <p>Customer contributes <strong>gradients only</strong> — never raw data. Differential privacy (ε=1.0) means the gradient reveals almost nothing about any individual sensor reading. SGX secure aggregation means we (the platform operator) can't see the gradient either. The customer gets a better model without giving up data.</p>
+      </div>
+      <div class="card">
+        <h3>The 36-month window</h3>
+        <p>Every round, every customer improves the model for every other customer. This compounds. After 36 months of customers contributing gradients, the accuracy gap vs. a non-federated competitor is structural — they would need 36 months of customer data to catch up, and they don't have our customers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy guarantees -->
+  <section class="doc-section">
+    <div class="section-label">Privacy guarantees</div>
+    <h2>What we can and can't see.</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>What</th><th>Customer sees</th><th>Platform sees</th><th>Compromise impact</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Raw sensor data</strong></td><td>Yes (own data only)</td><td><strong>Never</strong></td><td>No raw data leak — even full platform compromise reveals nothing</td></tr>
+        <tr><td><strong>Local gradients</strong></td><td>Yes (own gradients)</td><td><strong>Never</strong> (DP noise + SGX)</td><td>SGX attestation required — operator can't decrypt</td></tr>
+        <tr><td><strong>Aggregated gradient</strong></td><td>No</td><td>Yes (only the sum)</td><td>Aggregation is the only thing operator can read — by design</td></tr>
+        <tr><td><strong>Global model weights</strong></td><td>Yes (broadcast to all)</td><td>Yes</td><td>Public to all participating customers — the point</td></tr>
+        <tr><td><strong>Privacy budget (ε)</strong></td><td>Yes (cumulative log)</td><td>Yes</td><td>Customer can opt out at any ε; new customer starts at ε=0</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>The federated loop runs in production <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>Every design-partner deployment contributes to the global model. The live MVP dashboard runs the same inference engine that consumes the federated weights.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="ai-stack.html">AI Stack</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="system-design.html">System Design</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Federated Learning &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+// =====================================================================
+// Federated learning simulation
+// =====================================================================
+const CUSTOMERS = [
+  { id: 1, name: "DeepWater Energy", icon: "🛢️", dataPoints: 48000, optedOut: false, accuracy: 0.78 },
+  { id: 2, name: "NorthStar Manufacturing", icon: "🏭", dataPoints: 92000, optedOut: false, accuracy: 0.81 },
+  { id: 3, name: "AquaPure Water Utility", icon: "💧", dataPoints: 31000, optedOut: false, accuracy: 0.76 },
+  { id: 4, name: "AgriCoop Midwest", icon: "🌾", dataPoints: 24000, optedOut: false, accuracy: 0.74 },
+  { id: 5, name: "MetroGrid Utilities", icon: "⚡", dataPoints: 67000, optedOut: false, accuracy: 0.79 },
+];
+
+let round = 0;
+let globalAccuracy = 0.82;
+let cumEpsilon = 0.0;
+const accuracyHistory = [0.82];
+let isRunning = false;
+
+function renderCustomers() {
+  const container = document.getElementById('customers-container');
+  container.innerHTML = CUSTOMERS.map(c => `
+    <div class="fl-customer ${c.optedOut ? 'opted-out' : ''}" id="customer-${c.id}">
+      <div class="fl-customer-icon">${c.icon}</div>
+      <div class="fl-customer-name">${c.name}</div>
+      <div class="fl-customer-data">${c.dataPoints.toLocaleString()} sensors</div>
+      <div class="fl-customer-accuracy">local acc: ${c.accuracy.toFixed(3)}</div>
+      <div class="fl-customer-bar">
+        <div class="fl-customer-bar-fill" style="width: ${c.accuracy * 100}%"></div>
+      </div>
+      <button class="fl-customer-toggle" onclick="toggleOptOut(${c.id})">
+        ${c.optedOut ? '↩ Re-join' : '✕ Opt out'}
+      </button>
+    </div>
+  `).join('');
+  updateParticipatingCount();
+}
+
+function toggleOptOut(id) {
+  if (isRunning) return;
+  const c = CUSTOMERS.find(x => x.id === id);
+  c.optedOut = !c.optedOut;
+  renderCustomers();
+}
+
+function updateParticipatingCount() {
+  const participating = CUSTOMERS.filter(c => !c.optedOut).length;
+  document.getElementById('participating-count').textContent = participating;
+}
+
+async function runRound() {
+  if (isRunning) return;
+  isRunning = true;
+  document.getElementById('run-round-btn').disabled = true;
+
+  const participating = CUSTOMERS.filter(c => !c.optedOut);
+  if (participating.length === 0) {
+    alert('All customers opted out — no gradient to aggregate.');
+    isRunning = false;
+    document.getElementById('run-round-btn').disabled = false;
+    return;
+  }
+
+  round++;
+  cumEpsilon += 1.0;
+
+  // Animate each customer: compute gradient
+  for (const c of participating) {
+    const el = document.getElementById(`customer-${c.id}`);
+    el.classList.add('active');
+    await sleep(200);
+  }
+
+  // Animate gradient flow
+  document.getElementById('gradient-flow').style.opacity = '1';
+  document.getElementById('gradient-count').textContent = participating.length;
+  await sleep(400);
+
+  // Aggregator runs
+  document.querySelector('.fl-aggregator').style.boxShadow = '0 0 32px color-mix(in srgb, var(--violet) 40%, transparent)';
+  await sleep(600);
+  document.querySelector('.fl-aggregator').style.boxShadow = '';
+
+  // Model update flow
+  document.getElementById('model-update-flow').style.opacity = '1';
+  await sleep(400);
+
+  // Update global accuracy (improves, but slower with fewer participants)
+  const improvement = (0.005 + Math.random() * 0.003) * (participating.length / 5);
+  globalAccuracy = Math.min(0.95, globalAccuracy + improvement);
+  document.getElementById('global-accuracy').textContent = globalAccuracy.toFixed(3);
+
+  // Update each customer's local accuracy (their model improves from the global update)
+  for (const c of participating) {
+    const boost = (globalAccuracy - c.accuracy) * 0.3 + Math.random() * 0.005;
+    c.accuracy = Math.min(0.95, c.accuracy + boost);
+  }
+
+  // Update UI
+  document.getElementById('round-num').textContent = round;
+  document.getElementById('cum-epsilon').textContent = cumEpsilon.toFixed(1);
+  renderCustomers();
+  updateChart();
+
+  // Reset visual states
+  document.getElementById('gradient-flow').style.opacity = '0.5';
+  document.getElementById('model-update-flow').style.opacity = '0.5';
+  participating.forEach(c => {
+    document.getElementById(`customer-${c.id}`).classList.remove('active');
+  });
+
+  isRunning = false;
+  document.getElementById('run-round-btn').disabled = false;
+}
+
+async function runMultipleRounds(n) {
+  for (let i = 0; i < n; i++) {
+    await runRound();
+    await sleep(200);
+  }
+}
+
+function resetSimulation() {
+  if (isRunning) return;
+  round = 0;
+  globalAccuracy = 0.82;
+  cumEpsilon = 0.0;
+  accuracyHistory.length = 0;
+  accuracyHistory.push(0.82);
+  CUSTOMERS.forEach(c => {
+    c.optedOut = false;
+    c.accuracy = 0.74 + Math.random() * 0.08;
+  });
+  document.getElementById('round-num').textContent = '0';
+  document.getElementById('global-accuracy').textContent = '0.82';
+  document.getElementById('cum-epsilon').textContent = '0.0';
+  renderCustomers();
+  updateChart();
+}
+
+function updateChart() {
+  accuracyHistory.push(globalAccuracy);
+  if (accuracyHistory.length > 50) accuracyHistory.shift();
+
+  const svg = document.getElementById('accuracy-chart');
+  const w = 800, h = 200, padding = 20;
+  const minAcc = 0.70, maxAcc = 0.98;
+
+  // Build path
+  let path = '';
+  const points = [];
+  accuracyHistory.forEach((acc, i) => {
+    const x = padding + (i / Math.max(accuracyHistory.length - 1, 1)) * (w - 2 * padding);
+    const y = h - padding - ((acc - minAcc) / (maxAcc - minAcc)) * (h - 2 * padding);
+    points.push(`${x},${y}`);
+  });
+  path = 'M ' + points.join(' L ');
+
+  // Build SVG content
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="acc-gradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(0, 212, 255, 0.3)"/>
+        <stop offset="100%" stop-color="rgba(0, 212, 255, 0)"/>
+      </linearGradient>
+    </defs>
+    <line x1="${padding}" y1="${h - padding}" x2="${w - padding}" y2="${h - padding}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${h - padding}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <text x="${padding}" y="${padding + 5}" fill="rgba(255,255,255,0.5)" font-family="JetBrains Mono" font-size="10">0.98</text>
+    <text x="${padding}" y="${h - padding + 15}" fill="rgba(255,255,255,0.5)" font-family="JetBrains Mono" font-size="10">0.70</text>
+    <text x="${w - padding - 30}" y="${h - padding + 15}" fill="rgba(255,255,255,0.5)" font-family="JetBrains Mono" font-size="10">round</text>
+    <path d="${path} L ${w - padding},${h - padding} L ${padding},${h - padding} Z" fill="url(#acc-gradient)"/>
+    <path d="${path}" stroke="rgb(0, 212, 255)" stroke-width="2" fill="none"/>
+    ${points.map(p => {
+      const [x, y] = p.split(',');
+      return `<circle cx="${x}" cy="${y}" r="2" fill="rgb(0, 212, 255)"/>`;
+    }).join('')}
+  `;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Init
+renderCustomers();
+updateChart();
+</script>
+
+</body>
+</html>

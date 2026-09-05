@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — API Reference</title>
+<meta name="description" content="OpenAPI 3.1 spec for the AISensorEdgeComp REST API. Interactive Swagger UI. Engineers evaluating the platform can explore the actual API contract." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — API Reference" />
+<meta property="og:description" content="OpenAPI 3.1 spec with interactive Swagger UI." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<!-- Swagger UI dark theme -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+<style>
+  body.swagger-body {
+    background: var(--bg);
+  }
+  .swagger-ui {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    margin: 24px 0;
+  }
+  .swagger-ui .info-title {
+    color: var(--text) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+  }
+  .swagger-ui .info-description {
+    color: var(--text-dim) !important;
+  }
+  .swagger-ui .opblock {
+    background: var(--bg-2) !important;
+    border-color: var(--border) !important;
+  }
+  .swagger-ui .opblock-summary-method {
+    color: white !important;
+  }
+  .swagger-ui table thead tr td, .swagger-ui table thead tr th {
+    color: var(--text-dim) !important;
+    border-bottom-color: var(--border) !important;
+  }
+  .swagger-ui .scheme-container {
+    background: var(--bg-2) !important;
+  }
+</style>
+</head>
+<body id="api-reference">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="system-design.html">System Design</a>
+    <a href="api-reference.html" class="active">API Reference</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="engineering.html">Engineering</a><span class="sep">/</span>
+      <span>API Reference</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>OpenAPI 3.1 · Interactive Swagger UI</div>
+    <h1>API <span class="accent">Reference</span></h1>
+    <p class="lead">
+      The complete REST API contract for AISensorEdgeComp — OpenAPI 3.1 spec with
+      interactive Swagger UI below. Engineers evaluating the platform can explore
+      every endpoint, request/response schema, and authentication flow. The spec
+      lives at <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/openapi.yaml" target="_blank" rel="noopener" style="color: var(--cyan);"><code>openapi.yaml</code></a> in the platform repo.
+    </p>
+  </div>
+</section>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Quick links -->
+  <section class="doc-section" style="border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+    <div class="section-label">Quick links</div>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/openapi.yaml" target="_blank" rel="noopener" class="btn btn-primary btn-sm">View openapi.yaml on GitHub →</a>
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/services/api/main.py" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">View API source (FastAPI) →</a>
+      <a href="system-design.html" class="btn btn-ghost btn-sm">System Design →</a>
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Try the live API →</a>
+    </div>
+  </section>
+
+  <!-- Endpoint summary -->
+  <section class="doc-section">
+    <div class="section-label">Endpoints (16 total)</div>
+    <h2>What's in the API</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Method</th><th>Path</th><th>Tag</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>GET</code></td><td><code>/health</code></td><td>Health</td><td>Service health check (no auth)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/v1/auth/login</code></td><td>Auth</td><td>Sign in, get JWT (24h expiry)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/sensors</code></td><td>Sensors</td><td>List sensors (with filters: kind, status, pagination)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/sensors/{sensor_id}</code></td><td>Sensors</td><td>Get sensor metadata</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/sensors/{sensor_id}/readings</code></td><td>Sensors</td><td>Get raw telemetry readings (with time range + pagination)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/sensors/{sensor_id}/stats</code></td><td>Sensors</td><td>Aggregated stats (min/max/mean/std per window)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/alerts</code></td><td>Alerts</td><td>List alerts (filter by severity, asset, time)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/alerts/{alert_id}</code></td><td>Alerts</td><td>Get alert with full evidence chain + citations</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/assets</code></td><td>Assets</td><td>List assets (compressors, lines, fields, etc.)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/assets/{asset_id}</code></td><td>Assets</td><td>Get asset metadata</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/assets/{asset_id}/rul</code></td><td>ML</td><td>Get RUL prediction for asset</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/v1/maintenance</code></td><td>Maintenance</td><td>List maintenance events (filter by asset, type)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/v1/ml/infer/anomaly</code></td><td>ML</td><td>Run TS-FM anomaly detection on a window</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/v1/ml/infer/rul</code></td><td>ML</td><td>Predict remaining useful life for an asset</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/v1/search</code></td><td>Search</td><td>Natural-language query (LLM-powered, with citations)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Swagger UI -->
+  <section class="doc-section">
+    <div class="section-label">Interactive Swagger UI</div>
+    <h2>Explore the API</h2>
+    <p>Click any endpoint to expand. Try it live against the staging server (read-only endpoints work with no auth).</p>
+
+    <!-- Swagger UI container -->
+    <div id="swagger-ui"></div>
+  </section>
+
+  <!-- Code samples -->
+  <section class="doc-section">
+    <div class="section-label">Code samples</div>
+    <h2>Quick start with the API</h2>
+
+    <h3>Python (requests)</h3>
+    <div class="code-block">
+<pre><span class="comment"># Get a JWT token</span>
+<span class="key">import</span> requests
+
+resp = requests.post(<span class="str">"https://api.aisensoredgecomp.ai/api/v1/auth/login"</span>, json={
+    <span class="str">"email"</span>: <span class="str">"you@company.com"</span>,
+    <span class="str">"password"</span>: <span class="str">"your-password"</span>,
+})
+token = resp.json()[<span class="str">"token"</span>]
+headers = {<span class="str">"Authorization"</span>: <span class="val">f"Bearer {token}"</span>}
+
+<span class="comment"># List sensors</span>
+sensors = requests.get(
+    <span class="str">"https://api.aisensoredgecomp.ai/api/v1/sensors"</span>,
+    headers=headers,
+    params={<span class="str">"sensor_kind"</span>: <span class="str">"vibration"</span>, <span class="str">"page_size"</span>: 50},
+).json()
+
+<span class="comment"># Get readings for a sensor</span>
+readings = requests.get(
+    <span class="val">f"https://api.aisensoredgecomp.ai/api/v1/sensors/{sensors['sensors'][0]['sensor_id']}/readings"</span>,
+    headers=headers,
+    params={<span class="str">"limit"</span>: 100},
+).json()
+
+<span class="comment"># Ask a natural-language question</span>
+answer = requests.post(
+    <span class="str">"https://api.aisensoredgecomp.ai/api/v1/search"</span>,
+    headers=headers,
+    json={<span class="str">"query"</span>: <span class="str">"What is the current status of compressor A?"</span>},
+).json()
+print(answer[<span class="str">"answer"</span>])</pre>
+    </div>
+
+    <h3>JavaScript (fetch)</h3>
+    <div class="code-block">
+<pre><span class="comment">// Sign in</span>
+<span class="key">const</span> loginResp = <span class="key">await</span> fetch(<span class="str">"https://api.aisensoredgecomp.ai/api/v1/auth/login"</span>, {
+  method: <span class="str">"POST"</span>,
+  headers: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+  body: JSON.stringify({
+    email: <span class="str">"you@company.com"</span>,
+    password: <span class="str">"your-password"</span>,
+  }),
+});
+<span class="key">const</span> { token } = <span class="key">await</span> loginResp.json();
+
+<span class="comment">// Query sensors</span>
+<span class="key">const</span> sensorsResp = <span class="key">await</span> fetch(<span class="str">"https://api.aisensoredgecomp.ai/api/v1/sensors"</span>, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+<span class="key">const</span> sensors = <span class="key">await</span> sensorsResp.json();</pre>
+    </div>
+
+    <h3>curl</h3>
+    <div class="code-block">
+<pre><span class="comment"># Sign in</span>
+curl -X POST https://api.aisensoredgecomp.ai/api/v1/auth/login \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d '{"email":"you@company.com","password":"your-password"}'
+
+<span class="comment"># List sensors (replace TOKEN)</span>
+curl https://api.aisensoredgecomp.ai/api/v1/sensors \
+  -H <span class="str">"Authorization: Bearer TOKEN"</span>
+
+<span class="comment"># Ask a question</span>
+curl -X POST https://api.aisensoredgecomp.ai/api/v1/search \
+  -H <span class="str">"Authorization: Bearer TOKEN"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d '{"query":"What is your TAM?"}'</pre>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="system-design.html">System Design</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/openapi.yaml" target="_blank" rel="noopener">openapi.yaml</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; API Reference &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<!-- Swagger UI bundle -->
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>
+// Initialize Swagger UI with the embedded spec
+const swaggerSpec = {"openapi": "3.1.0", "info": {"title": "AISensorEdgeComp API", "version": "0.1.0", "description": "The AISensorEdgeComp REST API \u2014 planetary-scale IoT + edge AI platform.\n\n## Authentication\nAll write endpoints require a JWT bearer token obtained via `/api/v1/auth/login`.\nRead endpoints are rate-limited per IP (1000 req/min default).\n\n## Rate Limiting\n- Anonymous: 100 req/min per IP\n- Authenticated: 1000 req/min per token\n- Design partner: 10,000 req/min per token\n\n## Versioning\nAPI version is in the URL path (`/api/v1/`). Breaking changes require a new\nversion (`/api/v2/`). Backward-compatible changes are additive only.\n\n## Schemas\nAll schemas match the Avro definitions in `schemas/avro/` and Protobuf\ndefinitions in `schemas/proto/`. See [schemas/README.md](schemas/README.md).\n", "contact": {"name": "AISensorEdgeComp API Support", "email": "platform@aisensoredgecomp.ai", "url": "https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/"}, "license": {"name": "Apache 2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0"}}, "servers": [{"url": "https://api.aisensoredgecomp.ai", "description": "Production"}, {"url": "https://staging-api.aisensoredgecomp.ai", "description": "Staging"}, {"url": "http://localhost:8000", "description": "Local development"}], "tags": [{"name": "Auth", "description": "Authentication and session management"}, {"name": "Sensors", "description": "Sensor registry and live readings"}, {"name": "Alerts", "description": "Active and historical alerts"}, {"name": "Assets", "description": "Asset registry (compressors, lines, fields, etc.)"}, {"name": "Maintenance", "description": "Maintenance event log and scheduling"}, {"name": "ML", "description": "ML inference \u2014 anomaly detection, RUL prediction"}, {"name": "Search", "description": "Natural-language query (LLM-powered, with citations)"}, {"name": "Health", "description": "Service health and observability"}], "security": [{"bearerAuth": []}], "paths": {"/health": {"get": {"tags": ["Health"], "summary": "Service health check", "description": "Returns service health status. No authentication required.", "security": [], "responses": {"200": {"description": "Service is healthy", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HealthResponse"}}}}}}}, "/api/v1/auth/login": {"post": {"tags": ["Auth"], "summary": "Sign in and obtain JWT", "description": "Authenticate with email + password, receive a JWT bearer token valid for 24 hours.", "security": [], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LoginRequest"}}}}, "responses": {"200": {"description": "Authentication successful", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LoginResponse"}}}}, "401": {"$ref": "#/components/responses/Unauthorized"}}}}, "/api/v1/sensors": {"get": {"tags": ["Sensors"], "summary": "List sensors", "description": "Returns the sensor registry with current state per sensor.", "parameters": [{"$ref": "#/components/parameters/SensorKindFilter"}, {"$ref": "#/components/parameters/StatusFilter"}, {"$ref": "#/components/parameters/PageParam"}, {"$ref": "#/components/parameters/PageSizeParam"}], "responses": {"200": {"description": "List of sensors", "content": {"application/json": {"schema": {"type": "object", "properties": {"sensors": {"type": "array", "items": {"$ref": "#/components/schemas/Sensor"}}, "count": {"type": "integer"}, "page": {"type": "integer"}, "page_size": {"type": "integer"}}}}}}}}}, "/api/v1/sensors/{sensor_id}": {"get": {"tags": ["Sensors"], "summary": "Get sensor metadata", "parameters": [{"$ref": "#/components/parameters/SensorIdPath"}], "responses": {"200": {"description": "Sensor metadata", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Sensor"}}}}, "404": {"$ref": "#/components/responses/NotFound"}}}}, "/api/v1/sensors/{sensor_id}/readings": {"get": {"tags": ["Sensors"], "summary": "Get sensor readings", "description": "Returns raw telemetry readings for a sensor. Query by time range, with pagination.", "parameters": [{"$ref": "#/components/parameters/SensorIdPath"}, {"name": "since", "in": "query", "description": "Epoch nanoseconds \u2014 return readings with `timestamp_ns` >= this value", "schema": {"type": "integer", "format": "int64"}}, {"name": "until", "in": "query", "description": "Epoch nanoseconds \u2014 return readings with `timestamp_ns` < this value", "schema": {"type": "integer", "format": "int64"}}, {"name": "limit", "in": "query", "description": "Max readings to return (default 1000, max 10000)", "schema": {"type": "integer", "default": 1000, "maximum": 10000}}], "responses": {"200": {"description": "Sensor readings", "content": {"application/json": {"schema": {"type": "object", "properties": {"sensor_id": {"type": "string"}, "readings": {"type": "array", "items": {"$ref": "#/components/schemas/Telemetry"}}, "count": {"type": "integer"}, "next_cursor": {"type": "integer", "format": "int64", "nullable": true}}}}}}}}}, "/api/v1/sensors/{sensor_id}/stats": {"get": {"tags": ["Sensors"], "summary": "Get sensor statistics", "description": "Returns aggregated statistics (min, max, mean, std, anomaly count) for a time range.", "parameters": [{"$ref": "#/components/parameters/SensorIdPath"}, {"name": "window", "in": "query", "description": "Aggregation window (1m, 5m, 1h, 1d)", "schema": {"type": "string", "enum": ["1m", "5m", "1h", "1d"], "default": "1h"}}, {"name": "since", "in": "query", "schema": {"type": "integer", "format": "int64"}}, {"name": "until", "in": "query", "schema": {"type": "integer", "format": "int64"}}], "responses": {"200": {"description": "Aggregated stats", "content": {"application/json": {"schema": {"type": "object", "properties": {"sensor_id": {"type": "string"}, "buckets": {"type": "array", "items": {"$ref": "#/components/schemas/SensorStat"}}}}}}}}}}, "/api/v1/alerts": {"get": {"tags": ["Alerts"], "summary": "List alerts", "description": "Returns recent alerts, optionally filtered by severity or asset.", "parameters": [{"name": "severity", "in": "query", "schema": {"type": "string", "enum": ["info", "warning", "critical", "emergency"]}}, {"name": "asset_id", "in": "query", "schema": {"type": "string"}}, {"name": "since", "in": "query", "schema": {"type": "integer", "format": "int64"}}, {"$ref": "#/components/parameters/PageParam"}, {"$ref": "#/components/parameters/PageSizeParam"}], "responses": {"200": {"description": "List of alerts", "content": {"application/json": {"schema": {"type": "object", "properties": {"alerts": {"type": "array", "items": {"$ref": "#/components/schemas/Alert"}}, "count": {"type": "integer"}}}}}}}}}, "/api/v1/alerts/{alert_id}": {"get": {"tags": ["Alerts"], "summary": "Get alert details with evidence chain", "parameters": [{"name": "alert_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Alert with full evidence chain", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Alert"}}}}, "404": {"$ref": "#/components/responses/NotFound"}}}}, "/api/v1/assets": {"get": {"tags": ["Assets"], "summary": "List assets", "parameters": [{"name": "asset_type", "in": "query", "schema": {"type": "string"}}, {"$ref": "#/components/parameters/PageParam"}, {"$ref": "#/components/parameters/PageSizeParam"}], "responses": {"200": {"description": "List of assets", "content": {"application/json": {"schema": {"type": "object", "properties": {"assets": {"type": "array", "items": {"$ref": "#/components/schemas/Asset"}}, "count": {"type": "integer"}}}}}}}}}, "/api/v1/assets/{asset_id}": {"get": {"tags": ["Assets"], "summary": "Get asset details", "parameters": [{"name": "asset_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Asset details", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Asset"}}}}}}}, "/api/v1/assets/{asset_id}/rul": {"get": {"tags": ["ML"], "summary": "Get remaining-useful-life prediction", "description": "Returns the TS-FM-based RUL prediction for an asset, updated daily.", "parameters": [{"name": "asset_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "RUL prediction", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RULPrediction"}}}}}}}, "/api/v1/maintenance": {"get": {"tags": ["Maintenance"], "summary": "List maintenance events", "parameters": [{"name": "asset_id", "in": "query", "schema": {"type": "string"}}, {"name": "event_type", "in": "query", "schema": {"type": "string", "enum": ["inspection", "repair", "replacement", "calibration", "fault"]}}, {"$ref": "#/components/parameters/PageParam"}, {"$ref": "#/components/parameters/PageSizeParam"}], "responses": {"200": {"description": "List of maintenance events", "content": {"application/json": {"schema": {"type": "object", "properties": {"events": {"type": "array", "items": {"$ref": "#/components/schemas/MaintenanceEvent"}}, "count": {"type": "integer"}}}}}}}}}, "/api/v1/ml/infer/anomaly": {"post": {"tags": ["ML"], "summary": "Run TS-FM anomaly detection on a window", "description": "Submits a window of sensor readings for TS-FM anomaly detection. Returns anomaly score and confidence.", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/InferenceRequest"}}}}, "responses": {"200": {"description": "Inference result", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AnomalyInferenceResponse"}}}}}}}, "/api/v1/ml/infer/rul": {"post": {"tags": ["ML"], "summary": "Predict remaining useful life for an asset", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RULRequest"}}}}, "responses": {"200": {"description": "RUL prediction", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RULPrediction"}}}}}}}, "/api/v1/search": {"post": {"tags": ["Search"], "summary": "Natural-language query (LLM-powered)", "description": "Ask a natural-language question about the platform. Returns a grounded\nanswer with citation chain. Powered by z-ai-web-dev-sdk on the backend.\n\nExample queries:\n- \"What is your TAM and how is it calculated?\"\n- \"How does the edge-cloud workload placement work?\"\n- \"Which verticals are you going after first and why?\"\n", "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["query"], "properties": {"query": {"type": "string", "minLength": 3, "maxLength": 500, "description": "Natural-language query"}}}}}}, "responses": {"200": {"description": "Grounded answer", "content": {"application/json": {"schema": {"type": "object", "properties": {"query": {"type": "string"}, "answer": {"type": "string"}, "citations": {"type": "array", "items": {"type": "string"}}, "confidence": {"type": "number", "format": "float"}, "timestamp": {"type": "integer", "format": "int64"}, "grounded": {"type": "boolean", "description": "True if LLM responded (vs. fallback rule-based answer)"}}}}}}}}}}, "components": {"securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}}, "parameters": {"SensorIdPath": {"name": "sensor_id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stable sensor identifier (e.g., vib_a3_l3_compressor_a_bearing1)"}, "SensorKindFilter": {"name": "sensor_kind", "in": "query", "schema": {"type": "string", "enum": ["vibration", "temperature", "pressure", "flow", "level", "gas", "acoustic", "flame", "corrosion", "valve_position", "power", "environmental"]}}, "StatusFilter": {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["nominal", "warning", "critical", "offline"]}}, "PageParam": {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1, "minimum": 1}}, "PageSizeParam": {"name": "page_size", "in": "query", "schema": {"type": "integer", "default": 100, "maximum": 1000}}}, "responses": {"Unauthorized": {"description": "Authentication required or invalid", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "NotFound": {"description": "Resource not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}, "RateLimited": {"description": "Rate limit exceeded", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}}, "schemas": {"HealthResponse": {"type": "object", "properties": {"status": {"type": "string", "enum": ["ok", "degraded", "down"]}, "service": {"type": "string"}, "version": {"type": "string"}, "timestamp": {"type": "integer", "format": "int64"}}}, "Error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "details": {"type": "object", "additionalProperties": true}}}, "LoginRequest": {"type": "object", "required": ["email", "password"], "properties": {"email": {"type": "string", "format": "email"}, "password": {"type": "string", "minLength": 6}}}, "LoginResponse": {"type": "object", "properties": {"ok": {"type": "boolean"}, "token": {"type": "string", "description": "JWT bearer token"}, "user": {"type": "object", "properties": {"email": {"type": "string"}, "name": {"type": "string"}, "role": {"type": "string", "enum": ["design_partner", "customer", "admin"]}}}, "expires_in_hours": {"type": "integer", "default": 24}}}, "Sensor": {"type": "object", "properties": {"sensor_id": {"type": "string"}, "sensor_kind": {"type": "string", "enum": ["vibration", "temperature", "pressure", "flow", "level", "gas", "acoustic", "flame", "corrosion", "valve_position", "power", "environmental"]}, "physical_quantity": {"type": "string"}, "unit": {"type": "string"}, "sample_rate_hz": {"type": "number"}, "edge_device": {"type": "string"}, "location": {"type": "object", "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}, "elevation_m": {"type": "number", "nullable": true}}}, "status": {"type": "string", "enum": ["nominal", "warning", "critical", "offline"]}, "ts_fm_confidence": {"type": "number", "format": "float"}, "last_reading_at": {"type": "integer", "format": "int64"}, "calibration_confidence": {"type": "number", "format": "float"}}}, "Telemetry": {"type": "object", "description": "Canonical measurement record (matches schemas/avro/telemetry.avsc)", "properties": {"measurement_id": {"type": "string"}, "sensor_id": {"type": "string"}, "sensor_kind": {"type": "string"}, "physical_quantity": {"type": "string"}, "unit": {"type": "string"}, "value": {"type": "number"}, "uncertainty": {"type": "number"}, "timestamp_ns": {"type": "integer", "format": "int64"}, "sample_rate_hz": {"type": "number"}, "location": {"$ref": "#/components/schemas/GeoLocation"}, "lineage": {"$ref": "#/components/schemas/Lineage"}, "calibration_confidence": {"type": "number"}}}, "GeoLocation": {"type": "object", "nullable": true, "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}, "elevation_m": {"type": "number", "nullable": true}}}, "Lineage": {"type": "object", "properties": {"ingest_protocol": {"type": "string", "enum": ["mqtt", "opcua", "modbus", "coap", "profinet", "ethercat", "lorawan", "nbiot", "stac", "http"]}, "source_node_id": {"type": "string"}, "ingest_ts": {"type": "integer", "format": "int64"}, "calibration_age_days": {"type": "integer"}}}, "SensorStat": {"type": "object", "properties": {"bucket": {"type": "string", "format": "date-time"}, "avg_value": {"type": "number"}, "min_value": {"type": "number"}, "max_value": {"type": "number"}, "sample_count": {"type": "integer"}, "anomaly_count": {"type": "integer"}, "avg_confidence": {"type": "number"}}}, "Alert": {"type": "object", "properties": {"alert_id": {"type": "string"}, "sensor_id": {"type": "string", "nullable": true}, "asset_id": {"type": "string", "nullable": true}, "severity": {"type": "string", "enum": ["info", "warning", "critical", "emergency"]}, "title": {"type": "string"}, "description": {"type": "string", "nullable": true}, "evidence": {"type": "object", "properties": {"anomaly_score": {"type": "number"}, "ts_fm_confidence": {"type": "number"}, "causal_test_result": {"type": "string", "nullable": true}, "citation_chain": {"type": "array", "items": {"type": "string"}}}}, "triggered_at": {"type": "integer", "format": "int64"}, "acknowledged_at": {"type": "integer", "format": "int64", "nullable": true}, "resolved_at": {"type": "integer", "format": "int64", "nullable": true}}}, "Asset": {"type": "object", "properties": {"asset_id": {"type": "string"}, "asset_type": {"type": "string", "description": "e.g., compressor, line, field, vessel, wellhead"}, "description": {"type": "string", "nullable": true}, "parent_id": {"type": "string", "nullable": true}, "location": {"$ref": "#/components/schemas/GeoLocation"}, "metadata": {"type": "object", "additionalProperties": {"type": "string"}}, "created_at": {"type": "integer", "format": "int64"}, "updated_at": {"type": "integer", "format": "int64"}}}, "MaintenanceEvent": {"type": "object", "properties": {"event_id": {"type": "string"}, "asset_id": {"type": "string"}, "event_type": {"type": "string", "enum": ["inspection", "repair", "replacement", "calibration", "fault"]}, "description": {"type": "string", "nullable": true}, "performed_by": {"type": "string", "nullable": true}, "cost_usd": {"type": "number", "nullable": true}, "started_at": {"type": "integer", "format": "int64"}, "completed_at": {"type": "integer", "format": "int64", "nullable": true}, "metadata": {"type": "object", "additionalProperties": {"type": "string"}}}}, "InferenceRequest": {"type": "object", "required": ["sensor_id", "window", "sensor_kind"], "properties": {"sensor_id": {"type": "string"}, "window": {"type": "array", "items": {"type": "number"}, "description": "Last N samples (tokenized for TS-FM)"}, "sensor_kind": {"type": "string"}}}, "AnomalyInferenceResponse": {"type": "object", "properties": {"sensor_id": {"type": "string"}, "anomaly_score": {"type": "number", "description": "0.0-1.0"}, "confidence": {"type": "number", "description": "0.0-1.0"}, "model_version": {"type": "string", "example": "ts-fm-v1"}, "inference_at": {"type": "string", "enum": ["edge", "cloud"]}}}, "RULRequest": {"type": "object", "required": ["asset_id"], "properties": {"asset_id": {"type": "string"}, "window_days": {"type": "integer", "default": 7, "description": "Number of days of recent sensor data to use"}}}, "RULPrediction": {"type": "object", "properties": {"asset_id": {"type": "string"}, "rul_hours": {"type": "number", "description": "Predicted remaining useful life in hours"}, "confidence": {"type": "number"}, "model_version": {"type": "string", "example": "rul-v1"}, "predicted_at": {"type": "integer", "format": "int64"}, "features": {"type": "array", "items": {"type": "string"}, "description": "Features used in the prediction"}}}}}};
+
+window.onload = () => {
+  SwaggerUIBundle({
+    spec: swaggerSpec,
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [SwaggerUIBundle.presets.apis],
+    layout: 'BaseLayout',
+    syntaxHighlight: { activated: true, theme: 'monokai' },
+    defaultModelsExpandDepth: 2,
+    defaultModelExpandDepth: 2,
+    docExpansion: 'list',
+    filter: true,
+    tryItOutEnabled: false,
+    supportedSubmitMethods: [],
+  });
+};
+</script>
+
+</body>
+</html>
