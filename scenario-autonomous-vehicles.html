@@ -1,0 +1,5560 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Scenario: Autonomous Vehicles</title>
+<meta name="description" content="Live scenario: FleetOps AI — Autonomous Delivery Fleet. 96 assets, 374 sensors, synthetic telemetry streaming." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Scenario: Autonomous Vehicles" />
+<meta property="og:description" content="FleetOps AI — Autonomous Delivery Fleet: 96 assets, 374 sensors, live synthetic telemetry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .platform-map { background: linear-gradient(180deg, #0a1a2f 0%, #051020 100%); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin: 24px 0; position: relative; overflow: hidden; min-height: 260px; }
+  .platform-map-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: center; }
+  .platform-diagram { position: relative; height: 200px; background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08), transparent 70%); border: 1px solid rgba(0, 212, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .platform-stats-side { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-tile { padding: 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); text-align: center; }
+  .stat-tile .num { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-tile .lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+  .filter-chip { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+  .filter-chip:hover, .filter-chip.active { background: color-mix(in srgb, var(--cyan) 10%, transparent); border-color: var(--cyan); color: var(--cyan); }
+  .filter-chip .count { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--text-mute) 15%, transparent); font-size: 10px; }
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+  .asset-card { padding: 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden; }
+  .asset-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .asset-card.warning { border-color: var(--gold); }
+  .asset-card.critical { border-color: var(--magenta); border-width: 2px; }
+  .sensor-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; padding: 10px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border); }
+  .live-channel { display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 6px; background: var(--card); border-radius: 4px; border-left: 2px solid var(--text-mute); }
+  .live-channel.nominal { border-left-color: var(--green); }
+  .live-channel.warning { border-left-color: var(--gold); }
+  .live-channel.critical { border-left-color: var(--magenta); }
+  .status-badge { padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .status-badge.nominal { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .status-badge.warning { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .status-badge.critical, .status-badge.emergency { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .alert-item { padding: 14px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid; }
+  .alert-item.warning { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 5%, var(--card)); }
+  .alert-item.critical, .alert-item.emergency { border-left-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 5%, var(--card)); }
+  .audit-item { display: flex; gap: 12px; padding: 12px; border-left: 2px solid var(--cyan); margin-bottom: 8px; background: var(--card); border-radius: 0 8px 8px 0; }
+  .audit-item.action-required { border-left-color: var(--magenta); }
+  .audit-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 100px; }
+  .audit-result { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+  .audit-result.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .audit-result.pass-with-notes { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); }
+  .compliance-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 4px; }
+  .compliance-badge.pass { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .compliance-badge.pending { background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .rul-bar { height: 8px; border-radius: 4px; background: var(--bg-2); overflow: hidden; }
+  .rul-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--magenta)); }
+</style>
+</head>
+<body id="scenario-autonomous-vehicles">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore O&G</a>
+    <a href="scenario-autonomous-vehicles.html" class="active">Autonomous Vehicles</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live"><span class="label">Live Dashboard</span></a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="sectors.html">Sectors</a><span class="sep">/</span><span>Autonomous Vehicles</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Live Scenario · Synthetic Telemetry Streaming</div>
+    <h1>Autonomous Vehicles <span class="accent">Live Scenario</span></h1>
+    <p class="lead">A live scenario demonstration of AISensorEdgeComp deployed at <strong>FleetOps AI — Autonomous Delivery Fleet</strong> in Palo Alto, California, USA (fleet HQ + 5 depots). 96 assets across 12 categories, 374 sensor endpoints, real-time TS-FM anomaly detection, and full audit/compliance tracking — all running on synthetic data.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">Open Live MVP &rarr;</a>
+      <a href="roi-autonomous-vehicles.html" class="btn btn-ghost">Autonomous Vehicles ROI Calculator →</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Scenario</h4>
+    <a href="#platform-overview">Platform Overview</a>
+    <a href="#asset-registry">Asset Registry</a>
+    <a href="#live-readings">Live Sensor Readings</a>
+    <a href="#alerts">Active Alerts</a>
+    <a href="#maintenance">Maintenance Log</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#rul">RUL Predictions</a>
+    <a href="#compliance">Compliance</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="doc-section" id="platform-overview">
+      <div class="section-label">Platform Profile</div>
+      <h2>FleetOps AI — Autonomous Delivery Fleet</h2>
+      <p>Operated by FleetOps AI Inc.. Installed 2024-01-15 with a design life to 2034-01-15. 500 autonomous vehicles, 5 depots, 50k deliveries/day. 120 fleet ops + 80 remote operators.</p>
+      <div class="platform-map">
+        <div class="platform-map-content">
+          <div class="platform-diagram">
+            <div style="font-size: 48px; margin-bottom: 8px;">🏥</div>
+            <div class="platform-info">
+              <div style="font-size: 16px; font-weight: 600; color: var(--text);">Autonomous Vehicles</div>
+              <div style="font-size: 12px; color: var(--text-dim);">Palo Alto, California, USA (fleet HQ + 5 depots)</div>
+              <div style="font-size: 11px; color: var(--cyan); margin-top: 4px;">37.4419°, -122.143°</div>
+            </div>
+          </div>
+          <div class="platform-stats-side">
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">96</div><div class="lbl">Assets</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--violet);">12</div><div class="lbl">Categories</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">374</div><div class="lbl">Sensors</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--green);">81</div><div class="lbl">Nominal</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--gold);">12</div><div class="lbl">Warning</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--magenta);">3</div><div class="lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tbody>
+          <tr><td style="width: 200px;"><strong>Name</strong></td><td>FleetOps AI — Autonomous Delivery Fleet</td></tr>
+          <tr><td><strong>Operator</strong></td><td>FleetOps AI Inc.</td></tr>
+          <tr><td><strong>Location</strong></td><td>Palo Alto, California, USA (fleet HQ + 5 depots)</td></tr>
+          <tr><td><strong>Installed</strong></td><td>2024-01-15</td></tr>
+          <tr><td><strong>Design Life</strong></td><td>2034-01-15</td></tr>
+          <tr><td><strong>Capacity</strong></td><td>500 autonomous vehicles, 5 depots, 50k deliveries/day</td></tr>
+          <tr><td><strong>Compliance</strong></td><td><span class="compliance-badge pass">ISO 26262 ASIL-D ✓</span><span class="compliance-badge pass">SAE J3016 Level 4 ✓</span><span class="compliance-badge pass">UN-R155 ✓</span><span class="compliance-badge pass">UN-R156 ✓</span><span class="compliance-badge pass">NHTSA exempt ✓</span><span class="compliance-badge pending">ISO 21434 (cybersecurity)</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ASSET REGISTRY -->
+    <section class="doc-section" id="asset-registry">
+      <div class="section-label">Asset Registry</div>
+      <h2>96 assets across <span class="accent">12 categories</span></h2>
+      <p>Each asset has a unique ID, geolocation, install/expire dates, monthly audit schedule, sensor readings (live-updated), TS-FM confidence scores, and RUL predictions.</p>
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" onclick="filterAssets('all')">All <span class="count">96</span></button>
+        <button class="filter-chip" onclick="filterAssets('LiDAR Sensors')" >📡 LiDAR Sensors <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Cameras')" >📷 Cameras <span class="count">12</span></button><button class="filter-chip" onclick="filterAssets('Radar (mmWave)')" >📡 Radar (mmWave) <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('IMU')" >🧭 IMU <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('GNSS')" >🛰️ GNSS <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Battery Packs')" >🔋 Battery Packs <span class="count">10</span></button><button class="filter-chip" onclick="filterAssets('Drive Motors')" >⚙️ Drive Motors <span class="count">10</span></button><button class="filter-chip" onclick="filterAssets('Brake Systems')" >🛑 Brake Systems <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Tire Pressure (TPMS)')" >🛞 Tire Pressure (TPMS) <span class="count">20</span></button><button class="filter-chip" onclick="filterAssets('Compute Units')" >🖥️ Compute Units <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Communication')" >📶 Communication <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('HVAC')" >❄️ HVAC <span class="count">5</span></button>
+      </div>
+      <div class="asset-grid" id="asset-grid"></div>
+    </section>
+
+    <!-- LIVE READINGS -->
+    <section class="doc-section" id="live-readings">
+      <div class="section-label">Real-Time Sensor Stream</div>
+      <h2>Live sensor readings <span class="accent">(updates every 3s)</span></h2>
+      <p>All 374 sensor endpoints stream synthetic telemetry through the AISensorEdgeComp ingest pipeline.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;"><span style="height: 8px; width: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite;"></span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span></div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Nominal: <span id="nominal-count" style="color: var(--green);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Warning: <span id="warning-count" style="color: var(--gold);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Critical: <span id="critical-count" style="color: var(--magenta);">--</span></span>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="doc-section" id="alerts">
+      <div class="section-label">Active Alerts</div>
+      <h2>18 active alerts from <span class="accent">TS-FM anomaly detection</span></h2>
+      <div>
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Velodyne VLS-128 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on LiDAR Sensors LID-004</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-44743 · Asset: LID-004 · TS-FM confidence: 0.87 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Fisheye 4x — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Cameras CAM-004</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-89742 · Asset: CAM-004 · TS-FM confidence: 0.95 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Front 8MP HDR — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Cameras CAM-005</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-21920 · Asset: CAM-005 · TS-FM confidence: 0.95 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Fisheye 4x — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Cameras CAM-008</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-79614 · Asset: CAM-008 · TS-FM confidence: 0.94 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Side 4MP x4 — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Cameras CAM-010</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-57577 · Asset: CAM-010 · TS-FM confidence: 0.93 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">u-blox F9P — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on GNSS GPS-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-41225 · Asset: GPS-002 · TS-FM confidence: 0.97 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Trimble BX992 — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on GNSS GPS-004</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-55940 · Asset: GPS-004 · TS-FM confidence: 0.87 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">FL sensor — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Tire Pressure (TPMS) TPMS-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-63809 · Asset: TPMS-001 · TS-FM confidence: 0.89 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">FR sensor — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Tire Pressure (TPMS) TPMS-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-71924 · Asset: TPMS-002 · TS-FM confidence: 0.93 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">RL sensor — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Tire Pressure (TPMS) TPMS-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-85536 · Asset: TPMS-003 · TS-FM confidence: 0.92 · Acknowledged
+          </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- MAINTENANCE -->
+    <section class="doc-section" id="maintenance">
+      <div class="section-label">Maintenance Log</div>
+      <h2>351 maintenance events <span class="accent">YTD</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Asset</th><th>Type</th><th>By</th><th>Duration</th><th>Cost</th><th>Description</th></tr></thead>
+        <tbody><tr><td>2026-08-30</td><td><strong>BAT-005</strong></td><td>inspection</td><td>Tech 7</td><td>2h</td><td>$5,251</td><td>Inspection on LFP 75kWh</td></tr><tr><td>2026-08-28</td><td><strong>LID-007</strong></td><td>calibration</td><td>Tech 1</td><td>22h</td><td>$2,588</td><td>Replacement on Velodyne VLS-128</td></tr><tr><td>2026-08-28</td><td><strong>TPMS-016</strong></td><td>inspection</td><td>Tech 1</td><td>16h</td><td>$16,228</td><td>Fault on RR sensor</td></tr><tr><td>2026-08-28</td><td><strong>COMM-001</strong></td><td>inspection</td><td>Tech 5</td><td>12h</td><td>$8,958</td><td>Inspection on 5G mmWave</td></tr><tr><td>2026-08-27</td><td><strong>TPMS-016</strong></td><td>calibration</td><td>Tech 2</td><td>16h</td><td>$4,489</td><td>Replacement on RR sensor</td></tr><tr><td>2026-08-26</td><td><strong>MOT-004</strong></td><td>repair</td><td>Tech 8</td><td>1h</td><td>$4,261</td><td>Inspection on Front PMSM 150kW</td></tr><tr><td>2026-08-25</td><td><strong>IMU-005</strong></td><td>replacement</td><td>Tech 8</td><td>15h</td><td>$895</td><td>Replacement on KVH 1775</td></tr><tr><td>2026-08-24</td><td><strong>ECU-003</strong></td><td>calibration</td><td>Tech 4</td><td>24h</td><td>$7,719</td><td>Fault on Body controller</td></tr><tr><td>2026-08-23</td><td><strong>TPMS-017</strong></td><td>inspection</td><td>Tech 4</td><td>2h</td><td>$20,574</td><td>Calibration on FL sensor</td></tr><tr><td>2026-08-21</td><td><strong>BAT-003</strong></td><td>fault</td><td>Tech 1</td><td>2h</td><td>$4,801</td><td>Inspection on NMC 120kWh</td></tr><tr><td>2026-08-20</td><td><strong>TPMS-008</strong></td><td>replacement</td><td>Tech 6</td><td>11h</td><td>$21,558</td><td>Replacement on RR sensor</td></tr><tr><td>2026-08-20</td><td><strong>TPMS-016</strong></td><td>repair</td><td>Tech 3</td><td>8h</td><td>$23,984</td><td>Inspection on RR sensor</td></tr><tr><td>2026-08-19</td><td><strong>COMM-003</strong></td><td>inspection</td><td>Tech 4</td><td>20h</td><td>$15,275</td><td>Replacement on DSRC V2X</td></tr><tr><td>2026-08-17</td><td><strong>CAM-004</strong></td><td>fault</td><td>Tech 2</td><td>6h</td><td>$9,360</td><td>Repair on Fisheye 4x</td></tr><tr><td>2026-08-17</td><td><strong>BRK-002</strong></td><td>inspection</td><td>Tech 5</td><td>23h</td><td>$3,413</td><td>Inspection on Rear EMB</td></tr></tbody>
+      </table>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 15 of 351 events.</p>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section class="doc-section" id="audit">
+      <div class="section-label">Audit Trail</div>
+      <h2>64 audit entries <span class="accent">(monthly cycle)</span></h2>
+      <div>
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-003 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Safety test passed.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-28</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-003 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item action-required">
+          <div class="audit-date">2026-08-23</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-006 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result action-required">action required</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-20</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-005 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-19</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-005 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-19</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-005 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-15</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-004 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item action-required">
+          <div class="audit-date">2026-08-14</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-006 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result action-required">action required</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-13</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-008 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-12</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-003 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-08</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CAM-012 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-07</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">LID-003 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 12 of 64 entries.</p>
+    </section>
+
+    <!-- RUL -->
+    <section class="doc-section" id="rul">
+      <div class="section-label">Remaining Useful Life</div>
+      <h2>RUL predictions <span class="accent">from TS-FM + federated learning</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Sub-type</th><th>RUL (hours)</th><th>RUL (years)</th><th>Confidence</th><th>Health</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><strong>LID-002</strong></td>
+          <td>Luminar Iris</td>
+          <td>19,771</td>
+          <td>2.3</td>
+          <td>0.83</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 39.542%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>LID-005</strong></td>
+          <td>Luminar Iris</td>
+          <td>7,210</td>
+          <td>0.8</td>
+          <td>0.93</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 14.42%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>LID-007</strong></td>
+          <td>Velodyne VLS-128</td>
+          <td>2,373</td>
+          <td>0.3</td>
+          <td>0.94</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 4.746%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>LID-008</strong></td>
+          <td>Luminar Iris</td>
+          <td>3,384</td>
+          <td>0.4</td>
+          <td>0.92</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 6.768%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-001</strong></td>
+          <td>Front 8MP HDR</td>
+          <td>2,024</td>
+          <td>0.2</td>
+          <td>0.85</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 4.048%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-002</strong></td>
+          <td>Side 4MP x4</td>
+          <td>19,876</td>
+          <td>2.3</td>
+          <td>0.82</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 39.752%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-003</strong></td>
+          <td>Rear 8MP</td>
+          <td>24,591</td>
+          <td>2.8</td>
+          <td>0.84</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 49.182%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-004</strong></td>
+          <td>Fisheye 4x</td>
+          <td>25,863</td>
+          <td>3.0</td>
+          <td>0.95</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 51.726%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-005</strong></td>
+          <td>Front 8MP HDR</td>
+          <td>26,484</td>
+          <td>3.0</td>
+          <td>0.95</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 52.968%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>CAM-006</strong></td>
+          <td>Side 4MP x4</td>
+          <td>9,698</td>
+          <td>1.1</td>
+          <td>0.85</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 19.396%"></div></div></td>
+        </tr>
+    </tbody>
+      </table>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="doc-section" id="compliance">
+      <div class="section-label">Compliance Status</div>
+      <h2>Regulatory compliance <span class="accent">dashboard</span></h2>
+      <p><span class="compliance-badge pass">ISO 26262 ASIL-D ✓</span><span class="compliance-badge pass">SAE J3016 Level 4 ✓</span><span class="compliance-badge pass">UN-R155 ✓</span><span class="compliance-badge pass">UN-R156 ✓</span><span class="compliance-badge pass">NHTSA exempt ✓</span><span class="compliance-badge pending">ISO 21434 (cybersecurity)</span></p>
+    </section>
+
+    <!-- PROBLEM DEEP DIVES -->
+    <section class="doc-section">
+      <div class="section-label">Related Problem Deep Dives</div>
+      <h2>How AISensorEdgeComp solves the four problems <span class="accent">at this facility</span></h2>
+      <p style="color: var(--text-dim); margin-bottom: 16px;">This scenario faces all four structural problems. Here's how the platform addresses each — and how they compound.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="protocol-heterogeneity.html" class="btn btn-ghost btn-sm">Protocol Heterogeneity →</a> <a href="unlabeled-industrial-data.html" class="btn btn-ghost btn-sm">Unlabeled Data (zero collision) →</a> <a href="edge-cloud-placement.html" class="btn btn-ghost btn-sm">Edge-Cloud Placement (100ms SLA) →</a>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="problem.html#compound-value" class="btn btn-ghost btn-sm">Read about the compound effect →</a>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, this scenario <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + liquid placement + Graph RAG that powers this autonomous vehicles scenario.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">Open Live Dashboard</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="roi-autonomous-vehicles.html">Autonomous Vehicles ROI Calculator</a>
+    <a href="problem.html">The 4 Problems</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Scenario: Autonomous Vehicles &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const ASSETS = [
+  {
+    "id": "LID-001",
+    "category": "LiDAR Sensors",
+    "sub_type": "Velodyne VLS-128",
+    "location": {
+      "lat": 37.440003,
+      "lon": -122.142095,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-07-28",
+    "expire_date": "2035-07-25",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 31040,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 132410.77,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 204.39,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 10.2,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.02,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-002",
+    "category": "LiDAR Sensors",
+    "sub_type": "Luminar Iris",
+    "location": {
+      "lat": 37.442327,
+      "lon": -122.143806,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-04-19",
+    "expire_date": "2027-04-18",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 19771,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 128600.77,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 199.48,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 10.32,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.83,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-003",
+    "category": "LiDAR Sensors",
+    "sub_type": "Ouster OS1-128",
+    "location": {
+      "lat": 37.440352,
+      "lon": -122.142237,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-03-25",
+    "expire_date": "2038-03-21",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 48365,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 130919.24,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 201.11,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 10.45,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.46,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-004",
+    "category": "LiDAR Sensors",
+    "sub_type": "Velodyne VLS-128",
+    "location": {
+      "lat": 37.442109,
+      "lon": -122.144171,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-04-17",
+    "expire_date": "2033-04-14",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 45333,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 131101.62,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 204.12,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 10.47,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.62,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-005",
+    "category": "LiDAR Sensors",
+    "sub_type": "Luminar Iris",
+    "location": {
+      "lat": 37.441054,
+      "lon": -122.141705,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-06-03",
+    "expire_date": "2024-06-01",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 7210,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 126857.57,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 199.14,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 9.66,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.63,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-006",
+    "category": "LiDAR Sensors",
+    "sub_type": "Ouster OS1-128",
+    "location": {
+      "lat": 37.443502,
+      "lon": -122.143201,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-03-16",
+    "expire_date": "2038-03-12",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 41779,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 132891.26,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 200.69,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 10.2,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.39,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-007",
+    "category": "LiDAR Sensors",
+    "sub_type": "Velodyne VLS-128",
+    "location": {
+      "lat": 37.44274,
+      "lon": -122.143332,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-03-14",
+    "expire_date": "2031-03-12",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 2373,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 128786.27,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 198.57,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 9.77,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.23,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LID-008",
+    "category": "LiDAR Sensors",
+    "sub_type": "Luminar Iris",
+    "location": {
+      "lat": 37.44349,
+      "lon": -122.141642,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-01-15",
+    "expire_date": "2027-01-14",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 3384,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "point_count",
+      "range_max",
+      "rotation_speed",
+      "temp"
+    ],
+    "extra": {
+      "mounting": "roof-mounted 360\u00b0",
+      "ip_rating": "IP69K",
+      "power_draw_w": "8-15"
+    },
+    "live_sensors": {
+      "point_count": {
+        "value": 126676.53,
+        "unit": "pts/s",
+        "status": "nominal"
+      },
+      "range_max": {
+        "value": 198.85,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "rotation_speed": {
+        "value": 9.61,
+        "unit": "Hz",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.52,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-001",
+    "category": "Cameras",
+    "sub_type": "Front 8MP HDR",
+    "location": {
+      "lat": 37.441158,
+      "lon": -122.142638,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-02-18",
+    "expire_date": "2028-02-17",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 2024,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.61,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.61,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.06,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-002",
+    "category": "Cameras",
+    "sub_type": "Side 4MP x4",
+    "location": {
+      "lat": 37.441523,
+      "lon": -122.142614,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-06-09",
+    "expire_date": "2036-06-05",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 19876,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.8,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 4.28,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.19,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-003",
+    "category": "Cameras",
+    "sub_type": "Rear 8MP",
+    "location": {
+      "lat": 37.443752,
+      "lon": -122.141058,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-08-13",
+    "expire_date": "2030-08-11",
+    "last_audit": "2026-07-25",
+    "next_audit": "2026-08-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 24591,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.97,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 4.25,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.27,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-004",
+    "category": "Cameras",
+    "sub_type": "Fisheye 4x",
+    "location": {
+      "lat": 37.443416,
+      "lon": -122.142807,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-12-27",
+    "expire_date": "2035-12-24",
+    "last_audit": "2026-08-05",
+    "next_audit": "2026-09-04",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 25863,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.06,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.34,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.98,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-005",
+    "category": "Cameras",
+    "sub_type": "Front 8MP HDR",
+    "location": {
+      "lat": 37.443154,
+      "lon": -122.143894,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-11-20",
+    "expire_date": "2024-11-18",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 26484,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.41,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.45,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-006",
+    "category": "Cameras",
+    "sub_type": "Side 4MP x4",
+    "location": {
+      "lat": 37.4404,
+      "lon": -122.143201,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-03-21",
+    "expire_date": "2038-03-17",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 9698,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.52,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.77,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.47,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-007",
+    "category": "Cameras",
+    "sub_type": "Rear 8MP",
+    "location": {
+      "lat": 37.440563,
+      "lon": -122.143744,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-11-30",
+    "expire_date": "2024-11-28",
+    "last_audit": "2026-08-20",
+    "next_audit": "2026-09-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 13861,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 30.65,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.15,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.93,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-008",
+    "category": "Cameras",
+    "sub_type": "Fisheye 4x",
+    "location": {
+      "lat": 37.443844,
+      "lon": -122.143198,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-01-01",
+    "expire_date": "2027-12-31",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 5555,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 31.0,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.42,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.21,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-009",
+    "category": "Cameras",
+    "sub_type": "Front 8MP HDR",
+    "location": {
+      "lat": 37.440619,
+      "lon": -122.14458,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-09-23",
+    "expire_date": "2032-09-20",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 39484,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.62,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.34,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.08,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-010",
+    "category": "Cameras",
+    "sub_type": "Side 4MP x4",
+    "location": {
+      "lat": 37.440256,
+      "lon": -122.142638,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-05-28",
+    "expire_date": "2036-05-24",
+    "last_audit": "2026-07-18",
+    "next_audit": "2026-08-17",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 16744,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 30.83,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.43,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.13,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-011",
+    "category": "Cameras",
+    "sub_type": "Rear 8MP",
+    "location": {
+      "lat": 37.443348,
+      "lon": -122.14104,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-08-05",
+    "expire_date": "2024-08-03",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 27993,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.05,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 5.97,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.21,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CAM-012",
+    "category": "Cameras",
+    "sub_type": "Fisheye 4x",
+    "location": {
+      "lat": 37.44042,
+      "lon": -122.144405,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-10-31",
+    "expire_date": "2025-10-30",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 49740,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "fps",
+      "resolution",
+      "exposure",
+      "temp"
+    ],
+    "extra": {
+      "hdr": "120dB",
+      "operating_temp": "-30 to +70\u00b0C"
+    },
+    "live_sensors": {
+      "fps": {
+        "value": 29.2,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "resolution": {
+        "value": 8.0,
+        "unit": "MP",
+        "status": "warning"
+      },
+      "exposure": {
+        "value": 4.18,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 44.2,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-001",
+    "category": "Radar (mmWave)",
+    "sub_type": "Continental ARS540",
+    "location": {
+      "lat": 37.440341,
+      "lon": -122.144349,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-10-22",
+    "expire_date": "2025-10-21",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 43135,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 15.73,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 149.03,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 52.5,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": 0.08,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-002",
+    "category": "Radar (mmWave)",
+    "sub_type": "Aptak R240",
+    "location": {
+      "lat": 37.441002,
+      "lon": -122.141637,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-07-06",
+    "expire_date": "2033-07-03",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 3634,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 17.65,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 151.99,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 51.78,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": 0.81,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-003",
+    "category": "Radar (mmWave)",
+    "sub_type": "Front long-range",
+    "location": {
+      "lat": 37.439919,
+      "lon": -122.144792,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-07-14",
+    "expire_date": "2034-07-10",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 35193,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 16.17,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 155.32,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 54.36,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": 0.12,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-004",
+    "category": "Radar (mmWave)",
+    "sub_type": "Continental ARS540",
+    "location": {
+      "lat": 37.440908,
+      "lon": -122.143425,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-03-13",
+    "expire_date": "2030-03-11",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 36374,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 16.91,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 154.1,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 51.0,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": -0.27,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-005",
+    "category": "Radar (mmWave)",
+    "sub_type": "Aptak R240",
+    "location": {
+      "lat": 37.443587,
+      "lon": -122.141235,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-09-11",
+    "expire_date": "2031-09-09",
+    "last_audit": "2026-08-04",
+    "next_audit": "2026-09-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 27356,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 16.51,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 141.45,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 51.96,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": -0.48,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RAD-006",
+    "category": "Radar (mmWave)",
+    "sub_type": "Front long-range",
+    "location": {
+      "lat": 37.442482,
+      "lon": -122.141404,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-01-31",
+    "expire_date": "2035-01-27",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 15451,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "object_count",
+      "range",
+      "velocity",
+      "azimuth"
+    ],
+    "extra": {
+      "frequency": "77 GHz",
+      "range_m": "250",
+      "angular_res": "1\u00b0"
+    },
+    "live_sensors": {
+      "object_count": {
+        "value": 15.95,
+        "unit": "objects",
+        "status": "nominal"
+      },
+      "range": {
+        "value": 140.33,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "velocity": {
+        "value": 53.42,
+        "unit": "km/h",
+        "status": "nominal"
+      },
+      "azimuth": {
+        "value": -0.44,
+        "unit": "\u00b0",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "IMU-001",
+    "category": "IMU",
+    "sub_type": "Honeywell HG4930",
+    "location": {
+      "lat": 37.439922,
+      "lon": -122.1431,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-01-06",
+    "expire_date": "2036-01-03",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 37882,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z"
+    ],
+    "extra": {
+      "sample_rate_hz": "200",
+      "bias_stability": "0.01\u00b0/hr"
+    },
+    "live_sensors": {
+      "accel_x": {
+        "value": -0.06,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_y": {
+        "value": 0.51,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_z": {
+        "value": 9.88,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "gyro_x": {
+        "value": 0.53,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_y": {
+        "value": 0.41,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_z": {
+        "value": 0.48,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "IMU-002",
+    "category": "IMU",
+    "sub_type": "KVH 1775",
+    "location": {
+      "lat": 37.441049,
+      "lon": -122.143559,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-03-05",
+    "expire_date": "2027-03-04",
+    "last_audit": "2026-08-03",
+    "next_audit": "2026-09-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 41617,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z"
+    ],
+    "extra": {
+      "sample_rate_hz": "200",
+      "bias_stability": "0.01\u00b0/hr"
+    },
+    "live_sensors": {
+      "accel_x": {
+        "value": 0.12,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_y": {
+        "value": -0.23,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_z": {
+        "value": 9.8,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "gyro_x": {
+        "value": 0.59,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_y": {
+        "value": 0.37,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_z": {
+        "value": 0.34,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "IMU-003",
+    "category": "IMU",
+    "sub_type": "MEMS backup",
+    "location": {
+      "lat": 37.442569,
+      "lon": -122.141282,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-02-24",
+    "expire_date": "2026-02-23",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 8160,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z"
+    ],
+    "extra": {
+      "sample_rate_hz": "200",
+      "bias_stability": "0.01\u00b0/hr"
+    },
+    "live_sensors": {
+      "accel_x": {
+        "value": -0.3,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_y": {
+        "value": -0.34,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_z": {
+        "value": 9.75,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "gyro_x": {
+        "value": 0.47,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_y": {
+        "value": 0.41,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_z": {
+        "value": 0.42,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "IMU-004",
+    "category": "IMU",
+    "sub_type": "Honeywell HG4930",
+    "location": {
+      "lat": 37.440499,
+      "lon": -122.143536,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-08-14",
+    "expire_date": "2025-08-13",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 6955,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z"
+    ],
+    "extra": {
+      "sample_rate_hz": "200",
+      "bias_stability": "0.01\u00b0/hr"
+    },
+    "live_sensors": {
+      "accel_x": {
+        "value": 0.26,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_y": {
+        "value": -0.29,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_z": {
+        "value": 9.72,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "gyro_x": {
+        "value": 0.44,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_y": {
+        "value": 0.5,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_z": {
+        "value": 0.37,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "IMU-005",
+    "category": "IMU",
+    "sub_type": "KVH 1775",
+    "location": {
+      "lat": 37.442404,
+      "lon": -122.141224,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-12-22",
+    "expire_date": "2028-12-20",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 36573,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "accel_x",
+      "accel_y",
+      "accel_z",
+      "gyro_x",
+      "gyro_y",
+      "gyro_z"
+    ],
+    "extra": {
+      "sample_rate_hz": "200",
+      "bias_stability": "0.01\u00b0/hr"
+    },
+    "live_sensors": {
+      "accel_x": {
+        "value": 0.59,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_y": {
+        "value": 0.18,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "accel_z": {
+        "value": 9.77,
+        "unit": "m/s\u00b2",
+        "status": "nominal"
+      },
+      "gyro_x": {
+        "value": 0.47,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_y": {
+        "value": 0.44,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      },
+      "gyro_z": {
+        "value": 0.4,
+        "unit": "\u00b0/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GPS-001",
+    "category": "GNSS",
+    "sub_type": "Trimble BX992",
+    "location": {
+      "lat": 37.441491,
+      "lon": -122.141364,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-07-11",
+    "expire_date": "2038-07-07",
+    "last_audit": "2026-08-15",
+    "next_audit": "2026-09-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 31105,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "satellites",
+      "hdop",
+      "lat_acc",
+      "lon_acc"
+    ],
+    "extra": {
+      "accuracy_cm": "2 (RTK)",
+      "update_rate_hz": "10"
+    },
+    "live_sensors": {
+      "satellites": {
+        "value": 26.52,
+        "unit": "sats",
+        "status": "nominal"
+      },
+      "hdop": {
+        "value": 0.88,
+        "unit": "",
+        "status": "nominal"
+      },
+      "lat_acc": {
+        "value": 2.03,
+        "unit": "cm",
+        "status": "nominal"
+      },
+      "lon_acc": {
+        "value": 2.34,
+        "unit": "cm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GPS-002",
+    "category": "GNSS",
+    "sub_type": "u-blox F9P",
+    "location": {
+      "lat": 37.440247,
+      "lon": -122.142814,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-01-18",
+    "expire_date": "2031-01-16",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 21033,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "satellites",
+      "hdop",
+      "lat_acc",
+      "lon_acc"
+    ],
+    "extra": {
+      "accuracy_cm": "2 (RTK)",
+      "update_rate_hz": "10"
+    },
+    "live_sensors": {
+      "satellites": {
+        "value": 29.44,
+        "unit": "sats",
+        "status": "nominal"
+      },
+      "hdop": {
+        "value": 0.79,
+        "unit": "",
+        "status": "nominal"
+      },
+      "lat_acc": {
+        "value": 2.38,
+        "unit": "cm",
+        "status": "nominal"
+      },
+      "lon_acc": {
+        "value": 1.81,
+        "unit": "cm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GPS-003",
+    "category": "GNSS",
+    "sub_type": "RTK base station",
+    "location": {
+      "lat": 37.441188,
+      "lon": -122.143594,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-12-12",
+    "expire_date": "2030-12-10",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 12562,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "satellites",
+      "hdop",
+      "lat_acc",
+      "lon_acc"
+    ],
+    "extra": {
+      "accuracy_cm": "2 (RTK)",
+      "update_rate_hz": "10"
+    },
+    "live_sensors": {
+      "satellites": {
+        "value": 27.49,
+        "unit": "sats",
+        "status": "nominal"
+      },
+      "hdop": {
+        "value": 0.89,
+        "unit": "",
+        "status": "nominal"
+      },
+      "lat_acc": {
+        "value": 2.03,
+        "unit": "cm",
+        "status": "nominal"
+      },
+      "lon_acc": {
+        "value": 2.32,
+        "unit": "cm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GPS-004",
+    "category": "GNSS",
+    "sub_type": "Trimble BX992",
+    "location": {
+      "lat": 37.4439,
+      "lon": -122.141952,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-11-28",
+    "expire_date": "2029-11-25",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 20891,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "satellites",
+      "hdop",
+      "lat_acc",
+      "lon_acc"
+    ],
+    "extra": {
+      "accuracy_cm": "2 (RTK)",
+      "update_rate_hz": "10"
+    },
+    "live_sensors": {
+      "satellites": {
+        "value": 28.28,
+        "unit": "sats",
+        "status": "nominal"
+      },
+      "hdop": {
+        "value": 0.81,
+        "unit": "",
+        "status": "nominal"
+      },
+      "lat_acc": {
+        "value": 2.35,
+        "unit": "cm",
+        "status": "nominal"
+      },
+      "lon_acc": {
+        "value": 1.71,
+        "unit": "cm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GPS-005",
+    "category": "GNSS",
+    "sub_type": "u-blox F9P",
+    "location": {
+      "lat": 37.443656,
+      "lon": -122.144594,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-05-05",
+    "expire_date": "2036-05-01",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 32158,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "satellites",
+      "hdop",
+      "lat_acc",
+      "lon_acc"
+    ],
+    "extra": {
+      "accuracy_cm": "2 (RTK)",
+      "update_rate_hz": "10"
+    },
+    "live_sensors": {
+      "satellites": {
+        "value": 28.1,
+        "unit": "sats",
+        "status": "nominal"
+      },
+      "hdop": {
+        "value": 0.89,
+        "unit": "",
+        "status": "nominal"
+      },
+      "lat_acc": {
+        "value": 1.79,
+        "unit": "cm",
+        "status": "nominal"
+      },
+      "lon_acc": {
+        "value": 1.9,
+        "unit": "cm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-001",
+    "category": "Battery Packs",
+    "sub_type": "LFP 100kWh",
+    "location": {
+      "lat": 37.443799,
+      "lon": -122.144567,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-06-16",
+    "expire_date": "2029-06-13",
+    "last_audit": "2026-08-31",
+    "next_audit": "2026-09-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 35783,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 72.5,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 29.29,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 396.59,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 47.93,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 477.66,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-002",
+    "category": "Battery Packs",
+    "sub_type": "LFP 75kWh",
+    "location": {
+      "lat": 37.443861,
+      "lon": -122.141537,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-06-18",
+    "expire_date": "2028-06-16",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 34721,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 71.44,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 34.47,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 392.93,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 44.07,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 473.65,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-003",
+    "category": "Battery Packs",
+    "sub_type": "NMC 120kWh",
+    "location": {
+      "lat": 37.440474,
+      "lon": -122.14398,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-12-29",
+    "expire_date": "2033-12-26",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 35292,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 78.71,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 33.99,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 397.55,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 37.43,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 484.51,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-004",
+    "category": "Battery Packs",
+    "sub_type": "LFP 100kWh",
+    "location": {
+      "lat": 37.440088,
+      "lon": -122.141294,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-03-29",
+    "expire_date": "2027-03-28",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 44184,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 70.73,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 29.57,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 399.12,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 38.44,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 505.1,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-005",
+    "category": "Battery Packs",
+    "sub_type": "LFP 75kWh",
+    "location": {
+      "lat": 37.441767,
+      "lon": -122.143113,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-09-15",
+    "expire_date": "2038-09-11",
+    "last_audit": "2026-07-24",
+    "next_audit": "2026-08-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 32872,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 75.47,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 32.96,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 399.08,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 46.18,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 526.36,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-006",
+    "category": "Battery Packs",
+    "sub_type": "NMC 120kWh",
+    "location": {
+      "lat": 37.442165,
+      "lon": -122.143906,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-06-20",
+    "expire_date": "2029-06-17",
+    "last_audit": "2026-08-18",
+    "next_audit": "2026-09-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 40847,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 79.31,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 33.55,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 392.57,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 54.64,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 457.08,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-007",
+    "category": "Battery Packs",
+    "sub_type": "LFP 100kWh",
+    "location": {
+      "lat": 37.442878,
+      "lon": -122.144251,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-05-19",
+    "expire_date": "2025-05-18",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 46945,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 78.57,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 30.51,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 398.81,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 41.73,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 516.29,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-008",
+    "category": "Battery Packs",
+    "sub_type": "LFP 75kWh",
+    "location": {
+      "lat": 37.441406,
+      "lon": -122.142915,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-05-29",
+    "expire_date": "2035-05-26",
+    "last_audit": "2026-07-16",
+    "next_audit": "2026-08-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 17295,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 72.63,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 30.54,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 392.04,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 36.5,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 522.44,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-009",
+    "category": "Battery Packs",
+    "sub_type": "NMC 120kWh",
+    "location": {
+      "lat": 37.443644,
+      "lon": -122.142255,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-01-15",
+    "expire_date": "2028-01-14",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 18761,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 72.32,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 31.11,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 400.55,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 45.26,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 451.44,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BAT-010",
+    "category": "Battery Packs",
+    "sub_type": "LFP 100kWh",
+    "location": {
+      "lat": 37.443812,
+      "lon": -122.142653,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-07-16",
+    "expire_date": "2032-07-13",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 22784,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "soc",
+      "cell_temp",
+      "voltage",
+      "current",
+      "insulation_res"
+    ],
+    "extra": {
+      "cells": "LFP 4680 / NMC 21700",
+      "thermal_mgmt": "liquid cooling"
+    },
+    "live_sensors": {
+      "soc": {
+        "value": 73.13,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 34.1,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "voltage": {
+        "value": 392.21,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 50.52,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "insulation_res": {
+        "value": 472.7,
+        "unit": "k\u03a9",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-001",
+    "category": "Drive Motors",
+    "sub_type": "Front PMSM 150kW",
+    "location": {
+      "lat": 37.442944,
+      "lon": -122.144847,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-10-25",
+    "expire_date": "2034-10-21",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 48428,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 46.74,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 128.91,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2811.01,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.5,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-002",
+    "category": "Drive Motors",
+    "sub_type": "Rear PMSM 150kW",
+    "location": {
+      "lat": 37.442822,
+      "lon": -122.14484,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-11-29",
+    "expire_date": "2038-11-25",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 41460,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 42.08,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 124.29,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 3068.95,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.38,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-003",
+    "category": "Drive Motors",
+    "sub_type": "Auxiliary",
+    "location": {
+      "lat": 37.439913,
+      "lon": -122.142503,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-07-03",
+    "expire_date": "2036-06-29",
+    "last_audit": "2026-07-24",
+    "next_audit": "2026-08-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 25945,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 43.36,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 111.77,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 3042.18,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.29,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-004",
+    "category": "Drive Motors",
+    "sub_type": "Front PMSM 150kW",
+    "location": {
+      "lat": 37.441984,
+      "lon": -122.144144,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-03-23",
+    "expire_date": "2025-03-22",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 25922,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 46.26,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 108.91,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2859.88,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.59,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-005",
+    "category": "Drive Motors",
+    "sub_type": "Rear PMSM 150kW",
+    "location": {
+      "lat": 37.443587,
+      "lon": -122.141765,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-11-11",
+    "expire_date": "2034-11-07",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 33157,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 42.57,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 107.34,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 3140.19,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.32,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-006",
+    "category": "Drive Motors",
+    "sub_type": "Auxiliary",
+    "location": {
+      "lat": 37.442736,
+      "lon": -122.141825,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-03-11",
+    "expire_date": "2027-03-10",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 14897,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 44.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 112.68,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2822.34,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.76,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-007",
+    "category": "Drive Motors",
+    "sub_type": "Front PMSM 150kW",
+    "location": {
+      "lat": 37.442398,
+      "lon": -122.143347,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-10-30",
+    "expire_date": "2026-10-29",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 5658,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 45.57,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 113.34,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2987.94,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.63,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-008",
+    "category": "Drive Motors",
+    "sub_type": "Rear PMSM 150kW",
+    "location": {
+      "lat": 37.440932,
+      "lon": -122.141072,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-07-12",
+    "expire_date": "2036-07-08",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 30861,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 45.14,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 113.54,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2896.48,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.49,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-009",
+    "category": "Drive Motors",
+    "sub_type": "Auxiliary",
+    "location": {
+      "lat": 37.441222,
+      "lon": -122.142426,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-01-14",
+    "expire_date": "2036-01-11",
+    "last_audit": "2026-07-18",
+    "next_audit": "2026-08-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 11850,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 46.15,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 120.68,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2884.57,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.54,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "MOT-010",
+    "category": "Drive Motors",
+    "sub_type": "Front PMSM 150kW",
+    "location": {
+      "lat": 37.442784,
+      "lon": -122.144365,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-12-22",
+    "expire_date": "2035-12-19",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 42167,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "temp",
+      "torque",
+      "rpm",
+      "vibration"
+    ],
+    "extra": {
+      "type": "PMSM",
+      "cooling": "water-glycol"
+    },
+    "live_sensors": {
+      "temp": {
+        "value": 45.83,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "torque": {
+        "value": 114.66,
+        "unit": "Nm",
+        "status": "nominal"
+      },
+      "rpm": {
+        "value": 2939.78,
+        "unit": "rpm",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 2.66,
+        "unit": "mm/s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BRK-001",
+    "category": "Brake Systems",
+    "sub_type": "Front EMB",
+    "location": {
+      "lat": 37.44165,
+      "lon": -122.141701,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-11-26",
+    "expire_date": "2037-11-22",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 11578,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "pad_wear",
+      "temp",
+      "response_time"
+    ],
+    "extra": {
+      "type": "electromechanical brake (EMB)",
+      "fail_safe": "spring-applied"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 109.27,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "pad_wear": {
+        "value": 27.44,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.79,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 82.31,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BRK-002",
+    "category": "Brake Systems",
+    "sub_type": "Rear EMB",
+    "location": {
+      "lat": 37.443854,
+      "lon": -122.14144,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-03-23",
+    "expire_date": "2030-03-21",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 8645,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "pad_wear",
+      "temp",
+      "response_time"
+    ],
+    "extra": {
+      "type": "electromechanical brake (EMB)",
+      "fail_safe": "spring-applied"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 105.32,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "pad_wear": {
+        "value": 31.05,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 44.85,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 85.22,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BRK-003",
+    "category": "Brake Systems",
+    "sub_type": "Regen brake",
+    "location": {
+      "lat": 37.442371,
+      "lon": -122.142231,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-07-04",
+    "expire_date": "2029-07-01",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 14420,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "pad_wear",
+      "temp",
+      "response_time"
+    ],
+    "extra": {
+      "type": "electromechanical brake (EMB)",
+      "fail_safe": "spring-applied"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.76,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "pad_wear": {
+        "value": 32.69,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.42,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 80.89,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BRK-004",
+    "category": "Brake Systems",
+    "sub_type": "Front EMB",
+    "location": {
+      "lat": 37.443835,
+      "lon": -122.143091,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-02-27",
+    "expire_date": "2031-02-25",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 26338,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "pad_wear",
+      "temp",
+      "response_time"
+    ],
+    "extra": {
+      "type": "electromechanical brake (EMB)",
+      "fail_safe": "spring-applied"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 108.19,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "pad_wear": {
+        "value": 31.34,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.51,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 86.39,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "BRK-005",
+    "category": "Brake Systems",
+    "sub_type": "Rear EMB",
+    "location": {
+      "lat": 37.442277,
+      "lon": -122.143045,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-01-08",
+    "expire_date": "2030-01-05",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 13241,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "pad_wear",
+      "temp",
+      "response_time"
+    ],
+    "extra": {
+      "type": "electromechanical brake (EMB)",
+      "fail_safe": "spring-applied"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 114.17,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "pad_wear": {
+        "value": 29.52,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.18,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 89.1,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-001",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FL sensor",
+    "location": {
+      "lat": 37.440507,
+      "lon": -122.141457,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-11-04",
+    "expire_date": "2036-10-31",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 29493,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 110.24,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.4,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 35.38,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-002",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FR sensor",
+    "location": {
+      "lat": 37.442522,
+      "lon": -122.144063,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-11-28",
+    "expire_date": "2033-11-25",
+    "last_audit": "2026-08-12",
+    "next_audit": "2026-09-11",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 39500,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 113.65,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.67,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 37.0,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-003",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RL sensor",
+    "location": {
+      "lat": 37.440403,
+      "lon": -122.141627,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-07-19",
+    "expire_date": "2037-07-15",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 15453,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 108.09,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.21,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 37.33,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-004",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RR sensor",
+    "location": {
+      "lat": 37.440341,
+      "lon": -122.143158,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-12-02",
+    "expire_date": "2026-12-01",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 10278,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 111.54,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 37.88,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-005",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FL sensor",
+    "location": {
+      "lat": 37.442568,
+      "lon": -122.141357,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-11-28",
+    "expire_date": "2027-11-27",
+    "last_audit": "2026-07-18",
+    "next_audit": "2026-08-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 6081,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 105.1,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.47,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 40.73,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-006",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FR sensor",
+    "location": {
+      "lat": 37.4429,
+      "lon": -122.142229,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-06-28",
+    "expire_date": "2027-06-27",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 10607,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 106.15,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.62,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 35.22,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-007",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RL sensor",
+    "location": {
+      "lat": 37.440592,
+      "lon": -122.142281,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-10-11",
+    "expire_date": "2035-10-08",
+    "last_audit": "2026-08-04",
+    "next_audit": "2026-09-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 37943,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 105.24,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.67,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 43.52,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-008",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RR sensor",
+    "location": {
+      "lat": 37.442424,
+      "lon": -122.14142,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-06-13",
+    "expire_date": "2037-06-09",
+    "last_audit": "2026-08-17",
+    "next_audit": "2026-09-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 49587,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.43,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.96,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 36.91,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-009",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FL sensor",
+    "location": {
+      "lat": 37.442264,
+      "lon": -122.144908,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-04-07",
+    "expire_date": "2033-04-04",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 39228,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.38,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.01,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 40.83,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-010",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FR sensor",
+    "location": {
+      "lat": 37.440341,
+      "lon": -122.141945,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-04-04",
+    "expire_date": "2029-04-01",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 42847,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 107.57,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.86,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 38.71,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-011",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RL sensor",
+    "location": {
+      "lat": 37.443107,
+      "lon": -122.141519,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-02-28",
+    "expire_date": "2032-02-26",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 45808,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 110.96,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 43.51,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-012",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RR sensor",
+    "location": {
+      "lat": 37.440469,
+      "lon": -122.143338,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-02-01",
+    "expire_date": "2029-01-29",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 42046,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 113.26,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.0,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 43.42,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-013",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FL sensor",
+    "location": {
+      "lat": 37.443126,
+      "lon": -122.141392,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-07-15",
+    "expire_date": "2026-07-14",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 30434,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 107.08,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.95,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 44.31,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-014",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FR sensor",
+    "location": {
+      "lat": 37.441366,
+      "lon": -122.141359,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-10-06",
+    "expire_date": "2027-10-05",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 4404,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 107.74,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 44.15,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 37.38,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-015",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RL sensor",
+    "location": {
+      "lat": 37.441853,
+      "lon": -122.143017,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-08-17",
+    "expire_date": "2026-08-16",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 2185,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.26,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 43.41,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 44.89,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-016",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RR sensor",
+    "location": {
+      "lat": 37.440424,
+      "lon": -122.142418,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-03-12",
+    "expire_date": "2025-03-11",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 8331,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 106.61,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.1,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 40.08,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-017",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FL sensor",
+    "location": {
+      "lat": 37.441041,
+      "lon": -122.143539,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-03-20",
+    "expire_date": "2027-03-19",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 41284,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.71,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 44.06,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 42.06,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-018",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "FR sensor",
+    "location": {
+      "lat": 37.443364,
+      "lon": -122.144375,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-07-21",
+    "expire_date": "2032-07-18",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 36451,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 111.21,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.45,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 40.0,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-019",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RL sensor",
+    "location": {
+      "lat": 37.44334,
+      "lon": -122.142447,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-04-19",
+    "expire_date": "2031-04-17",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 23455,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 111.28,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 46.15,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 41.3,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TPMS-020",
+    "category": "Tire Pressure (TPMS)",
+    "sub_type": "RR sensor",
+    "location": {
+      "lat": 37.442081,
+      "lon": -122.142034,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-11-24",
+    "expire_date": "2038-11-20",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 18168,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "pressure",
+      "temp",
+      "wear_pct"
+    ],
+    "extra": {
+      "protocol": "BLE 5.0",
+      "battery_life_yr": "5"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 112.6,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 42.16,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "wear_pct": {
+        "value": 37.76,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECU-001",
+    "category": "Compute Units",
+    "sub_type": "Main AV compute (Orin x2)",
+    "location": {
+      "lat": 37.443745,
+      "lon": -122.142769,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-12-18",
+    "expire_date": "2036-12-14",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 22843,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "cpu_temp",
+      "gpu_temp",
+      "fps",
+      "power_draw"
+    ],
+    "extra": {
+      "soc": "NVIDIA Orin",
+      "tops": "275",
+      "os": "QNX + Linux"
+    },
+    "live_sensors": {
+      "cpu_temp": {
+        "value": 69.03,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "gpu_temp": {
+        "value": 73.43,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fps": {
+        "value": 29.03,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "power_draw": {
+        "value": 169.67,
+        "unit": "W",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECU-002",
+    "category": "Compute Units",
+    "sub_type": "Safety compute (Orin)",
+    "location": {
+      "lat": 37.441933,
+      "lon": -122.143149,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-08-08",
+    "expire_date": "2030-08-06",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 47854,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "cpu_temp",
+      "gpu_temp",
+      "fps",
+      "power_draw"
+    ],
+    "extra": {
+      "soc": "NVIDIA Orin",
+      "tops": "275",
+      "os": "QNX + Linux"
+    },
+    "live_sensors": {
+      "cpu_temp": {
+        "value": 65.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "gpu_temp": {
+        "value": 76.78,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fps": {
+        "value": 30.6,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "power_draw": {
+        "value": 189.04,
+        "unit": "W",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECU-003",
+    "category": "Compute Units",
+    "sub_type": "Body controller",
+    "location": {
+      "lat": 37.442041,
+      "lon": -122.144867,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-05-29",
+    "expire_date": "2031-05-27",
+    "last_audit": "2026-07-07",
+    "next_audit": "2026-08-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 46420,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "cpu_temp",
+      "gpu_temp",
+      "fps",
+      "power_draw"
+    ],
+    "extra": {
+      "soc": "NVIDIA Orin",
+      "tops": "275",
+      "os": "QNX + Linux"
+    },
+    "live_sensors": {
+      "cpu_temp": {
+        "value": 62.32,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "gpu_temp": {
+        "value": 69.57,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fps": {
+        "value": 29.97,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "power_draw": {
+        "value": 161.36,
+        "unit": "W",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECU-004",
+    "category": "Compute Units",
+    "sub_type": "Main AV compute (Orin x2)",
+    "location": {
+      "lat": 37.440267,
+      "lon": -122.141591,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-04-03",
+    "expire_date": "2028-04-01",
+    "last_audit": "2026-07-21",
+    "next_audit": "2026-08-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 16403,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "cpu_temp",
+      "gpu_temp",
+      "fps",
+      "power_draw"
+    ],
+    "extra": {
+      "soc": "NVIDIA Orin",
+      "tops": "275",
+      "os": "QNX + Linux"
+    },
+    "live_sensors": {
+      "cpu_temp": {
+        "value": 63.49,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "gpu_temp": {
+        "value": 75.75,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fps": {
+        "value": 30.05,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "power_draw": {
+        "value": 186.95,
+        "unit": "W",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECU-005",
+    "category": "Compute Units",
+    "sub_type": "Safety compute (Orin)",
+    "location": {
+      "lat": 37.440783,
+      "lon": -122.143247,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-01-05",
+    "expire_date": "2036-01-02",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 2836,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "cpu_temp",
+      "gpu_temp",
+      "fps",
+      "power_draw"
+    ],
+    "extra": {
+      "soc": "NVIDIA Orin",
+      "tops": "275",
+      "os": "QNX + Linux"
+    },
+    "live_sensors": {
+      "cpu_temp": {
+        "value": 65.32,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "gpu_temp": {
+        "value": 71.37,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fps": {
+        "value": 29.22,
+        "unit": "fps",
+        "status": "nominal"
+      },
+      "power_draw": {
+        "value": 184.03,
+        "unit": "W",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "COMM-001",
+    "category": "Communication",
+    "sub_type": "5G mmWave",
+    "location": {
+      "lat": 37.440512,
+      "lon": -122.144918,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-03-23",
+    "expire_date": "2029-03-20",
+    "last_audit": "2026-08-10",
+    "next_audit": "2026-09-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 38156,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "signal_strength",
+      "latency_ms",
+      "packet_loss"
+    ],
+    "extra": {
+      "5g_band": "n260/n261",
+      "v2x": "C-V2X (DSRC ready)"
+    },
+    "live_sensors": {
+      "signal_strength": {
+        "value": -76.01,
+        "unit": "dBm",
+        "status": "nominal"
+      },
+      "latency_ms": {
+        "value": 11.14,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "packet_loss": {
+        "value": 0.06,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "COMM-002",
+    "category": "Communication",
+    "sub_type": "LTE backup",
+    "location": {
+      "lat": 37.443863,
+      "lon": -122.141304,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-02-28",
+    "expire_date": "2038-02-24",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 44695,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "signal_strength",
+      "latency_ms",
+      "packet_loss"
+    ],
+    "extra": {
+      "5g_band": "n260/n261",
+      "v2x": "C-V2X (DSRC ready)"
+    },
+    "live_sensors": {
+      "signal_strength": {
+        "value": -76.11,
+        "unit": "dBm",
+        "status": "nominal"
+      },
+      "latency_ms": {
+        "value": 12.97,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "packet_loss": {
+        "value": 0.11,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "COMM-003",
+    "category": "Communication",
+    "sub_type": "DSRC V2X",
+    "location": {
+      "lat": 37.442608,
+      "lon": -122.144115,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-10-07",
+    "expire_date": "2025-10-06",
+    "last_audit": "2026-08-15",
+    "next_audit": "2026-09-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 9013,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "signal_strength",
+      "latency_ms",
+      "packet_loss"
+    ],
+    "extra": {
+      "5g_band": "n260/n261",
+      "v2x": "C-V2X (DSRC ready)"
+    },
+    "live_sensors": {
+      "signal_strength": {
+        "value": -76.21,
+        "unit": "dBm",
+        "status": "nominal"
+      },
+      "latency_ms": {
+        "value": 10.06,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "packet_loss": {
+        "value": 0.13,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "COMM-004",
+    "category": "Communication",
+    "sub_type": "5G mmWave",
+    "location": {
+      "lat": 37.442301,
+      "lon": -122.143924,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-08-03",
+    "expire_date": "2034-07-30",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 12128,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "signal_strength",
+      "latency_ms",
+      "packet_loss"
+    ],
+    "extra": {
+      "5g_band": "n260/n261",
+      "v2x": "C-V2X (DSRC ready)"
+    },
+    "live_sensors": {
+      "signal_strength": {
+        "value": -71.71,
+        "unit": "dBm",
+        "status": "nominal"
+      },
+      "latency_ms": {
+        "value": 11.08,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "packet_loss": {
+        "value": 0.13,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "COMM-005",
+    "category": "Communication",
+    "sub_type": "LTE backup",
+    "location": {
+      "lat": 37.442588,
+      "lon": -122.143168,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-02-07",
+    "expire_date": "2031-02-05",
+    "last_audit": "2026-07-24",
+    "next_audit": "2026-08-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 38123,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "signal_strength",
+      "latency_ms",
+      "packet_loss"
+    ],
+    "extra": {
+      "5g_band": "n260/n261",
+      "v2x": "C-V2X (DSRC ready)"
+    },
+    "live_sensors": {
+      "signal_strength": {
+        "value": -72.79,
+        "unit": "dBm",
+        "status": "nominal"
+      },
+      "latency_ms": {
+        "value": 9.02,
+        "unit": "ms",
+        "status": "nominal"
+      },
+      "packet_loss": {
+        "value": 0.08,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-001",
+    "category": "HVAC",
+    "sub_type": "Cabin HVAC",
+    "location": {
+      "lat": 37.441734,
+      "lon": -122.143998,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-06-18",
+    "expire_date": "2029-06-15",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 16573,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "cabin_temp",
+      "battery_temp",
+      "coolant_flow"
+    ],
+    "extra": {
+      "cooling_kw": "4",
+      "heating_kw": "5"
+    },
+    "live_sensors": {
+      "cabin_temp": {
+        "value": 22.31,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "battery_temp": {
+        "value": 31.02,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "coolant_flow": {
+        "value": 7.96,
+        "unit": "L/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-002",
+    "category": "HVAC",
+    "sub_type": "Battery thermal mgmt",
+    "location": {
+      "lat": 37.440008,
+      "lon": -122.141274,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-05-06",
+    "expire_date": "2033-05-03",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 6903,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "cabin_temp",
+      "battery_temp",
+      "coolant_flow"
+    ],
+    "extra": {
+      "cooling_kw": "4",
+      "heating_kw": "5"
+    },
+    "live_sensors": {
+      "cabin_temp": {
+        "value": 22.38,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "battery_temp": {
+        "value": 30.57,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "coolant_flow": {
+        "value": 8.96,
+        "unit": "L/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-003",
+    "category": "HVAC",
+    "sub_type": "Cabin HVAC",
+    "location": {
+      "lat": 37.441721,
+      "lon": -122.142595,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-05-12",
+    "expire_date": "2031-05-10",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 14184,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "cabin_temp",
+      "battery_temp",
+      "coolant_flow"
+    ],
+    "extra": {
+      "cooling_kw": "4",
+      "heating_kw": "5"
+    },
+    "live_sensors": {
+      "cabin_temp": {
+        "value": 21.38,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "battery_temp": {
+        "value": 31.87,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "coolant_flow": {
+        "value": 8.82,
+        "unit": "L/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-004",
+    "category": "HVAC",
+    "sub_type": "Battery thermal mgmt",
+    "location": {
+      "lat": 37.44098,
+      "lon": -122.141231,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-10-19",
+    "expire_date": "2038-10-15",
+    "last_audit": "2026-07-18",
+    "next_audit": "2026-08-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 27112,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "cabin_temp",
+      "battery_temp",
+      "coolant_flow"
+    ],
+    "extra": {
+      "cooling_kw": "4",
+      "heating_kw": "5"
+    },
+    "live_sensors": {
+      "cabin_temp": {
+        "value": 21.35,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "battery_temp": {
+        "value": 30.69,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "coolant_flow": {
+        "value": 7.09,
+        "unit": "L/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-005",
+    "category": "HVAC",
+    "sub_type": "Cabin HVAC",
+    "location": {
+      "lat": 37.443807,
+      "lon": -122.144103,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-08-03",
+    "expire_date": "2037-07-30",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 11969,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "cabin_temp",
+      "battery_temp",
+      "coolant_flow"
+    ],
+    "extra": {
+      "cooling_kw": "4",
+      "heating_kw": "5"
+    },
+    "live_sensors": {
+      "cabin_temp": {
+        "value": 21.94,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "battery_temp": {
+        "value": 28.26,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "coolant_flow": {
+        "value": 7.88,
+        "unit": "L/min",
+        "status": "nominal"
+      }
+    }
+  }
+];
+const CATEGORIES = [{"name": "LiDAR Sensors", "icon": "\ud83d\udce1", "count": 8}, {"name": "Cameras", "icon": "\ud83d\udcf7", "count": 12}, {"name": "Radar (mmWave)", "icon": "\ud83d\udce1", "count": 6}, {"name": "IMU", "icon": "\ud83e\udded", "count": 5}, {"name": "GNSS", "icon": "\ud83d\udef0\ufe0f", "count": 5}, {"name": "Battery Packs", "icon": "\ud83d\udd0b", "count": 10}, {"name": "Drive Motors", "icon": "\u2699\ufe0f", "count": 10}, {"name": "Brake Systems", "icon": "\ud83d\uded1", "count": 5}, {"name": "Tire Pressure (TPMS)", "icon": "\ud83d\udede", "count": 20}, {"name": "Compute Units", "icon": "\ud83d\udda5\ufe0f", "count": 5}, {"name": "Communication", "icon": "\ud83d\udcf6", "count": 5}, {"name": "HVAC", "icon": "\u2744\ufe0f", "count": 5}];
+const SENSOR_BASELINES = {"point_count": [128000, 5000, "pts/s"], "range_max": [200, 5, "m"], "rotation_speed": [10, 0.5, "Hz"], "temp": [45, 3, "\u00b0C"], "fps": [30, 1, "fps"], "resolution": [8, 0, "MP"], "exposure": [5, 1, "ms"], "object_count": [15, 3, "objects"], "range": [150, 10, "m"], "velocity": [50, 5, "km/h"], "azimuth": [0, 1, "\u00b0"], "accel_x": [0.1, 0.5, "m/s\u00b2"], "accel_y": [0.1, 0.5, "m/s\u00b2"], "accel_z": [9.8, 0.1, "m/s\u00b2"], "gyro_x": [0.5, 0.2, "\u00b0/s"], "gyro_y": [0.5, 0.2, "\u00b0/s"], "gyro_z": [0.5, 0.2, "\u00b0/s"], "satellites": [28, 2, "sats"], "hdop": [0.8, 0.1, ""], "lat_acc": [2, 0.5, "cm"], "lon_acc": [2, 0.5, "cm"], "soc": [75, 5, "%"], "cell_temp": [32, 3, "\u00b0C"], "voltage": [396, 5, "V"], "current": [45, 10, "A"], "insulation_res": [500, 50, "k\u03a9"], "torque": [120, 15, "Nm"], "rpm": [3000, 200, "rpm"], "vibration": [2.5, 0.3, "mm/s"], "pressure": [110, 5, "bar"], "pad_wear": [30, 5, "%"], "response_time": [85, 5, "ms"], "wear_pct": [40, 5, "%"], "cpu_temp": [65, 5, "\u00b0C"], "gpu_temp": [72, 5, "\u00b0C"], "power_draw": [180, 20, "W"], "signal_strength": [-75, 5, "dBm"], "latency_ms": [12, 3, "ms"], "packet_loss": [0.1, 0.05, "%"], "cabin_temp": [22, 1, "\u00b0C"], "battery_temp": [30, 2, "\u00b0C"], "coolant_flow": [8, 1, "L/min"]};
+
+function renderAssets(filter) {
+  const grid = document.getElementById('asset-grid');
+  const filtered = filter === 'all' ? ASSETS : ASSETS.filter(a => a.category === filter);
+  grid.innerHTML = filtered.map(a => {
+    const cat = CATEGORIES.find(c => c.name === a.category);
+    const sensorsHtml = Object.entries(a.live_sensors).map(([name, reading]) => `
+      <div class="live-channel ${reading.status}">
+        <span style="font-size: 10px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name.replace(/_/g, ' ')}</span>
+        <span style="font-size: 13px; font-weight: 600;">${reading.value} ${reading.unit}</span>
+      </div>
+    `).join('');
+    return `<div class="asset-card ${a.status}">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div><span style="font-size: 24px; margin-right: 8px;">${cat ? cat.icon : ''}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;">${a.id}</span></div>
+        <span class="status-badge ${a.status}">${a.status}</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">${a.sub_type}</div>
+      <div class="sensor-readings">${sensorsHtml}</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+        <div><span style="color: var(--text-mute);">Lat:</span> ${a.location.lat}</div>
+        <div><span style="color: var(--text-mute);">Lon:</span> ${a.location.lon}</div>
+        <div><span style="color: var(--text-mute);">Installed:</span> ${a.install_date}</div>
+        <div><span style="color: var(--text-mute);">TS-FM:</span> ${a.ts_fm_confidence}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterAssets(category) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.closest('.filter-chip').classList.add('active');
+  renderAssets(category);
+}
+
+function updateSensors() {
+  let nominal = 0, warning = 0, critical = 0;
+  ASSETS.forEach(asset => {
+    asset.sensors.forEach(sensorType => {
+      const baseline = SENSOR_BASELINES[sensorType];
+      if (!baseline) return;
+      const [base, variance, unit] = baseline;
+      const phase = (Date.now() / 1000 + asset.id.charCodeAt(4) * 0.5) * 0.3;
+      const sine = Math.sin(phase) * variance * 0.3;
+      const noise = (Math.random() - 0.5) * variance * 0.4;
+      let value = base + sine + noise;
+      if (Math.random() < 0.003) value = base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      value = Math.round(value * 100) / 100;
+      const status = Math.abs(value - base) > variance * 2 ? 'warning' : 'nominal';
+      if (asset.live_sensors[sensorType]) {
+        asset.live_sensors[sensorType].value = value;
+        asset.live_sensors[sensorType].status = status;
+      }
+      if (status === 'nominal') nominal++; else if (status === 'warning') warning++; else critical++;
+    });
+  });
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-GB', {hour12: false});
+  document.getElementById('nominal-count').textContent = nominal;
+  document.getElementById('warning-count').textContent = warning;
+  document.getElementById('critical-count').textContent = critical;
+  // Re-render assets
+  const activeFilter = document.querySelector('.filter-chip.active')?.textContent?.split(' ')[0] || 'all';
+  renderAssets(activeFilter === 'All' ? 'all' : activeFilter);
+}
+
+renderAssets('all');
+updateSensors();
+setInterval(updateSensors, 3000);
+
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, {rootMargin: '-30% 0px -60% 0px'});
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

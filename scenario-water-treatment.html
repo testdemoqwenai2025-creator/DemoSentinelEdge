@@ -1,0 +1,3753 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Scenario: Water Treatment</title>
+<meta name="description" content="Live scenario: ClearWater Municipal Treatment Plant. 60 assets, 238 sensors, synthetic telemetry streaming." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Scenario: Water Treatment" />
+<meta property="og:description" content="ClearWater Municipal Treatment Plant: 60 assets, 238 sensors, live synthetic telemetry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .platform-map { background: linear-gradient(180deg, #0a1a2f 0%, #051020 100%); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin: 24px 0; position: relative; overflow: hidden; min-height: 260px; }
+  .platform-map-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: center; }
+  .platform-diagram { position: relative; height: 200px; background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08), transparent 70%); border: 1px solid rgba(0, 212, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .platform-stats-side { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-tile { padding: 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); text-align: center; }
+  .stat-tile .num { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-tile .lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+  .filter-chip { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+  .filter-chip:hover, .filter-chip.active { background: color-mix(in srgb, var(--cyan) 10%, transparent); border-color: var(--cyan); color: var(--cyan); }
+  .filter-chip .count { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--text-mute) 15%, transparent); font-size: 10px; }
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+  .asset-card { padding: 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden; }
+  .asset-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .asset-card.warning { border-color: var(--gold); }
+  .asset-card.critical { border-color: var(--magenta); border-width: 2px; }
+  .sensor-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; padding: 10px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border); }
+  .live-channel { display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 6px; background: var(--card); border-radius: 4px; border-left: 2px solid var(--text-mute); }
+  .live-channel.nominal { border-left-color: var(--green); }
+  .live-channel.warning { border-left-color: var(--gold); }
+  .live-channel.critical { border-left-color: var(--magenta); }
+  .status-badge { padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .status-badge.nominal { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .status-badge.warning { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .status-badge.critical, .status-badge.emergency { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .alert-item { padding: 14px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid; }
+  .alert-item.warning { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 5%, var(--card)); }
+  .alert-item.critical, .alert-item.emergency { border-left-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 5%, var(--card)); }
+  .audit-item { display: flex; gap: 12px; padding: 12px; border-left: 2px solid var(--cyan); margin-bottom: 8px; background: var(--card); border-radius: 0 8px 8px 0; }
+  .audit-item.action-required { border-left-color: var(--magenta); }
+  .audit-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 100px; }
+  .audit-result { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+  .audit-result.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .audit-result.pass-with-notes { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); }
+  .compliance-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 4px; }
+  .compliance-badge.pass { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .compliance-badge.pending { background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .rul-bar { height: 8px; border-radius: 4px; background: var(--bg-2); overflow: hidden; }
+  .rul-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--magenta)); }
+</style>
+</head>
+<body id="scenario-water-treatment">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore O&G</a>
+    <a href="scenario-water-treatment.html" class="active">Water Treatment</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live"><span class="label">Live Dashboard</span></a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="sectors.html">Sectors</a><span class="sep">/</span><span>Water Treatment</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Live Scenario · Synthetic Telemetry Streaming</div>
+    <h1>Water Treatment <span class="accent">Live Scenario</span></h1>
+    <p class="lead">A live scenario demonstration of AISensorEdgeComp deployed at <strong>ClearWater Municipal Treatment Plant</strong> in Denver, Colorado, USA (1 plant + 500km distribution). 60 assets across 10 categories, 238 sensor endpoints, real-time TS-FM anomaly detection, and full audit/compliance tracking — all running on synthetic data.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">Open Live MVP &rarr;</a>
+      <a href="roi-water-treatment.html" class="btn btn-ghost">Water Treatment ROI Calculator →</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Scenario</h4>
+    <a href="#platform-overview">Platform Overview</a>
+    <a href="#asset-registry">Asset Registry</a>
+    <a href="#live-readings">Live Sensor Readings</a>
+    <a href="#alerts">Active Alerts</a>
+    <a href="#maintenance">Maintenance Log</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#rul">RUL Predictions</a>
+    <a href="#compliance">Compliance</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="doc-section" id="platform-overview">
+      <div class="section-label">Platform Profile</div>
+      <h2>ClearWater Municipal Treatment Plant</h2>
+      <p>Operated by ClearWater Utilities. Installed 2008-03-01 with a design life to 2038-03-01. 400 MLD (megaliters/day) treated water, 500km distribution network. 85 operators + 40 field techs.</p>
+      <div class="platform-map">
+        <div class="platform-map-content">
+          <div class="platform-diagram">
+            <div style="font-size: 48px; margin-bottom: 8px;">🏥</div>
+            <div class="platform-info">
+              <div style="font-size: 16px; font-weight: 600; color: var(--text);">Water Treatment</div>
+              <div style="font-size: 12px; color: var(--text-dim);">Denver, Colorado, USA (1 plant + 500km distribution)</div>
+              <div style="font-size: 11px; color: var(--cyan); margin-top: 4px;">39.7392°, -104.9903°</div>
+            </div>
+          </div>
+          <div class="platform-stats-side">
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">60</div><div class="lbl">Assets</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--violet);">10</div><div class="lbl">Categories</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">238</div><div class="lbl">Sensors</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--green);">49</div><div class="lbl">Nominal</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--gold);">10</div><div class="lbl">Warning</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--magenta);">1</div><div class="lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tbody>
+          <tr><td style="width: 200px;"><strong>Name</strong></td><td>ClearWater Municipal Treatment Plant</td></tr>
+          <tr><td><strong>Operator</strong></td><td>ClearWater Utilities</td></tr>
+          <tr><td><strong>Location</strong></td><td>Denver, Colorado, USA (1 plant + 500km distribution)</td></tr>
+          <tr><td><strong>Installed</strong></td><td>2008-03-01</td></tr>
+          <tr><td><strong>Design Life</strong></td><td>2038-03-01</td></tr>
+          <tr><td><strong>Capacity</strong></td><td>400 MLD (megaliters/day) treated water, 500km distribution network</td></tr>
+          <tr><td><strong>Compliance</strong></td><td><span class="compliance-badge pass">SDWA ✓</span><span class="compliance-badge pass">EPA LCR ✓</span><span class="compliance-badge pass">ISO 24528 ✓</span><span class="compliance-badge pass">Colorado WQCD ✓</span><span class="compliance-badge pass">AWWA standards ✓</span><span class="compliance-badge pending">ISO 27001 (data security)</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ASSET REGISTRY -->
+    <section class="doc-section" id="asset-registry">
+      <div class="section-label">Asset Registry</div>
+      <h2>60 assets across <span class="accent">10 categories</span></h2>
+      <p>Each asset has a unique ID, geolocation, install/expire dates, monthly audit schedule, sensor readings (live-updated), TS-FM confidence scores, and RUL predictions.</p>
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" onclick="filterAssets('all')">All <span class="count">60</span></button>
+        <button class="filter-chip" onclick="filterAssets('Intake Pumps')" >🔧 Intake Pumps <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Chemical Dosing')" >⚗️ Chemical Dosing <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Sedimentation Basins')" >💧 Sedimentation Basins <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('Filtration')" >🧊 Filtration <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Disinfection')" >🦠 Disinfection <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Storage Reservoirs')" >🛢️ Storage Reservoirs <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Distribution Sensors')" >📡 Distribution Sensors <span class="count">20</span></button><button class="filter-chip" onclick="filterAssets('Water Quality Lab')" >🔬 Water Quality Lab <span class="count">1</span></button><button class="filter-chip" onclick="filterAssets('SCADA System')" >🖥️ SCADA System <span class="count">1</span></button><button class="filter-chip" onclick="filterAssets('Power Supply')" >⚡ Power Supply <span class="count">3</span></button>
+      </div>
+      <div class="asset-grid" id="asset-grid"></div>
+    </section>
+
+    <!-- LIVE READINGS -->
+    <section class="doc-section" id="live-readings">
+      <div class="section-label">Real-Time Sensor Stream</div>
+      <h2>Live sensor readings <span class="accent">(updates every 3s)</span></h2>
+      <p>All 238 sensor endpoints stream synthetic telemetry through the AISensorEdgeComp ingest pipeline.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;"><span style="height: 8px; width: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite;"></span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span></div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Nominal: <span id="nominal-count" style="color: var(--green);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Warning: <span id="warning-count" style="color: var(--gold);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Critical: <span id="critical-count" style="color: var(--magenta);">--</span></span>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="doc-section" id="alerts">
+      <div class="section-label">Active Alerts</div>
+      <h2>14 active alerts from <span class="accent">TS-FM anomaly detection</span></h2>
+      <div>
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Chlorine dosing — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Chemical Dosing DOS-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-51452 · Asset: DOS-001 · TS-FM confidence: 0.98 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Phosphate — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Chemical Dosing DOS-006</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-98232 · Asset: DOS-006 · TS-FM confidence: 0.95 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Primary clarifier A-F — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Sedimentation Basins SED-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-98091 · Asset: SED-003 · TS-FM confidence: 0.9 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Sand filter A-H — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Filtration FLT-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-12659 · Asset: FLT-003 · TS-FM confidence: 0.84 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Sand filter A-H — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Filtration FLT-006</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-15807 · Asset: FLT-006 · TS-FM confidence: 0.91 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Sand filter A-H — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Filtration FLT-007</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-53357 · Asset: FLT-007 · TS-FM confidence: 0.92 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Chlorine contact tank 1-4 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Disinfection DIS-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-89231 · Asset: DIS-001 · TS-FM confidence: 0.92 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Treated water reservoir 1-5 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Storage Reservoirs RES-005</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-10181 · Asset: RES-005 · TS-FM confidence: 0.97 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Pressure sensor — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Distribution Sensors DIST-017</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-60806 · Asset: DIST-017 · TS-FM confidence: 0.96 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Flow meter — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Distribution Sensors DIST-018</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-13156 · Asset: DIST-018 · TS-FM confidence: 0.9 · Unacknowledged
+          </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- MAINTENANCE -->
+    <section class="doc-section" id="maintenance">
+      <div class="section-label">Maintenance Log</div>
+      <h2>222 maintenance events <span class="accent">YTD</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Asset</th><th>Type</th><th>By</th><th>Duration</th><th>Cost</th><th>Description</th></tr></thead>
+        <tbody><tr><td>2026-08-27</td><td><strong>INT-002</strong></td><td>calibration</td><td>Tech 2</td><td>12h</td><td>$6,580</td><td>Calibration on Raw water intake B</td></tr><tr><td>2026-08-24</td><td><strong>SED-001</strong></td><td>repair</td><td>Tech 3</td><td>23h</td><td>$5,092</td><td>Replacement on Primary clarifier A-F</td></tr><tr><td>2026-08-20</td><td><strong>DOS-003</strong></td><td>inspection</td><td>Tech 8</td><td>13h</td><td>$5,969</td><td>Inspection on Flocculant</td></tr><tr><td>2026-08-20</td><td><strong>DOS-008</strong></td><td>calibration</td><td>Tech 5</td><td>18h</td><td>$10,650</td><td>Calibration on Coagulant (alum)</td></tr><tr><td>2026-08-05</td><td><strong>DIST-013</strong></td><td>calibration</td><td>Tech 8</td><td>10h</td><td>$8,239</td><td>Inspection on Pressure sensor</td></tr><tr><td>2026-08-03</td><td><strong>RES-004</strong></td><td>replacement</td><td>Tech 4</td><td>1h</td><td>$8,355</td><td>Repair on Treated water reservoir 1-5</td></tr><tr><td>2026-08-02</td><td><strong>DOS-002</strong></td><td>fault</td><td>Tech 4</td><td>24h</td><td>$16,103</td><td>Calibration on Coagulant (alum)</td></tr><tr><td>2026-08-02</td><td><strong>SED-003</strong></td><td>inspection</td><td>Tech 8</td><td>22h</td><td>$3,263</td><td>Calibration on Primary clarifier A-F</td></tr><tr><td>2026-08-01</td><td><strong>DIS-003</strong></td><td>calibration</td><td>Tech 8</td><td>22h</td><td>$5,114</td><td>Fault on Chlorine contact tank 1-4</td></tr><tr><td>2026-07-31</td><td><strong>SED-003</strong></td><td>fault</td><td>Tech 7</td><td>24h</td><td>$16,253</td><td>Inspection on Primary clarifier A-F</td></tr><tr><td>2026-07-27</td><td><strong>INT-002</strong></td><td>calibration</td><td>Tech 3</td><td>3h</td><td>$15,478</td><td>Fault on Raw water intake B</td></tr><tr><td>2026-07-26</td><td><strong>INT-001</strong></td><td>inspection</td><td>Tech 5</td><td>15h</td><td>$20,219</td><td>Calibration on Raw water intake A</td></tr><tr><td>2026-07-24</td><td><strong>SED-006</strong></td><td>repair</td><td>Tech 6</td><td>19h</td><td>$2,249</td><td>Inspection on Primary clarifier A-F</td></tr><tr><td>2026-07-24</td><td><strong>DIS-003</strong></td><td>inspection</td><td>Tech 6</td><td>2h</td><td>$8,729</td><td>Fault on Chlorine contact tank 1-4</td></tr><tr><td>2026-07-19</td><td><strong>DIST-004</strong></td><td>replacement</td><td>Tech 8</td><td>24h</td><td>$16,553</td><td>Replacement on Turbidity sensor</td></tr></tbody>
+      </table>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 15 of 222 events.</p>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section class="doc-section" id="audit">
+      <div class="section-label">Audit Trail</div>
+      <h2>64 audit entries <span class="accent">(monthly cycle)</span></h2>
+      <div>
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-31</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DOS-006 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-24</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">INT-002 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-23</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DOS-001 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-23</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DOS-007 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-22</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DOS-002 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-18</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">FLT-001 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-17</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">INT-001 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-17</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">INT-003 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Safety test passed.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-17</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">SED-004 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-13</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">SED-001 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-11</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">SED-004 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-09</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DOS-004 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 12 of 64 entries.</p>
+    </section>
+
+    <!-- RUL -->
+    <section class="doc-section" id="rul">
+      <div class="section-label">Remaining Useful Life</div>
+      <h2>RUL predictions <span class="accent">from TS-FM + federated learning</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Sub-type</th><th>RUL (hours)</th><th>RUL (years)</th><th>Confidence</th><th>Health</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><strong>INT-002</strong></td>
+          <td>Raw water intake B</td>
+          <td>6,407</td>
+          <td>0.7</td>
+          <td>0.87</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 12.814%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>INT-003</strong></td>
+          <td>Backup intake</td>
+          <td>19,220</td>
+          <td>2.2</td>
+          <td>0.84</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 38.44%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>INT-004</strong></td>
+          <td>Emergency intake</td>
+          <td>12,474</td>
+          <td>1.4</td>
+          <td>0.88</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 24.948%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-002</strong></td>
+          <td>Coagulant (alum)</td>
+          <td>11,601</td>
+          <td>1.3</td>
+          <td>0.88</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 23.202%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-003</strong></td>
+          <td>Flocculant</td>
+          <td>27,867</td>
+          <td>3.2</td>
+          <td>0.93</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 55.734%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-004</strong></td>
+          <td>pH adjuster</td>
+          <td>21,262</td>
+          <td>2.4</td>
+          <td>0.87</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 42.524%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-005</strong></td>
+          <td>Fluoride</td>
+          <td>19,108</td>
+          <td>2.2</td>
+          <td>0.86</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 38.216%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-007</strong></td>
+          <td>Chlorine dosing</td>
+          <td>16,608</td>
+          <td>1.9</td>
+          <td>0.89</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 33.216%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>DOS-008</strong></td>
+          <td>Coagulant (alum)</td>
+          <td>10,192</td>
+          <td>1.2</td>
+          <td>0.9</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 20.384%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>SED-002</strong></td>
+          <td>Primary clarifier A-F</td>
+          <td>21,819</td>
+          <td>2.5</td>
+          <td>0.9</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 43.638%"></div></div></td>
+        </tr>
+    </tbody>
+      </table>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="doc-section" id="compliance">
+      <div class="section-label">Compliance Status</div>
+      <h2>Regulatory compliance <span class="accent">dashboard</span></h2>
+      <p><span class="compliance-badge pass">SDWA ✓</span><span class="compliance-badge pass">EPA LCR ✓</span><span class="compliance-badge pass">ISO 24528 ✓</span><span class="compliance-badge pass">Colorado WQCD ✓</span><span class="compliance-badge pass">AWWA standards ✓</span><span class="compliance-badge pending">ISO 27001 (data security)</span></p>
+    </section>
+
+    <!-- PROBLEM DEEP DIVES -->
+    <section class="doc-section">
+      <div class="section-label">Related Problem Deep Dives</div>
+      <h2>How AISensorEdgeComp solves the four problems <span class="accent">at this facility</span></h2>
+      <p style="color: var(--text-dim); margin-bottom: 16px;">This scenario faces all four structural problems. Here's how the platform addresses each — and how they compound.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="protocol-heterogeneity.html" class="btn btn-ghost btn-sm">Protocol Heterogeneity →</a> <a href="calibration-drift.html" class="btn btn-ghost btn-sm">Calibration Drift (Cl2) →</a> <a href="edge-cloud-placement.html" class="btn btn-ghost btn-sm">Edge-Cloud Placement →</a> <a href="unlabeled-industrial-data.html" class="btn btn-ghost btn-sm">Unlabeled Data →</a>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="problem.html#compound-value" class="btn btn-ghost btn-sm">Read about the compound effect →</a>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, this scenario <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + liquid placement + Graph RAG that powers this water treatment scenario.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">Open Live Dashboard</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="roi-water-treatment.html">Water Treatment ROI Calculator</a>
+    <a href="problem.html">The 4 Problems</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Scenario: Water Treatment &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const ASSETS = [
+  {
+    "id": "INT-001",
+    "category": "Intake Pumps",
+    "sub_type": "Raw water intake A",
+    "location": {
+      "lat": 39.739254,
+      "lon": -104.990341,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-09-21",
+    "expire_date": "2034-09-17",
+    "last_audit": "2026-07-27",
+    "next_audit": "2026-08-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 47772,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "temp"
+    ],
+    "extra": {
+      "capacity_mld": "100 each",
+      "type": "vertical turbine"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 468.43,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 43.25,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 3.62,
+        "unit": "mm/s",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 49.73,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "INT-002",
+    "category": "Intake Pumps",
+    "sub_type": "Raw water intake B",
+    "location": {
+      "lat": 39.737362,
+      "lon": -104.990014,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-03-20",
+    "expire_date": "2029-03-17",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 6407,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "temp"
+    ],
+    "extra": {
+      "capacity_mld": "100 each",
+      "type": "vertical turbine"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 448.27,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 43.65,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 3.46,
+        "unit": "mm/s",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 50.66,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "INT-003",
+    "category": "Intake Pumps",
+    "sub_type": "Backup intake",
+    "location": {
+      "lat": 39.740662,
+      "lon": -104.991834,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-06-29",
+    "expire_date": "2037-06-25",
+    "last_audit": "2026-07-08",
+    "next_audit": "2026-08-07",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 19220,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "temp"
+    ],
+    "extra": {
+      "capacity_mld": "100 each",
+      "type": "vertical turbine"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 465.3,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 46.2,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 3.49,
+        "unit": "mm/s",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 51.46,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "INT-004",
+    "category": "Intake Pumps",
+    "sub_type": "Emergency intake",
+    "location": {
+      "lat": 39.73853,
+      "lon": -104.989997,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-02-27",
+    "expire_date": "2031-02-25",
+    "last_audit": "2026-07-07",
+    "next_audit": "2026-08-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 12474,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "temp"
+    ],
+    "extra": {
+      "capacity_mld": "100 each",
+      "type": "vertical turbine"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 463.19,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 46.55,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 3.67,
+        "unit": "mm/s",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.45,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-001",
+    "category": "Chemical Dosing",
+    "sub_type": "Chlorine dosing",
+    "location": {
+      "lat": 39.74023,
+      "lon": -104.988456,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-11-12",
+    "expire_date": "2029-11-09",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 35735,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.92,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 74.69,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 447.31,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.12,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-002",
+    "category": "Chemical Dosing",
+    "sub_type": "Coagulant (alum)",
+    "location": {
+      "lat": 39.738239,
+      "lon": -104.988645,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-03-18",
+    "expire_date": "2037-03-14",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 11601,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.66,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 73.3,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 456.04,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.17,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-003",
+    "category": "Chemical Dosing",
+    "sub_type": "Flocculant",
+    "location": {
+      "lat": 39.738868,
+      "lon": -104.99024,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-03-25",
+    "expire_date": "2030-03-23",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 27867,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.57,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 69.97,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 430.91,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.21,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-004",
+    "category": "Chemical Dosing",
+    "sub_type": "pH adjuster",
+    "location": {
+      "lat": 39.741147,
+      "lon": -104.991619,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-11-09",
+    "expire_date": "2035-11-06",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 21262,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 14.56,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 67.83,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 462.18,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.22,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-005",
+    "category": "Chemical Dosing",
+    "sub_type": "Fluoride",
+    "location": {
+      "lat": 39.739594,
+      "lon": -104.99036,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-01-03",
+    "expire_date": "2027-01-02",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 19108,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.09,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 76.31,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 467.92,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.15,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-006",
+    "category": "Chemical Dosing",
+    "sub_type": "Phosphate",
+    "location": {
+      "lat": 39.740702,
+      "lon": -104.990984,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-01-23",
+    "expire_date": "2026-01-22",
+    "last_audit": "2026-08-07",
+    "next_audit": "2026-09-06",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 37099,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 14.88,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 72.22,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 440.97,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.17,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-007",
+    "category": "Chemical Dosing",
+    "sub_type": "Chlorine dosing",
+    "location": {
+      "lat": 39.739146,
+      "lon": -104.992223,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-08-10",
+    "expire_date": "2033-08-07",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 16608,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.98,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 68.41,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 435.76,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.11,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DOS-008",
+    "category": "Chemical Dosing",
+    "sub_type": "Coagulant (alum)",
+    "location": {
+      "lat": 39.739037,
+      "lon": -104.990108,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-01-28",
+    "expire_date": "2034-01-24",
+    "last_audit": "2026-08-11",
+    "next_audit": "2026-09-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 10192,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "dosing_rate",
+      "tank_level",
+      "flow",
+      "ph"
+    ],
+    "extra": {
+      "chemical": "Cl2/Alum/Polymer/NaOH/HF/SiF",
+      "accuracy_pct": "\u00b12%"
+    },
+    "live_sensors": {
+      "dosing_rate": {
+        "value": 15.98,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "tank_level": {
+        "value": 72.33,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 441.61,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.17,
+        "unit": "pH",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-001",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.739954,
+      "lon": -104.98891,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-06-09",
+    "expire_date": "2029-06-06",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 37774,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.33,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 78.6,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 24.49,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 34.43,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-002",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.74002,
+      "lon": -104.990555,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-07-03",
+    "expire_date": "2025-07-02",
+    "last_audit": "2026-08-03",
+    "next_audit": "2026-09-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 21819,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.27,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 77.0,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 26.3,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 34.67,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-003",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.737252,
+      "lon": -104.991076,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-09-14",
+    "expire_date": "2031-09-12",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 13136,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.34,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 75.63,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 24.03,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 33.02,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-004",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.741046,
+      "lon": -104.991745,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-09-23",
+    "expire_date": "2029-09-20",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 37709,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.33,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 77.32,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 23.83,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 35.17,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-005",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.738375,
+      "lon": -104.989671,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-08-11",
+    "expire_date": "2035-08-08",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 17430,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.33,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 76.19,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 22.38,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 36.27,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SED-006",
+    "category": "Sedimentation Basins",
+    "sub_type": "Primary clarifier A-F",
+    "location": {
+      "lat": 39.740766,
+      "lon": -104.992081,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-05-28",
+    "expire_date": "2031-05-26",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 4248,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "turbidity",
+      "level",
+      "sludge_level",
+      "overflow_rate"
+    ],
+    "extra": {
+      "diameter_m": "45",
+      "depth_m": "4.5"
+    },
+    "live_sensors": {
+      "turbidity": {
+        "value": 0.33,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 78.81,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "sludge_level": {
+        "value": 26.12,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "overflow_rate": {
+        "value": 34.04,
+        "unit": "m/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-001",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.739052,
+      "lon": -104.99052,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-12-21",
+    "expire_date": "2028-12-19",
+    "last_audit": "2026-07-27",
+    "next_audit": "2026-08-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 47666,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.17,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 451.97,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.31,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 48.97,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-002",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.73899,
+      "lon": -104.989684,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-09-09",
+    "expire_date": "2035-09-06",
+    "last_audit": "2026-08-07",
+    "next_audit": "2026-09-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 15848,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.16,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 452.72,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.25,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 48.49,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-003",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.73947,
+      "lon": -104.990531,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-03-11",
+    "expire_date": "2033-03-08",
+    "last_audit": "2026-08-16",
+    "next_audit": "2026-09-15",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 35205,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.11,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 464.49,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.32,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 46.33,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-004",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.739887,
+      "lon": -104.989462,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-09-25",
+    "expire_date": "2038-09-21",
+    "last_audit": "2026-08-26",
+    "next_audit": "2026-09-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 22166,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.29,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 461.11,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.35,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 46.52,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-005",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.738526,
+      "lon": -104.991284,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-11-26",
+    "expire_date": "2026-11-25",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 37264,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.28,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 461.68,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.31,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 46.91,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-006",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.738679,
+      "lon": -104.990146,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-12-17",
+    "expire_date": "2037-12-13",
+    "last_audit": "2026-07-27",
+    "next_audit": "2026-08-26",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 21365,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.28,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 440.73,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.32,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 46.87,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-007",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.7385,
+      "lon": -104.988398,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-03-10",
+    "expire_date": "2031-03-08",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 3718,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.28,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 444.55,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.31,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 49.85,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLT-008",
+    "category": "Filtration",
+    "sub_type": "Sand filter A-H",
+    "location": {
+      "lat": 39.739549,
+      "lon": -104.988349,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-01-08",
+    "expire_date": "2037-01-04",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 28447,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "headloss",
+      "flow",
+      "turbidity",
+      "filter_run_hours"
+    ],
+    "extra": {
+      "media": "dual media (sand/anthracite)",
+      "filter_rate_mh": "10-15"
+    },
+    "live_sensors": {
+      "headloss": {
+        "value": 1.15,
+        "unit": "m",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 430.93,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.29,
+        "unit": "NTU",
+        "status": "nominal"
+      },
+      "filter_run_hours": {
+        "value": 46.67,
+        "unit": "hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIS-001",
+    "category": "Disinfection",
+    "sub_type": "Chlorine contact tank 1-4",
+    "location": {
+      "lat": 39.738159,
+      "lon": -104.989299,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-06-06",
+    "expire_date": "2026-06-05",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 29704,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "cl2_residual",
+      "contact_time",
+      "ph",
+      "temp"
+    ],
+    "extra": {
+      "method": "chlorination",
+      "ct_value": ">450 mg\u00b7min/L"
+    },
+    "live_sensors": {
+      "cl2_residual": {
+        "value": 1.73,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "contact_time": {
+        "value": 90.61,
+        "unit": "min",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.28,
+        "unit": "pH",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 53.17,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIS-002",
+    "category": "Disinfection",
+    "sub_type": "Chlorine contact tank 1-4",
+    "location": {
+      "lat": 39.738708,
+      "lon": -104.991199,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-08-08",
+    "expire_date": "2033-08-05",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 11885,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "cl2_residual",
+      "contact_time",
+      "ph",
+      "temp"
+    ],
+    "extra": {
+      "method": "chlorination",
+      "ct_value": ">450 mg\u00b7min/L"
+    },
+    "live_sensors": {
+      "cl2_residual": {
+        "value": 1.85,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "contact_time": {
+        "value": 93.32,
+        "unit": "min",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.24,
+        "unit": "pH",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 47.75,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIS-003",
+    "category": "Disinfection",
+    "sub_type": "Chlorine contact tank 1-4",
+    "location": {
+      "lat": 39.740389,
+      "lon": -104.990849,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-06-26",
+    "expire_date": "2033-06-23",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 12644,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "cl2_residual",
+      "contact_time",
+      "ph",
+      "temp"
+    ],
+    "extra": {
+      "method": "chlorination",
+      "ct_value": ">450 mg\u00b7min/L"
+    },
+    "live_sensors": {
+      "cl2_residual": {
+        "value": 1.88,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "contact_time": {
+        "value": 86.76,
+        "unit": "min",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.11,
+        "unit": "pH",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 51.23,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIS-004",
+    "category": "Disinfection",
+    "sub_type": "Chlorine contact tank 1-4",
+    "location": {
+      "lat": 39.739852,
+      "lon": -104.990917,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-08-25",
+    "expire_date": "2029-08-22",
+    "last_audit": "2026-08-14",
+    "next_audit": "2026-09-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 40294,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "cl2_residual",
+      "contact_time",
+      "ph",
+      "temp"
+    ],
+    "extra": {
+      "method": "chlorination",
+      "ct_value": ">450 mg\u00b7min/L"
+    },
+    "live_sensors": {
+      "cl2_residual": {
+        "value": 1.73,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "contact_time": {
+        "value": 91.12,
+        "unit": "min",
+        "status": "nominal"
+      },
+      "ph": {
+        "value": 7.12,
+        "unit": "pH",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 54.35,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RES-001",
+    "category": "Storage Reservoirs",
+    "sub_type": "Treated water reservoir 1-5",
+    "location": {
+      "lat": 39.739005,
+      "lon": -104.991051,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-07-17",
+    "expire_date": "2032-07-14",
+    "last_audit": "2026-08-16",
+    "next_audit": "2026-09-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 3478,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "level",
+      "cl2_residual",
+      "temp",
+      "turnover_rate"
+    ],
+    "extra": {
+      "capacity_ml": "50-200 each",
+      "type": "covered/underground"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 80.25,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.89,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 54.85,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "turnover_rate": {
+        "value": 2.56,
+        "unit": "/day",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RES-002",
+    "category": "Storage Reservoirs",
+    "sub_type": "Treated water reservoir 1-5",
+    "location": {
+      "lat": 39.740506,
+      "lon": -104.989855,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-11-12",
+    "expire_date": "2029-11-09",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 28089,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "level",
+      "cl2_residual",
+      "temp",
+      "turnover_rate"
+    ],
+    "extra": {
+      "capacity_ml": "50-200 each",
+      "type": "covered/underground"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 78.7,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.9,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 45.88,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "turnover_rate": {
+        "value": 2.51,
+        "unit": "/day",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RES-003",
+    "category": "Storage Reservoirs",
+    "sub_type": "Treated water reservoir 1-5",
+    "location": {
+      "lat": 39.740007,
+      "lon": -104.991269,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-05-29",
+    "expire_date": "2029-05-26",
+    "last_audit": "2026-07-24",
+    "next_audit": "2026-08-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 11392,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "level",
+      "cl2_residual",
+      "temp",
+      "turnover_rate"
+    ],
+    "extra": {
+      "capacity_ml": "50-200 each",
+      "type": "covered/underground"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 75.95,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.86,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 54.49,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "turnover_rate": {
+        "value": 2.67,
+        "unit": "/day",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RES-004",
+    "category": "Storage Reservoirs",
+    "sub_type": "Treated water reservoir 1-5",
+    "location": {
+      "lat": 39.738527,
+      "lon": -104.989847,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-12-30",
+    "expire_date": "2031-12-28",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 30586,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "level",
+      "cl2_residual",
+      "temp",
+      "turnover_rate"
+    ],
+    "extra": {
+      "capacity_ml": "50-200 each",
+      "type": "covered/underground"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 78.23,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.71,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 48.57,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "turnover_rate": {
+        "value": 2.51,
+        "unit": "/day",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "RES-005",
+    "category": "Storage Reservoirs",
+    "sub_type": "Treated water reservoir 1-5",
+    "location": {
+      "lat": 39.739531,
+      "lon": -104.991742,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-12-15",
+    "expire_date": "2032-12-12",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 37096,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "level",
+      "cl2_residual",
+      "temp",
+      "turnover_rate"
+    ],
+    "extra": {
+      "capacity_ml": "50-200 each",
+      "type": "covered/underground"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 80.31,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.74,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 51.38,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "turnover_rate": {
+        "value": 2.33,
+        "unit": "/day",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-001",
+    "category": "Distribution Sensors",
+    "sub_type": "Pressure sensor",
+    "location": {
+      "lat": 39.739943,
+      "lon": -104.989588,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-12-13",
+    "expire_date": "2037-12-09",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 33669,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.5,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 447.37,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.77,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.34,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-002",
+    "category": "Distribution Sensors",
+    "sub_type": "Flow meter",
+    "location": {
+      "lat": 39.740434,
+      "lon": -104.989517,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-02-27",
+    "expire_date": "2025-02-25",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 3887,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.1,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 446.29,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.76,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.35,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-003",
+    "category": "Distribution Sensors",
+    "sub_type": "Cl2 sensor",
+    "location": {
+      "lat": 39.738061,
+      "lon": -104.989721,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-07-02",
+    "expire_date": "2032-06-29",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 9258,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 45.29,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 444.21,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.8,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.27,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-004",
+    "category": "Distribution Sensors",
+    "sub_type": "Turbidity sensor",
+    "location": {
+      "lat": 39.740392,
+      "lon": -104.991844,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-02-07",
+    "expire_date": "2038-02-03",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 38969,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 43.63,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 433.96,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.71,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.31,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-005",
+    "category": "Distribution Sensors",
+    "sub_type": "Pressure sensor",
+    "location": {
+      "lat": 39.740914,
+      "lon": -104.990797,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-02-01",
+    "expire_date": "2028-01-31",
+    "last_audit": "2026-08-02",
+    "next_audit": "2026-09-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 46803,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.53,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 443.45,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.77,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.27,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-006",
+    "category": "Distribution Sensors",
+    "sub_type": "Flow meter",
+    "location": {
+      "lat": 39.740667,
+      "lon": -104.989749,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-08-23",
+    "expire_date": "2024-08-21",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 14593,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.01,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 430.94,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.84,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.32,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-007",
+    "category": "Distribution Sensors",
+    "sub_type": "Cl2 sensor",
+    "location": {
+      "lat": 39.73992,
+      "lon": -104.991712,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-10-29",
+    "expire_date": "2038-10-25",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 6723,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.06,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 433.98,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.78,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.33,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-008",
+    "category": "Distribution Sensors",
+    "sub_type": "Turbidity sensor",
+    "location": {
+      "lat": 39.739381,
+      "lon": -104.991209,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-10-01",
+    "expire_date": "2038-09-27",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 8847,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.64,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 431.98,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.88,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.34,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-009",
+    "category": "Distribution Sensors",
+    "sub_type": "Pressure sensor",
+    "location": {
+      "lat": 39.740915,
+      "lon": -104.988618,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-04-17",
+    "expire_date": "2028-04-15",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 36864,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 45.03,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 463.87,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.8,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.25,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-010",
+    "category": "Distribution Sensors",
+    "sub_type": "Flow meter",
+    "location": {
+      "lat": 39.740373,
+      "lon": -104.991083,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-01-11",
+    "expire_date": "2031-01-09",
+    "last_audit": "2026-08-26",
+    "next_audit": "2026-09-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 47467,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.64,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 446.66,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.73,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.35,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-011",
+    "category": "Distribution Sensors",
+    "sub_type": "Cl2 sensor",
+    "location": {
+      "lat": 39.740663,
+      "lon": -104.988961,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-11-04",
+    "expire_date": "2029-11-01",
+    "last_audit": "2026-08-04",
+    "next_audit": "2026-09-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 5441,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.5,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 440.96,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.85,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.29,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-012",
+    "category": "Distribution Sensors",
+    "sub_type": "Turbidity sensor",
+    "location": {
+      "lat": 39.739783,
+      "lon": -104.990021,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-08-05",
+    "expire_date": "2032-08-02",
+    "last_audit": "2026-08-14",
+    "next_audit": "2026-09-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 21852,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.54,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 436.07,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.87,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.34,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-013",
+    "category": "Distribution Sensors",
+    "sub_type": "Pressure sensor",
+    "location": {
+      "lat": 39.741082,
+      "lon": -104.991236,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-05-10",
+    "expire_date": "2028-05-08",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 30356,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.19,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 435.12,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.7,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.32,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-014",
+    "category": "Distribution Sensors",
+    "sub_type": "Flow meter",
+    "location": {
+      "lat": 39.739734,
+      "lon": -104.991049,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-07-06",
+    "expire_date": "2033-07-03",
+    "last_audit": "2026-07-16",
+    "next_audit": "2026-08-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 9144,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 45.8,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 465.64,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.81,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.26,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-015",
+    "category": "Distribution Sensors",
+    "sub_type": "Cl2 sensor",
+    "location": {
+      "lat": 39.738139,
+      "lon": -104.988488,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-06-02",
+    "expire_date": "2027-06-01",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 7897,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 44.68,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 461.42,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.79,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.35,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-016",
+    "category": "Distribution Sensors",
+    "sub_type": "Turbidity sensor",
+    "location": {
+      "lat": 39.739878,
+      "lon": -104.990828,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-05-23",
+    "expire_date": "2038-05-19",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 45678,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 43.25,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 466.86,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.87,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.28,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-017",
+    "category": "Distribution Sensors",
+    "sub_type": "Pressure sensor",
+    "location": {
+      "lat": 39.738586,
+      "lon": -104.991608,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-08-31",
+    "expire_date": "2035-08-28",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 47083,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.39,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 434.4,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.85,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.34,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-018",
+    "category": "Distribution Sensors",
+    "sub_type": "Flow meter",
+    "location": {
+      "lat": 39.738704,
+      "lon": -104.98889,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-01-22",
+    "expire_date": "2031-01-20",
+    "last_audit": "2026-08-26",
+    "next_audit": "2026-09-25",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 24484,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 43.13,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 434.55,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.73,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.26,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-019",
+    "category": "Distribution Sensors",
+    "sub_type": "Cl2 sensor",
+    "location": {
+      "lat": 39.740407,
+      "lon": -104.99166,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-11-28",
+    "expire_date": "2032-11-25",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 17007,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 46.49,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 467.84,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.72,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.28,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DIST-020",
+    "category": "Distribution Sensors",
+    "sub_type": "Turbidity sensor",
+    "location": {
+      "lat": 39.739712,
+      "lon": -104.988533,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-09-21",
+    "expire_date": "2033-09-18",
+    "last_audit": "2026-08-20",
+    "next_audit": "2026-09-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 48379,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "pressure",
+      "flow",
+      "cl2_residual",
+      "turbidity"
+    ],
+    "extra": {
+      "network_km": "500",
+      "protocol": "LoRaWAN / NB-IoT"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 45.68,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 467.56,
+        "unit": "MLD",
+        "status": "nominal"
+      },
+      "cl2_residual": {
+        "value": 1.72,
+        "unit": "mg/L",
+        "status": "nominal"
+      },
+      "turbidity": {
+        "value": 0.29,
+        "unit": "NTU",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "LAB-001",
+    "category": "Water Quality Lab",
+    "sub_type": "Online + grab sample analysis",
+    "location": {
+      "lat": 39.740444,
+      "lon": -104.992276,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-09-29",
+    "expire_date": "2029-09-26",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 49946,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "samples_today",
+      "compliance_pct",
+      "deviation_count"
+    ],
+    "extra": {
+      "parameters": "pH, turbidity, Cl2, TTHM, HAA5, metals",
+      "method": "online + lab"
+    },
+    "live_sensors": {
+      "samples_today": {
+        "value": 142.03,
+        "unit": "samples",
+        "status": "nominal"
+      },
+      "compliance_pct": {
+        "value": 99.72,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "deviation_count": {
+        "value": 0.55,
+        "unit": "events",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SCADA-001",
+    "category": "SCADA System",
+    "sub_type": "Plant SCADA + distribution SCADA",
+    "location": {
+      "lat": 39.737689,
+      "lon": -104.988503,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-12-25",
+    "expire_date": "2030-12-23",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 32634,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "system_health",
+      "alarm_count",
+      "data_points"
+    ],
+    "extra": {
+      "io_points": "8000+",
+      "protocol": "Modbus/OPC-UA/DNP3"
+    },
+    "live_sensors": {
+      "system_health": {
+        "value": 98.94,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "alarm_count": {
+        "value": 3.02,
+        "unit": "alarms",
+        "status": "nominal"
+      },
+      "data_points": {
+        "value": 8013.74,
+        "unit": "points",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PWR-001",
+    "category": "Power Supply",
+    "sub_type": "Grid supply A",
+    "location": {
+      "lat": 39.737354,
+      "lon": -104.991041,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-08-25",
+    "expire_date": "2029-08-22",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 45670,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "voltage",
+      "current",
+      "power_factor",
+      "frequency"
+    ],
+    "extra": {
+      "redundancy": "N+1",
+      "backup_kva": "1500"
+    },
+    "live_sensors": {
+      "voltage": {
+        "value": 4157.01,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 337.34,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "power_factor": {
+        "value": 0.97,
+        "unit": "",
+        "status": "nominal"
+      },
+      "frequency": {
+        "value": 59.99,
+        "unit": "Hz",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PWR-002",
+    "category": "Power Supply",
+    "sub_type": "Grid supply B",
+    "location": {
+      "lat": 39.739227,
+      "lon": -104.991486,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-11-30",
+    "expire_date": "2026-11-29",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 35217,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "voltage",
+      "current",
+      "power_factor",
+      "frequency"
+    ],
+    "extra": {
+      "redundancy": "N+1",
+      "backup_kva": "1500"
+    },
+    "live_sensors": {
+      "voltage": {
+        "value": 4161.81,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 336.87,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "power_factor": {
+        "value": 0.93,
+        "unit": "",
+        "status": "nominal"
+      },
+      "frequency": {
+        "value": 59.99,
+        "unit": "Hz",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PWR-003",
+    "category": "Power Supply",
+    "sub_type": "Diesel backup",
+    "location": {
+      "lat": 39.740982,
+      "lon": -104.992076,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-09-25",
+    "expire_date": "2030-09-23",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 44088,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "voltage",
+      "current",
+      "power_factor",
+      "frequency"
+    ],
+    "extra": {
+      "redundancy": "N+1",
+      "backup_kva": "1500"
+    },
+    "live_sensors": {
+      "voltage": {
+        "value": 4155.43,
+        "unit": "V",
+        "status": "nominal"
+      },
+      "current": {
+        "value": 342.34,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "power_factor": {
+        "value": 0.95,
+        "unit": "",
+        "status": "nominal"
+      },
+      "frequency": {
+        "value": 60.0,
+        "unit": "Hz",
+        "status": "nominal"
+      }
+    }
+  }
+];
+const CATEGORIES = [{"name": "Intake Pumps", "icon": "\ud83d\udd27", "count": 4}, {"name": "Chemical Dosing", "icon": "\u2697\ufe0f", "count": 8}, {"name": "Sedimentation Basins", "icon": "\ud83d\udca7", "count": 6}, {"name": "Filtration", "icon": "\ud83e\uddca", "count": 8}, {"name": "Disinfection", "icon": "\ud83e\udda0", "count": 4}, {"name": "Storage Reservoirs", "icon": "\ud83d\udee2\ufe0f", "count": 5}, {"name": "Distribution Sensors", "icon": "\ud83d\udce1", "count": 20}, {"name": "Water Quality Lab", "icon": "\ud83d\udd2c", "count": 1}, {"name": "SCADA System", "icon": "\ud83d\udda5\ufe0f", "count": 1}, {"name": "Power Supply", "icon": "\u26a1", "count": 3}];
+const SENSOR_BASELINES = {"flow": [450, 20, "MLD"], "pressure": [45, 2, "psi"], "vibration": [3.5, 0.3, "mm/s"], "dosing_rate": [15, 1, "L/min"], "tank_level": [72, 5, "%"], "ph": [7.2, 0.1, "pH"], "turbidity": [0.3, 0.05, "NTU"], "level": [78, 3, "%"], "sludge_level": [25, 3, "%"], "overflow_rate": [35, 2, "m/h"], "headloss": [1.2, 0.1, "m"], "filter_run_hours": [48, 2, "hr"], "cl2_residual": [1.8, 0.1, "mg/L"], "contact_time": [90, 5, "min"], "turnover_rate": [2.5, 0.2, "/day"], "samples_today": [145, 5, "samples"], "compliance_pct": [99.8, 0.1, "%"], "deviation_count": [1, 1, "events"], "system_health": [99, 0.5, "%"], "alarm_count": [3, 1, "alarms"], "data_points": [8000, 50, "points"], "voltage": [4160, 10, "V"], "current": [350, 15, "A"], "power_factor": [0.95, 0.02, ""], "frequency": [60.0, 0.01, "Hz"]};
+
+function renderAssets(filter) {
+  const grid = document.getElementById('asset-grid');
+  const filtered = filter === 'all' ? ASSETS : ASSETS.filter(a => a.category === filter);
+  grid.innerHTML = filtered.map(a => {
+    const cat = CATEGORIES.find(c => c.name === a.category);
+    const sensorsHtml = Object.entries(a.live_sensors).map(([name, reading]) => `
+      <div class="live-channel ${reading.status}">
+        <span style="font-size: 10px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name.replace(/_/g, ' ')}</span>
+        <span style="font-size: 13px; font-weight: 600;">${reading.value} ${reading.unit}</span>
+      </div>
+    `).join('');
+    return `<div class="asset-card ${a.status}">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div><span style="font-size: 24px; margin-right: 8px;">${cat ? cat.icon : ''}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;">${a.id}</span></div>
+        <span class="status-badge ${a.status}">${a.status}</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">${a.sub_type}</div>
+      <div class="sensor-readings">${sensorsHtml}</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+        <div><span style="color: var(--text-mute);">Lat:</span> ${a.location.lat}</div>
+        <div><span style="color: var(--text-mute);">Lon:</span> ${a.location.lon}</div>
+        <div><span style="color: var(--text-mute);">Installed:</span> ${a.install_date}</div>
+        <div><span style="color: var(--text-mute);">TS-FM:</span> ${a.ts_fm_confidence}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterAssets(category) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.closest('.filter-chip').classList.add('active');
+  renderAssets(category);
+}
+
+function updateSensors() {
+  let nominal = 0, warning = 0, critical = 0;
+  ASSETS.forEach(asset => {
+    asset.sensors.forEach(sensorType => {
+      const baseline = SENSOR_BASELINES[sensorType];
+      if (!baseline) return;
+      const [base, variance, unit] = baseline;
+      const phase = (Date.now() / 1000 + asset.id.charCodeAt(4) * 0.5) * 0.3;
+      const sine = Math.sin(phase) * variance * 0.3;
+      const noise = (Math.random() - 0.5) * variance * 0.4;
+      let value = base + sine + noise;
+      if (Math.random() < 0.003) value = base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      value = Math.round(value * 100) / 100;
+      const status = Math.abs(value - base) > variance * 2 ? 'warning' : 'nominal';
+      if (asset.live_sensors[sensorType]) {
+        asset.live_sensors[sensorType].value = value;
+        asset.live_sensors[sensorType].status = status;
+      }
+      if (status === 'nominal') nominal++; else if (status === 'warning') warning++; else critical++;
+    });
+  });
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-GB', {hour12: false});
+  document.getElementById('nominal-count').textContent = nominal;
+  document.getElementById('warning-count').textContent = warning;
+  document.getElementById('critical-count').textContent = critical;
+  // Re-render assets
+  const activeFilter = document.querySelector('.filter-chip.active')?.textContent?.split(' ')[0] || 'all';
+  renderAssets(activeFilter === 'All' ? 'all' : activeFilter);
+}
+
+renderAssets('all');
+updateSensors();
+setInterval(updateSensors, 3000);
+
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, {rootMargin: '-30% 0px -60% 0px'});
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

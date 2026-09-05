@@ -1,0 +1,6076 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Scenario: Hospital ICU</title>
+<meta name="description" content="Live scenario: St. Marin General Hospital — ICU Ward. 104 assets, 428 sensors, synthetic telemetry streaming." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Scenario: Hospital ICU" />
+<meta property="og:description" content="St. Marin General Hospital — ICU Ward: 104 assets, 428 sensors, live synthetic telemetry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .platform-map { background: linear-gradient(180deg, #0a1a2f 0%, #051020 100%); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin: 24px 0; position: relative; overflow: hidden; min-height: 260px; }
+  .platform-map-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: center; }
+  .platform-diagram { position: relative; height: 200px; background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08), transparent 70%); border: 1px solid rgba(0, 212, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .platform-stats-side { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-tile { padding: 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); text-align: center; }
+  .stat-tile .num { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-tile .lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+  .filter-chip { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+  .filter-chip:hover, .filter-chip.active { background: color-mix(in srgb, var(--cyan) 10%, transparent); border-color: var(--cyan); color: var(--cyan); }
+  .filter-chip .count { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--text-mute) 15%, transparent); font-size: 10px; }
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+  .asset-card { padding: 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden; }
+  .asset-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .asset-card.warning { border-color: var(--gold); }
+  .asset-card.critical { border-color: var(--magenta); border-width: 2px; }
+  .sensor-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; padding: 10px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border); }
+  .live-channel { display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 6px; background: var(--card); border-radius: 4px; border-left: 2px solid var(--text-mute); }
+  .live-channel.nominal { border-left-color: var(--green); }
+  .live-channel.warning { border-left-color: var(--gold); }
+  .live-channel.critical { border-left-color: var(--magenta); }
+  .status-badge { padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .status-badge.nominal { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .status-badge.warning { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .status-badge.critical, .status-badge.emergency { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .alert-item { padding: 14px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid; }
+  .alert-item.warning { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 5%, var(--card)); }
+  .alert-item.critical, .alert-item.emergency { border-left-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 5%, var(--card)); }
+  .audit-item { display: flex; gap: 12px; padding: 12px; border-left: 2px solid var(--cyan); margin-bottom: 8px; background: var(--card); border-radius: 0 8px 8px 0; }
+  .audit-item.action-required { border-left-color: var(--magenta); }
+  .audit-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 100px; }
+  .audit-result { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+  .audit-result.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .audit-result.pass-with-notes { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); }
+  .compliance-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 4px; }
+  .compliance-badge.pass { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .compliance-badge.pending { background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .rul-bar { height: 8px; border-radius: 4px; background: var(--bg-2); overflow: hidden; }
+  .rul-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--magenta)); }
+</style>
+</head>
+<body id="scenario-hospital-icu">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore O&G</a>
+    <a href="scenario-hospital-icu.html" class="active">Hospital ICU</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live"><span class="label">Live Dashboard</span></a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="sectors.html">Sectors</a><span class="sep">/</span><span>Hospital ICU</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Live Scenario · Synthetic Telemetry Streaming</div>
+    <h1>Hospital ICU <span class="accent">Live Scenario</span></h1>
+    <p class="lead">A live scenario demonstration of AISensorEdgeComp deployed at <strong>St. Marin General Hospital — ICU Ward</strong> in San Rafael, California, USA. 104 assets across 10 categories, 428 sensor endpoints, real-time TS-FM anomaly detection, and full audit/compliance tracking — all running on synthetic data.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">Open Live MVP &rarr;</a>
+      <a href="roi-hospital-icu.html" class="btn btn-ghost">Hospital ICU ROI Calculator →</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Scenario</h4>
+    <a href="#platform-overview">Platform Overview</a>
+    <a href="#asset-registry">Asset Registry</a>
+    <a href="#live-readings">Live Sensor Readings</a>
+    <a href="#alerts">Active Alerts</a>
+    <a href="#maintenance">Maintenance Log</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#rul">RUL Predictions</a>
+    <a href="#compliance">Compliance</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="doc-section" id="platform-overview">
+      <div class="section-label">Platform Profile</div>
+      <h2>St. Marin General Hospital — ICU Ward</h2>
+      <p>Operated by Marin Health System. Installed 2020-03-15 with a design life to 2040-03-15. 120 ICU beds, 8 ventilators, 24 patient monitors. 45 ICU staff per shift.</p>
+      <div class="platform-map">
+        <div class="platform-map-content">
+          <div class="platform-diagram">
+            <div style="font-size: 48px; margin-bottom: 8px;">🏥</div>
+            <div class="platform-info">
+              <div style="font-size: 16px; font-weight: 600; color: var(--text);">Hospital ICU</div>
+              <div style="font-size: 12px; color: var(--text-dim);">San Rafael, California, USA</div>
+              <div style="font-size: 11px; color: var(--cyan); margin-top: 4px;">37.9735°, -122.5311°</div>
+            </div>
+          </div>
+          <div class="platform-stats-side">
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">104</div><div class="lbl">Assets</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--violet);">10</div><div class="lbl">Categories</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">428</div><div class="lbl">Sensors</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--green);">86</div><div class="lbl">Nominal</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--gold);">17</div><div class="lbl">Warning</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--magenta);">1</div><div class="lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tbody>
+          <tr><td style="width: 200px;"><strong>Name</strong></td><td>St. Marin General Hospital — ICU Ward</td></tr>
+          <tr><td><strong>Operator</strong></td><td>Marin Health System</td></tr>
+          <tr><td><strong>Location</strong></td><td>San Rafael, California, USA</td></tr>
+          <tr><td><strong>Installed</strong></td><td>2020-03-15</td></tr>
+          <tr><td><strong>Design Life</strong></td><td>2040-03-15</td></tr>
+          <tr><td><strong>Capacity</strong></td><td>120 ICU beds, 8 ventilators, 24 patient monitors</td></tr>
+          <tr><td><strong>Compliance</strong></td><td><span class="compliance-badge pass">HIPAA ✓</span><span class="compliance-badge pass">FDA 510(k) ✓</span><span class="compliance-badge pass">IEC 62304 ✓</span><span class="compliance-badge pass">ISO 14971 ✓</span><span class="compliance-badge pass">Joint Commission ✓</span><span class="compliance-badge pending">SOC 2 Type II (roadmap)</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ASSET REGISTRY -->
+    <section class="doc-section" id="asset-registry">
+      <div class="section-label">Asset Registry</div>
+      <h2>104 assets across <span class="accent">10 categories</span></h2>
+      <p>Each asset has a unique ID, geolocation, install/expire dates, monthly audit schedule, sensor readings (live-updated), TS-FM confidence scores, and RUL predictions.</p>
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" onclick="filterAssets('all')">All <span class="count">104</span></button>
+        <button class="filter-chip" onclick="filterAssets('Patient Monitors')" >🫀 Patient Monitors <span class="count">24</span></button><button class="filter-chip" onclick="filterAssets('Ventilators')" >💨 Ventilators <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Infusion Pumps')" >💉 Infusion Pumps <span class="count">16</span></button><button class="filter-chip" onclick="filterAssets('ECG Machines')" >💓 ECG Machines <span class="count">12</span></button><button class="filter-chip" onclick="filterAssets('Pulse Oximeters')" >🩸 Pulse Oximeters <span class="count">24</span></button><button class="filter-chip" onclick="filterAssets('Capnography')" >🌬️ Capnography <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Patient Warming')" >🌡️ Patient Warming <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('UPS Systems')" >🔌 UPS Systems <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Nurse Call System')" >🔔 Nurse Call System <span class="count">1</span></button><button class="filter-chip" onclick="filterAssets('Clinical Decision Support')" >🖥️ Clinical Decision Support <span class="count">1</span></button>
+      </div>
+      <div class="asset-grid" id="asset-grid"></div>
+    </section>
+
+    <!-- LIVE READINGS -->
+    <section class="doc-section" id="live-readings">
+      <div class="section-label">Real-Time Sensor Stream</div>
+      <h2>Live sensor readings <span class="accent">(updates every 3s)</span></h2>
+      <p>All 428 sensor endpoints stream synthetic telemetry through the AISensorEdgeComp ingest pipeline.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;"><span style="height: 8px; width: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite;"></span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span></div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Nominal: <span id="nominal-count" style="color: var(--green);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Warning: <span id="warning-count" style="color: var(--gold);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Critical: <span id="critical-count" style="color: var(--magenta);">--</span></span>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="doc-section" id="alerts">
+      <div class="section-label">Active Alerts</div>
+      <h2>21 active alerts from <span class="accent">TS-FM anomaly detection</span></h2>
+      <div>
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">GE CARESCAPE B650 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Patient Monitors PM-008</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-74435 · Asset: PM-008 · TS-FM confidence: 0.94 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">GE CARESCAPE B650 — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Patient Monitors PM-014</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-73324 · Asset: PM-014 · TS-FM confidence: 0.95 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Masimo Root — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Patient Monitors PM-021</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-28548 · Asset: PM-021 · TS-FM confidence: 0.95 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Hamilton G5 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Ventilators VENT-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-48780 · Asset: VENT-001 · TS-FM confidence: 0.98 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Medtronic Puritan Bennett 980 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Ventilators VENT-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-39390 · Asset: VENT-002 · TS-FM confidence: 0.89 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Hamilton G5 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Ventilators VENT-004</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-82784 · Asset: VENT-004 · TS-FM confidence: 0.89 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Drager Evita V800 — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Ventilators VENT-006</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-92468 · Asset: VENT-006 · TS-FM confidence: 0.96 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">BD Alaris — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Infusion Pumps PUMP-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-42926 · Asset: PUMP-002 · TS-FM confidence: 0.96 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Telemetry — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on ECG Machines ECG-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-43409 · Asset: ECG-002 · TS-FM confidence: 0.88 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">12-lead ECG — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on ECG Machines ECG-007</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-33072 · Asset: ECG-007 · TS-FM confidence: 0.85 · Unacknowledged
+          </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- MAINTENANCE -->
+    <section class="doc-section" id="maintenance">
+      <div class="section-label">Maintenance Log</div>
+      <h2>367 maintenance events <span class="accent">YTD</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Asset</th><th>Type</th><th>By</th><th>Duration</th><th>Cost</th><th>Description</th></tr></thead>
+        <tbody><tr><td>2026-08-27</td><td><strong>SpO2-010</strong></td><td>repair</td><td>Tech 2</td><td>2h</td><td>$1,985</td><td>Replacement on Masimo Radical-7</td></tr><tr><td>2026-08-25</td><td><strong>PM-011</strong></td><td>calibration</td><td>Tech 8</td><td>4h</td><td>$9,041</td><td>Inspection on GE CARESCAPE B650</td></tr><tr><td>2026-08-25</td><td><strong>SpO2-016</strong></td><td>repair</td><td>Tech 2</td><td>21h</td><td>$17,791</td><td>Fault on Masimo Radical-7</td></tr><tr><td>2026-08-23</td><td><strong>CO2-004</strong></td><td>inspection</td><td>Tech 3</td><td>13h</td><td>$13,302</td><td>Fault on EtCO2 sidestream</td></tr><tr><td>2026-08-21</td><td><strong>PUMP-010</strong></td><td>fault</td><td>Tech 7</td><td>12h</td><td>$21,269</td><td>Fault on Baxter Sigma Spectrum</td></tr><tr><td>2026-08-20</td><td><strong>ECG-012</strong></td><td>repair</td><td>Tech 8</td><td>8h</td><td>$9,467</td><td>Repair on Continuous ST</td></tr><tr><td>2026-08-19</td><td><strong>PM-003</strong></td><td>calibration</td><td>Tech 1</td><td>11h</td><td>$2,812</td><td>Fault on Masimo Root</td></tr><tr><td>2026-08-18</td><td><strong>SpO2-009</strong></td><td>calibration</td><td>Tech 7</td><td>19h</td><td>$13,087</td><td>Repair on Nonin WristOx2</td></tr><tr><td>2026-08-17</td><td><strong>VENT-006</strong></td><td>repair</td><td>Tech 1</td><td>8h</td><td>$5,630</td><td>Inspection on Drager Evita V800</td></tr><tr><td>2026-08-17</td><td><strong>UPS-002</strong></td><td>repair</td><td>Tech 5</td><td>6h</td><td>$15,552</td><td>Fault on UPS-B (ventilator backup)</td></tr><tr><td>2026-08-16</td><td><strong>PUMP-014</strong></td><td>fault</td><td>Tech 1</td><td>1h</td><td>$14,886</td><td>Inspection on BD Alaris</td></tr><tr><td>2026-08-16</td><td><strong>SpO2-023</strong></td><td>repair</td><td>Tech 6</td><td>16h</td><td>$19,039</td><td>Calibration on Nellcor OxiMax</td></tr><tr><td>2026-08-15</td><td><strong>PM-003</strong></td><td>repair</td><td>Tech 4</td><td>8h</td><td>$6,451</td><td>Replacement on Masimo Root</td></tr><tr><td>2026-08-15</td><td><strong>PUMP-002</strong></td><td>calibration</td><td>Tech 6</td><td>15h</td><td>$10,976</td><td>Fault on BD Alaris</td></tr><tr><td>2026-08-14</td><td><strong>ECG-002</strong></td><td>replacement</td><td>Tech 2</td><td>20h</td><td>$9,813</td><td>Repair on Telemetry</td></tr></tbody>
+      </table>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 15 of 367 events.</p>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section class="doc-section" id="audit">
+      <div class="section-label">Audit Trail</div>
+      <h2>61 audit entries <span class="accent">(monthly cycle)</span></h2>
+      <div>
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-23</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-012 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-20</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-011 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item action-required">
+          <div class="audit-date">2026-08-18</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-007 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result action-required">action required</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-17</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-001 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-17</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-007 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-08</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-017 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-07</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-008 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-001 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-26</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-019 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-20</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-001 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Safety test passed.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-19</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-010 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-19</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PM-019 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 12 of 61 entries.</p>
+    </section>
+
+    <!-- RUL -->
+    <section class="doc-section" id="rul">
+      <div class="section-label">Remaining Useful Life</div>
+      <h2>RUL predictions <span class="accent">from TS-FM + federated learning</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Sub-type</th><th>RUL (hours)</th><th>RUL (years)</th><th>Confidence</th><th>Health</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><strong>PM-001</strong></td>
+          <td>Philips IntelliVue MX450</td>
+          <td>27,104</td>
+          <td>3.1</td>
+          <td>0.86</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 54.208%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-003</strong></td>
+          <td>Masimo Root</td>
+          <td>14,981</td>
+          <td>1.7</td>
+          <td>0.9</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 29.962%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-004</strong></td>
+          <td>Philips IntelliVue MX450</td>
+          <td>13,218</td>
+          <td>1.5</td>
+          <td>0.84</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 26.436%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-006</strong></td>
+          <td>Masimo Root</td>
+          <td>21,396</td>
+          <td>2.4</td>
+          <td>0.84</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 42.792%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-008</strong></td>
+          <td>GE CARESCAPE B650</td>
+          <td>17,087</td>
+          <td>2.0</td>
+          <td>0.94</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 34.174%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-011</strong></td>
+          <td>GE CARESCAPE B650</td>
+          <td>14,666</td>
+          <td>1.7</td>
+          <td>0.97</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 29.332%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-013</strong></td>
+          <td>Philips IntelliVue MX450</td>
+          <td>3,351</td>
+          <td>0.4</td>
+          <td>0.85</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 6.702%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-014</strong></td>
+          <td>GE CARESCAPE B650</td>
+          <td>28,112</td>
+          <td>3.2</td>
+          <td>0.95</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 56.224%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-017</strong></td>
+          <td>GE CARESCAPE B650</td>
+          <td>17,070</td>
+          <td>1.9</td>
+          <td>0.87</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 34.14%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>PM-022</strong></td>
+          <td>Philips IntelliVue MX450</td>
+          <td>25,182</td>
+          <td>2.9</td>
+          <td>0.83</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 50.364%"></div></div></td>
+        </tr>
+    </tbody>
+      </table>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="doc-section" id="compliance">
+      <div class="section-label">Compliance Status</div>
+      <h2>Regulatory compliance <span class="accent">dashboard</span></h2>
+      <p><span class="compliance-badge pass">HIPAA ✓</span><span class="compliance-badge pass">FDA 510(k) ✓</span><span class="compliance-badge pass">IEC 62304 ✓</span><span class="compliance-badge pass">ISO 14971 ✓</span><span class="compliance-badge pass">Joint Commission ✓</span><span class="compliance-badge pending">SOC 2 Type II (roadmap)</span></p>
+    </section>
+
+    <!-- PROBLEM DEEP DIVES -->
+    <section class="doc-section">
+      <div class="section-label">Related Problem Deep Dives</div>
+      <h2>How AISensorEdgeComp solves the four problems <span class="accent">at this facility</span></h2>
+      <p style="color: var(--text-dim); margin-bottom: 16px;">This scenario faces all four structural problems. Here's how the platform addresses each — and how they compound.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="protocol-heterogeneity.html" class="btn btn-ghost btn-sm">Protocol Heterogeneity →</a> <a href="edge-cloud-placement.html" class="btn btn-ghost btn-sm">Edge-Cloud Placement →</a> <a href="unlabeled-industrial-data.html" class="btn btn-ghost btn-sm">Unlabeled Data (sepsis zero-shot) →</a>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="problem.html#compound-value" class="btn btn-ghost btn-sm">Read about the compound effect →</a>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, this scenario <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + liquid placement + Graph RAG that powers this hospital icu scenario.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">Open Live Dashboard</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="roi-hospital-icu.html">Hospital ICU ROI Calculator</a>
+    <a href="problem.html">The 4 Problems</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Scenario: Hospital ICU &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const ASSETS = [
+  {
+    "id": "PM-001",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.973898,
+      "lon": -122.532179,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-04-07",
+    "expire_date": "2031-04-05",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 27104,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 74.95,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.15,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 128.77,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 79.87,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.69,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.07,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-002",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.973052,
+      "lon": -122.530371,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-03-19",
+    "expire_date": "2030-03-17",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 39153,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 65.33,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.87,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 123.55,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 75.05,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.27,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.73,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-003",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.972315,
+      "lon": -122.529142,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-02-16",
+    "expire_date": "2027-02-15",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 14981,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 71.4,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.21,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 112.58,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 85.43,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.86,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.15,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-004",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.975432,
+      "lon": -122.529324,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-06-23",
+    "expire_date": "2036-06-19",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 13218,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 74.94,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.68,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 128.73,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 81.58,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.57,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.07,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-005",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.973594,
+      "lon": -122.532297,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-02-19",
+    "expire_date": "2031-02-17",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 37747,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 77.2,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.51,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 128.83,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 79.71,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.22,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.14,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-006",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.974489,
+      "lon": -122.530668,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-01-11",
+    "expire_date": "2038-01-07",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 21396,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 79.86,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.64,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 128.48,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 84.57,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.28,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-007",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.974931,
+      "lon": -122.531653,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-04-24",
+    "expire_date": "2030-04-22",
+    "last_audit": "2026-07-08",
+    "next_audit": "2026-08-07",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 40383,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 69.4,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.51,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 116.74,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 83.75,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.54,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.19,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-008",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.975018,
+      "lon": -122.529408,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-12-30",
+    "expire_date": "2026-12-29",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 17087,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 77.66,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.9,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 124.4,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 75.27,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.75,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.89,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-009",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.974346,
+      "lon": -122.531566,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-04-14",
+    "expire_date": "2038-04-10",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 30692,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 79.42,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.02,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 120.06,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 84.89,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.5,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.17,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-010",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.975084,
+      "lon": -122.531376,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-12-28",
+    "expire_date": "2026-12-27",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 42042,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 68.52,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.71,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 122.09,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 85.85,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.67,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.96,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-011",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.972291,
+      "lon": -122.533083,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-02-16",
+    "expire_date": "2031-02-14",
+    "last_audit": "2026-08-26",
+    "next_audit": "2026-09-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 14666,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 74.69,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 98.16,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 115.22,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 79.0,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.01,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.12,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-012",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.9731,
+      "lon": -122.532651,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-04-16",
+    "expire_date": "2031-04-14",
+    "last_audit": "2026-08-12",
+    "next_audit": "2026-09-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 46059,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 72.18,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 98.22,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 128.66,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 77.17,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.41,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.95,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-013",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.973979,
+      "lon": -122.530573,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-02-21",
+    "expire_date": "2037-02-17",
+    "last_audit": "2026-08-10",
+    "next_audit": "2026-09-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 3351,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 76.9,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.3,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 110.64,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 74.7,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.2,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.28,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-014",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.9738,
+      "lon": -122.532324,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-07-06",
+    "expire_date": "2037-07-02",
+    "last_audit": "2026-08-07",
+    "next_audit": "2026-09-06",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 28112,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 68.24,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.32,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 127.56,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 84.82,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.47,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.12,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-015",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.975317,
+      "lon": -122.532385,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-03-07",
+    "expire_date": "2031-03-05",
+    "last_audit": "2026-08-05",
+    "next_audit": "2026-09-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 47858,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 66.94,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 98.65,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 129.96,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 80.87,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.5,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.25,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-016",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.973627,
+      "lon": -122.529111,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-09-23",
+    "expire_date": "2027-09-22",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 34382,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 69.37,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.93,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 121.39,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 80.4,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.53,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.05,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-017",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.972045,
+      "lon": -122.52942,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-04-27",
+    "expire_date": "2031-04-25",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 17070,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 76.09,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.63,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 118.78,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 82.35,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.67,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.18,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-018",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.972591,
+      "lon": -122.530473,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-08-28",
+    "expire_date": "2029-08-25",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 38634,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 75.23,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.61,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 126.3,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 74.98,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.71,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.13,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-019",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.973681,
+      "lon": -122.532968,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-08-17",
+    "expire_date": "2028-08-15",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 48985,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 73.84,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 98.04,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 122.22,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 78.08,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.21,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-020",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.97273,
+      "lon": -122.530145,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-07-04",
+    "expire_date": "2032-07-01",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 49886,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 67.7,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 98.67,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 125.87,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 83.39,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.96,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.04,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-021",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.975061,
+      "lon": -122.529594,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-02-10",
+    "expire_date": "2038-02-06",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 31093,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 68.05,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.36,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 121.69,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 74.24,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.79,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.78,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-022",
+    "category": "Patient Monitors",
+    "sub_type": "Philips IntelliVue MX450",
+    "location": {
+      "lat": 37.973724,
+      "lon": -122.53194,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-01-24",
+    "expire_date": "2029-01-21",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 25182,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 73.7,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 96.27,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 116.69,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 77.92,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.32,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.72,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-023",
+    "category": "Patient Monitors",
+    "sub_type": "GE CARESCAPE B650",
+    "location": {
+      "lat": 37.972407,
+      "lon": -122.532497,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-07-25",
+    "expire_date": "2033-07-22",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 20925,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 70.71,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 97.86,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 125.49,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 76.09,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.63,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 36.73,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PM-024",
+    "category": "Patient Monitors",
+    "sub_type": "Masimo Root",
+    "location": {
+      "lat": 37.972155,
+      "lon": -122.530831,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-05-10",
+    "expire_date": "2035-05-07",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 15240,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "heart_rate",
+      "spo2",
+      "bp_systolic",
+      "bp_diastolic",
+      "resp_rate",
+      "temp"
+    ],
+    "extra": {
+      "patient_id_range": "ICU-001 to ICU-024",
+      "alarm_priority": "high"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 78.41,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "spo2": {
+        "value": 95.72,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "bp_systolic": {
+        "value": 116.01,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "bp_diastolic": {
+        "value": 85.87,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.02,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "temp": {
+        "value": 37.05,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-001",
+    "category": "Ventilators",
+    "sub_type": "Hamilton G5",
+    "location": {
+      "lat": 37.975231,
+      "lon": -122.532958,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-05-31",
+    "expire_date": "2026-05-30",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 6851,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.09,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 29.05,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 477.93,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.67,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 55.91,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-002",
+    "category": "Ventilators",
+    "sub_type": "Medtronic Puritan Bennett 980",
+    "location": {
+      "lat": 37.974435,
+      "lon": -122.531161,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-10-25",
+    "expire_date": "2026-10-24",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 15217,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 7.63,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 31.43,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 484.91,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.36,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 57.57,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-003",
+    "category": "Ventilators",
+    "sub_type": "Drager Evita V800",
+    "location": {
+      "lat": 37.974703,
+      "lon": -122.529432,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-08-27",
+    "expire_date": "2037-08-23",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 16861,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.2,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 29.37,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 503.68,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.97,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 58.24,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-004",
+    "category": "Ventilators",
+    "sub_type": "Hamilton G5",
+    "location": {
+      "lat": 37.972256,
+      "lon": -122.529926,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-03-02",
+    "expire_date": "2032-02-28",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 22656,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.43,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 30.98,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 481.11,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.6,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 61.72,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-005",
+    "category": "Ventilators",
+    "sub_type": "Medtronic Puritan Bennett 980",
+    "location": {
+      "lat": 37.972681,
+      "lon": -122.530197,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-01-21",
+    "expire_date": "2034-01-17",
+    "last_audit": "2026-08-03",
+    "next_audit": "2026-09-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 47651,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.03,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 28.19,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 473.35,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.83,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 58.55,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-006",
+    "category": "Ventilators",
+    "sub_type": "Drager Evita V800",
+    "location": {
+      "lat": 37.974839,
+      "lon": -122.531582,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-10-17",
+    "expire_date": "2034-10-13",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 18053,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 7.65,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 27.44,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 471.74,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.85,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 58.44,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-007",
+    "category": "Ventilators",
+    "sub_type": "Hamilton G5",
+    "location": {
+      "lat": 37.971503,
+      "lon": -122.532644,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-06-08",
+    "expire_date": "2025-06-07",
+    "last_audit": "2026-08-11",
+    "next_audit": "2026-09-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 49641,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.0,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 30.35,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 492.55,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.24,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 61.45,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-008",
+    "category": "Ventilators",
+    "sub_type": "Medtronic Puritan Bennett 980",
+    "location": {
+      "lat": 37.974734,
+      "lon": -122.532007,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-10-31",
+    "expire_date": "2035-10-28",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 19502,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "flow",
+      "pressure",
+      "tidal_volume",
+      "resp_rate",
+      "fiO2"
+    ],
+    "extra": {
+      "vent_mode": "PC-AC / PSV / SIMV",
+      "circuit_type": "dual-limb heated"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 8.12,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 28.63,
+        "unit": "cmH2O",
+        "status": "nominal"
+      },
+      "tidal_volume": {
+        "value": 488.41,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.5,
+        "unit": "/min",
+        "status": "nominal"
+      },
+      "fiO2": {
+        "value": 57.13,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-001",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.971567,
+      "lon": -122.530125,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-09-24",
+    "expire_date": "2032-09-21",
+    "last_audit": "2026-08-03",
+    "next_audit": "2026-09-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 3160,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 49.94,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 267.67,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.61,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 84.42,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-002",
+    "category": "Infusion Pumps",
+    "sub_type": "BD Alaris",
+    "location": {
+      "lat": 37.975485,
+      "lon": -122.53068,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-06-15",
+    "expire_date": "2033-06-12",
+    "last_audit": "2026-08-02",
+    "next_audit": "2026-09-01",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 20778,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 52.75,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 232.72,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.85,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 84.54,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-003",
+    "category": "Infusion Pumps",
+    "sub_type": "ICU Medical Plum 360",
+    "location": {
+      "lat": 37.97184,
+      "lon": -122.533021,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-09-30",
+    "expire_date": "2031-09-28",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 28871,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 49.23,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 256.52,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.17,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 80.18,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-004",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.972315,
+      "lon": -122.530539,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-09-06",
+    "expire_date": "2029-09-03",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 20801,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 53.38,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 262.76,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.38,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 89.98,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-005",
+    "category": "Infusion Pumps",
+    "sub_type": "BD Alaris",
+    "location": {
+      "lat": 37.972739,
+      "lon": -122.532361,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-12-16",
+    "expire_date": "2032-12-13",
+    "last_audit": "2026-07-07",
+    "next_audit": "2026-08-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 19627,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 48.04,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 263.95,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.45,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 87.53,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-006",
+    "category": "Infusion Pumps",
+    "sub_type": "ICU Medical Plum 360",
+    "location": {
+      "lat": 37.974494,
+      "lon": -122.529786,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-01-30",
+    "expire_date": "2028-01-29",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 21055,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 49.84,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 263.84,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.72,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 85.02,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-007",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.9735,
+      "lon": -122.530562,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-08-24",
+    "expire_date": "2033-08-21",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 35449,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 53.02,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 239.2,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.71,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 85.16,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-008",
+    "category": "Infusion Pumps",
+    "sub_type": "BD Alaris",
+    "location": {
+      "lat": 37.974625,
+      "lon": -122.530808,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-04-09",
+    "expire_date": "2035-04-06",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 40058,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 45.11,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 233.54,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.92,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 80.84,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-009",
+    "category": "Infusion Pumps",
+    "sub_type": "ICU Medical Plum 360",
+    "location": {
+      "lat": 37.972467,
+      "lon": -122.532333,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-02-04",
+    "expire_date": "2025-02-02",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 13352,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 51.77,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 237.6,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.23,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 83.24,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-010",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.973118,
+      "lon": -122.531084,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-09-12",
+    "expire_date": "2028-09-10",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 37537,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 48.49,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 243.92,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.09,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 83.25,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-011",
+    "category": "Infusion Pumps",
+    "sub_type": "BD Alaris",
+    "location": {
+      "lat": 37.972426,
+      "lon": -122.532265,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-02-07",
+    "expire_date": "2037-02-03",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 33208,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 51.04,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 252.3,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.46,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 88.45,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-012",
+    "category": "Infusion Pumps",
+    "sub_type": "ICU Medical Plum 360",
+    "location": {
+      "lat": 37.971566,
+      "lon": -122.530726,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-12-29",
+    "expire_date": "2031-12-27",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 36991,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 54.55,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 252.32,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.67,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 81.73,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-013",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.974592,
+      "lon": -122.532698,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-11-04",
+    "expire_date": "2035-11-01",
+    "last_audit": "2026-08-31",
+    "next_audit": "2026-09-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 24489,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 46.99,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 236.3,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.35,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 80.92,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-014",
+    "category": "Infusion Pumps",
+    "sub_type": "BD Alaris",
+    "location": {
+      "lat": 37.973676,
+      "lon": -122.531582,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-03-11",
+    "expire_date": "2031-03-09",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 18971,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 54.18,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 269.27,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.7,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 80.63,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-015",
+    "category": "Infusion Pumps",
+    "sub_type": "ICU Medical Plum 360",
+    "location": {
+      "lat": 37.971518,
+      "lon": -122.531538,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-10-26",
+    "expire_date": "2027-10-25",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 45523,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 54.94,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 241.05,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 5.79,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 81.35,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PUMP-016",
+    "category": "Infusion Pumps",
+    "sub_type": "Baxter Sigma Spectrum",
+    "location": {
+      "lat": 37.97538,
+      "lon": -122.530454,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-12-22",
+    "expire_date": "2028-12-20",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 11333,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "flow_rate",
+      "volume_infused",
+      "occlusion_pressure",
+      "battery_level"
+    ],
+    "extra": {
+      "medication_types": "vasopressors, sedatives, antibiotics",
+      "smart_pump": "yes"
+    },
+    "live_sensors": {
+      "flow_rate": {
+        "value": 49.11,
+        "unit": "mL/h",
+        "status": "nominal"
+      },
+      "volume_infused": {
+        "value": 252.1,
+        "unit": "mL",
+        "status": "nominal"
+      },
+      "occlusion_pressure": {
+        "value": 4.53,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "battery_level": {
+        "value": 84.34,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-001",
+    "category": "ECG Machines",
+    "sub_type": "12-lead ECG",
+    "location": {
+      "lat": 37.975358,
+      "lon": -122.532982,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-02-25",
+    "expire_date": "2026-02-24",
+    "last_audit": "2026-08-23",
+    "next_audit": "2026-09-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 34754,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 67.87,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.46,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 418.61,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-002",
+    "category": "ECG Machines",
+    "sub_type": "Telemetry",
+    "location": {
+      "lat": 37.97292,
+      "lon": -122.529272,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-06-10",
+    "expire_date": "2028-06-08",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 37101,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 65.03,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": 0.22,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 432.96,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-003",
+    "category": "ECG Machines",
+    "sub_type": "Continuous ST",
+    "location": {
+      "lat": 37.973599,
+      "lon": -122.531267,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-07-12",
+    "expire_date": "2026-07-11",
+    "last_audit": "2026-08-11",
+    "next_audit": "2026-09-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 4927,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 67.52,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.07,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 431.64,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-004",
+    "category": "ECG Machines",
+    "sub_type": "12-lead ECG",
+    "location": {
+      "lat": 37.972654,
+      "lon": -122.530665,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-10-30",
+    "expire_date": "2038-10-26",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 42973,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 74.98,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": 0.35,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 433.15,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-005",
+    "category": "ECG Machines",
+    "sub_type": "Telemetry",
+    "location": {
+      "lat": 37.973796,
+      "lon": -122.53031,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-10-17",
+    "expire_date": "2026-10-16",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 23605,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 77.18,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.3,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 417.45,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-006",
+    "category": "ECG Machines",
+    "sub_type": "Continuous ST",
+    "location": {
+      "lat": 37.97355,
+      "lon": -122.531186,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-10-17",
+    "expire_date": "2032-10-14",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 19056,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 68.85,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.33,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 434.27,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-007",
+    "category": "ECG Machines",
+    "sub_type": "12-lead ECG",
+    "location": {
+      "lat": 37.972192,
+      "lon": -122.530403,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-12-09",
+    "expire_date": "2032-12-06",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 16574,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 68.09,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.1,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 431.53,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-008",
+    "category": "ECG Machines",
+    "sub_type": "Telemetry",
+    "location": {
+      "lat": 37.972123,
+      "lon": -122.531245,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-02-06",
+    "expire_date": "2026-02-05",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 22874,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 66.84,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": 0.19,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 406.45,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-009",
+    "category": "ECG Machines",
+    "sub_type": "Continuous ST",
+    "location": {
+      "lat": 37.97385,
+      "lon": -122.529918,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-03-28",
+    "expire_date": "2036-03-24",
+    "last_audit": "2026-08-12",
+    "next_audit": "2026-09-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 47065,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 79.77,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": 0.03,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 414.85,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-010",
+    "category": "ECG Machines",
+    "sub_type": "12-lead ECG",
+    "location": {
+      "lat": 37.971858,
+      "lon": -122.529203,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-03-17",
+    "expire_date": "2035-03-14",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 18021,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 79.35,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.42,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 406.79,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-011",
+    "category": "ECG Machines",
+    "sub_type": "Telemetry",
+    "location": {
+      "lat": 37.973383,
+      "lon": -122.532239,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-04-26",
+    "expire_date": "2024-04-24",
+    "last_audit": "2026-08-10",
+    "next_audit": "2026-09-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 13959,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 72.9,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": 0.1,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 424.32,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ECG-012",
+    "category": "ECG Machines",
+    "sub_type": "Continuous ST",
+    "location": {
+      "lat": 37.975343,
+      "lon": -122.530608,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-10-15",
+    "expire_date": "2030-10-13",
+    "last_audit": "2026-08-17",
+    "next_audit": "2026-09-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 10900,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "heart_rate",
+      "rhythm",
+      "st_segment",
+      "qt_interval"
+    ],
+    "extra": {
+      "lead_config": "12-lead / 5-lead",
+      "arrhythmia_detection": "yes"
+    },
+    "live_sensors": {
+      "heart_rate": {
+        "value": 79.86,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "rhythm": {
+        "value": 1.0,
+        "unit": "normal",
+        "status": "warning"
+      },
+      "st_segment": {
+        "value": -0.05,
+        "unit": "mm",
+        "status": "nominal"
+      },
+      "qt_interval": {
+        "value": 420.56,
+        "unit": "ms",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-001",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.973643,
+      "lon": -122.530641,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-05-07",
+    "expire_date": "2037-05-03",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 46287,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.77,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 69.53,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.51,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-002",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.971739,
+      "lon": -122.532319,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-06-11",
+    "expire_date": "2031-06-09",
+    "last_audit": "2026-08-23",
+    "next_audit": "2026-09-22",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 37454,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.45,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 73.42,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.69,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-003",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.972884,
+      "lon": -122.529197,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-03-27",
+    "expire_date": "2030-03-25",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 16399,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 98.98,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 67.41,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.25,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-004",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.973405,
+      "lon": -122.529785,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-01-12",
+    "expire_date": "2030-01-09",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 21154,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 97.58,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 65.67,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.08,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-005",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.974999,
+      "lon": -122.529444,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-03-26",
+    "expire_date": "2024-03-24",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 24291,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 97.83,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 71.53,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.15,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-006",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.974093,
+      "lon": -122.533042,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-06-01",
+    "expire_date": "2038-05-28",
+    "last_audit": "2026-07-31",
+    "next_audit": "2026-08-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 23756,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 98.92,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 64.45,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.92,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-007",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.975205,
+      "lon": -122.533086,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-02-03",
+    "expire_date": "2036-01-31",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 46178,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 98.84,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 78.68,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.39,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-008",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.973912,
+      "lon": -122.532177,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-06-27",
+    "expire_date": "2030-06-25",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 7162,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 97.67,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 65.15,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.58,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-009",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.973055,
+      "lon": -122.531817,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-02-19",
+    "expire_date": "2025-02-17",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 10697,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.0,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 73.0,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.67,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-010",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.972865,
+      "lon": -122.532337,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-08-26",
+    "expire_date": "2027-08-25",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 13106,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 98.14,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 74.72,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.16,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-011",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.975448,
+      "lon": -122.531223,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-11-14",
+    "expire_date": "2024-11-12",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 39900,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.99,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 78.81,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.56,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-012",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.971952,
+      "lon": -122.530707,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-06-02",
+    "expire_date": "2030-05-31",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 46946,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.27,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 70.15,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.64,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-013",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.975219,
+      "lon": -122.529839,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-06-15",
+    "expire_date": "2027-06-14",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 14883,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 98.77,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 78.22,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.78,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-014",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.974998,
+      "lon": -122.529214,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-03-18",
+    "expire_date": "2034-03-14",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 49036,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.7,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 79.83,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.77,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-015",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.971783,
+      "lon": -122.53242,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-10-04",
+    "expire_date": "2033-10-01",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 7175,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 97.89,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 78.73,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.3,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-016",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.972999,
+      "lon": -122.53132,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-08-03",
+    "expire_date": "2033-07-31",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 14841,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.85,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 78.77,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.85,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-017",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.974783,
+      "lon": -122.530705,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-11-12",
+    "expire_date": "2032-11-09",
+    "last_audit": "2026-08-12",
+    "next_audit": "2026-09-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 35765,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.26,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 74.43,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.11,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-018",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.973714,
+      "lon": -122.53012,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-08-15",
+    "expire_date": "2029-08-12",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 9810,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.81,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 66.74,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.93,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-019",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.975301,
+      "lon": -122.532041,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-06-08",
+    "expire_date": "2034-06-04",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 37109,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 97.71,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 71.05,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.11,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-020",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.973809,
+      "lon": -122.532085,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2022-06-22",
+    "expire_date": "2032-06-19",
+    "last_audit": "2026-08-17",
+    "next_audit": "2026-09-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 32452,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.38,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 79.66,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.98,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-021",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.974972,
+      "lon": -122.529585,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-05-16",
+    "expire_date": "2035-05-13",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 13231,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.94,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 77.99,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 1.63,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-022",
+    "category": "Pulse Oximeters",
+    "sub_type": "Masimo Radical-7",
+    "location": {
+      "lat": 37.974138,
+      "lon": -122.529904,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-04-14",
+    "expire_date": "2032-04-11",
+    "last_audit": "2026-08-18",
+    "next_audit": "2026-09-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 41215,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 95.29,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 67.16,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.01,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-023",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nellcor OxiMax",
+    "location": {
+      "lat": 37.975297,
+      "lon": -122.530579,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-05-31",
+    "expire_date": "2030-05-29",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 13032,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.49,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 67.88,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.17,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SpO2-024",
+    "category": "Pulse Oximeters",
+    "sub_type": "Nonin WristOx2",
+    "location": {
+      "lat": 37.973529,
+      "lon": -122.532694,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-07-23",
+    "expire_date": "2025-07-22",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 20233,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "spo2",
+      "pulse_rate",
+      "perfusion_index"
+    ],
+    "extra": {
+      "sensor_type": "finger / forehead",
+      "alarm_threshold": "<90%"
+    },
+    "live_sensors": {
+      "spo2": {
+        "value": 96.03,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "pulse_rate": {
+        "value": 79.11,
+        "unit": "bpm",
+        "status": "nominal"
+      },
+      "perfusion_index": {
+        "value": 2.4,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-001",
+    "category": "Capnography",
+    "sub_type": "EtCO2 mainstream",
+    "location": {
+      "lat": 37.974506,
+      "lon": -122.531013,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-03-16",
+    "expire_date": "2035-03-13",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 26830,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 35.49,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.41,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.36,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-002",
+    "category": "Capnography",
+    "sub_type": "EtCO2 sidestream",
+    "location": {
+      "lat": 37.973792,
+      "lon": -122.532373,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-03-07",
+    "expire_date": "2036-03-03",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 35541,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 34.93,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.54,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.74,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-003",
+    "category": "Capnography",
+    "sub_type": "EtCO2 mainstream",
+    "location": {
+      "lat": 37.975177,
+      "lon": -122.529993,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-09-23",
+    "expire_date": "2037-09-19",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 42133,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 34.82,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.64,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 16.39,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-004",
+    "category": "Capnography",
+    "sub_type": "EtCO2 sidestream",
+    "location": {
+      "lat": 37.971911,
+      "lon": -122.53039,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-05-15",
+    "expire_date": "2030-05-13",
+    "last_audit": "2026-07-21",
+    "next_audit": "2026-08-20",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 17992,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 36.59,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.38,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.92,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-005",
+    "category": "Capnography",
+    "sub_type": "EtCO2 mainstream",
+    "location": {
+      "lat": 37.972374,
+      "lon": -122.529824,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-09-04",
+    "expire_date": "2026-09-03",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 49212,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 33.71,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.54,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 14.33,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-006",
+    "category": "Capnography",
+    "sub_type": "EtCO2 sidestream",
+    "location": {
+      "lat": 37.974257,
+      "lon": -122.532514,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-01-13",
+    "expire_date": "2035-01-09",
+    "last_audit": "2026-07-28",
+    "next_audit": "2026-08-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 8969,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 36.56,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.63,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 17.14,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-007",
+    "category": "Capnography",
+    "sub_type": "EtCO2 mainstream",
+    "location": {
+      "lat": 37.973519,
+      "lon": -122.532788,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-10-23",
+    "expire_date": "2024-10-21",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 15055,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 36.17,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.43,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.73,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CO2-008",
+    "category": "Capnography",
+    "sub_type": "EtCO2 sidestream",
+    "location": {
+      "lat": 37.974429,
+      "lon": -122.531306,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-04-21",
+    "expire_date": "2037-04-17",
+    "last_audit": "2026-07-21",
+    "next_audit": "2026-08-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 33582,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "etco2",
+      "insp_co2",
+      "resp_rate"
+    ],
+    "extra": {
+      "method": "infrared spectroscopy",
+      "range": "0-150 mmHg"
+    },
+    "live_sensors": {
+      "etco2": {
+        "value": 36.53,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "insp_co2": {
+        "value": 0.58,
+        "unit": "mmHg",
+        "status": "nominal"
+      },
+      "resp_rate": {
+        "value": 15.4,
+        "unit": "/min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-001",
+    "category": "Patient Warming",
+    "sub_type": "Bair Hugger",
+    "location": {
+      "lat": 37.972355,
+      "lon": -122.531021,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-06-25",
+    "expire_date": "2037-06-21",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 29968,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 36.63,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 13.37,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-002",
+    "category": "Patient Warming",
+    "sub_type": "Blanketrol II",
+    "location": {
+      "lat": 37.97342,
+      "lon": -122.53235,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-04-23",
+    "expire_date": "2037-04-19",
+    "last_audit": "2026-07-27",
+    "next_audit": "2026-08-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 13232,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 36.69,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 15.6,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-003",
+    "category": "Patient Warming",
+    "sub_type": "Bair Hugger",
+    "location": {
+      "lat": 37.974287,
+      "lon": -122.530761,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-03-11",
+    "expire_date": "2038-03-07",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 14971,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 37.04,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 16.51,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-004",
+    "category": "Patient Warming",
+    "sub_type": "Blanketrol II",
+    "location": {
+      "lat": 37.972761,
+      "lon": -122.531816,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-10-02",
+    "expire_date": "2024-09-30",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 21381,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 36.97,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 16.7,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-005",
+    "category": "Patient Warming",
+    "sub_type": "Bair Hugger",
+    "location": {
+      "lat": 37.975232,
+      "lon": -122.532988,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-10-16",
+    "expire_date": "2037-10-12",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 22805,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 36.78,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 16.41,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WARM-006",
+    "category": "Patient Warming",
+    "sub_type": "Blanketrol II",
+    "location": {
+      "lat": 37.972245,
+      "lon": -122.529656,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-02-20",
+    "expire_date": "2028-02-19",
+    "last_audit": "2026-07-31",
+    "next_audit": "2026-08-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 46014,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "temp_target",
+      "temp_actual",
+      "airflow"
+    ],
+    "extra": {
+      "use_case": "post-surgical, sepsis-induced hypothermia prevention"
+    },
+    "live_sensors": {
+      "temp_target": {
+        "value": 37.0,
+        "unit": "\u00b0C",
+        "status": "warning"
+      },
+      "temp_actual": {
+        "value": 36.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 15.36,
+        "unit": "CFM",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-001",
+    "category": "UPS Systems",
+    "sub_type": "UPS-A (ICU main)",
+    "location": {
+      "lat": 37.973892,
+      "lon": -122.532751,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-03-22",
+    "expire_date": "2026-03-21",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 33140,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "battery_charge",
+      "load_pct",
+      "runtime_min"
+    ],
+    "extra": {
+      "capacity_kva": "20-50",
+      "backup_time_min": "30-60"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 92.7,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 62.0,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "runtime_min": {
+        "value": 44.52,
+        "unit": "min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-002",
+    "category": "UPS Systems",
+    "sub_type": "UPS-B (ventilator backup)",
+    "location": {
+      "lat": 37.974446,
+      "lon": -122.530605,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-12-29",
+    "expire_date": "2037-12-25",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 27718,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "battery_charge",
+      "load_pct",
+      "runtime_min"
+    ],
+    "extra": {
+      "capacity_kva": "20-50",
+      "backup_time_min": "30-60"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 96.89,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 59.54,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "runtime_min": {
+        "value": 49.17,
+        "unit": "min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-003",
+    "category": "UPS Systems",
+    "sub_type": "UPS-C (telemetry)",
+    "location": {
+      "lat": 37.971585,
+      "lon": -122.531983,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-10-07",
+    "expire_date": "2034-10-03",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 39120,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "battery_charge",
+      "load_pct",
+      "runtime_min"
+    ],
+    "extra": {
+      "capacity_kva": "20-50",
+      "backup_time_min": "30-60"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 92.58,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 62.0,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "runtime_min": {
+        "value": 46.37,
+        "unit": "min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-004",
+    "category": "UPS Systems",
+    "sub_type": "UPS-D (med fridge)",
+    "location": {
+      "lat": 37.97298,
+      "lon": -122.530517,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-01-17",
+    "expire_date": "2028-01-16",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 47166,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "battery_charge",
+      "load_pct",
+      "runtime_min"
+    ],
+    "extra": {
+      "capacity_kva": "20-50",
+      "backup_time_min": "30-60"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 94.59,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 57.08,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "runtime_min": {
+        "value": 45.21,
+        "unit": "min",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "NCS-001",
+    "category": "Nurse Call System",
+    "sub_type": "Rauland Responder 5",
+    "location": {
+      "lat": 37.975063,
+      "lon": -122.531615,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-05-22",
+    "expire_date": "2033-05-19",
+    "last_audit": "2026-08-16",
+    "next_audit": "2026-09-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 39861,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "active_calls",
+      "response_time",
+      "alarm_overrides"
+    ],
+    "extra": {
+      "stations": "24 beds + 4 nurse stations",
+      "integration": "EHR + phone"
+    },
+    "live_sensors": {
+      "active_calls": {
+        "value": 2.23,
+        "unit": "calls",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 37.82,
+        "unit": "sec",
+        "status": "nominal"
+      },
+      "alarm_overrides": {
+        "value": 2.22,
+        "unit": "/shift",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CDS-001",
+    "category": "Clinical Decision Support",
+    "sub_type": "Epic Sepsis Model (ESM) + TS-FM overlay",
+    "location": {
+      "lat": 37.973104,
+      "lon": -122.531792,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-03-20",
+    "expire_date": "2034-03-16",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 7105,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "sepsis_score",
+      "alert_count",
+      "model_confidence"
+    ],
+    "extra": {
+      "base_model": "Epic ESM v3",
+      "ai_overlay": "TS-FM zero-shot",
+      "hipaa_compliant": "yes"
+    },
+    "live_sensors": {
+      "sepsis_score": {
+        "value": 2.31,
+        "unit": "score",
+        "status": "nominal"
+      },
+      "alert_count": {
+        "value": 0.57,
+        "unit": "alerts",
+        "status": "nominal"
+      },
+      "model_confidence": {
+        "value": 0.89,
+        "unit": "confidence",
+        "status": "nominal"
+      }
+    }
+  }
+];
+const CATEGORIES = [{"name": "Patient Monitors", "icon": "\ud83e\udec0", "count": 24}, {"name": "Ventilators", "icon": "\ud83d\udca8", "count": 8}, {"name": "Infusion Pumps", "icon": "\ud83d\udc89", "count": 16}, {"name": "ECG Machines", "icon": "\ud83d\udc93", "count": 12}, {"name": "Pulse Oximeters", "icon": "\ud83e\ude78", "count": 24}, {"name": "Capnography", "icon": "\ud83c\udf2c\ufe0f", "count": 8}, {"name": "Patient Warming", "icon": "\ud83c\udf21\ufe0f", "count": 6}, {"name": "UPS Systems", "icon": "\ud83d\udd0c", "count": 4}, {"name": "Nurse Call System", "icon": "\ud83d\udd14", "count": 1}, {"name": "Clinical Decision Support", "icon": "\ud83d\udda5\ufe0f", "count": 1}];
+const SENSOR_BASELINES = {"heart_rate": [72, 8, "bpm"], "spo2": [97, 2, "%"], "bp_systolic": [120, 10, "mmHg"], "bp_diastolic": [80, 6, "mmHg"], "resp_rate": [16, 2, "/min"], "temp": [37.0, 0.3, "\u00b0C"], "flow": [8.0, 0.5, "L/min"], "pressure": [30, 3, "cmH2O"], "tidal_volume": [500, 30, "mL"], "fiO2": [60, 5, "%"], "flow_rate": [50, 5, "mL/h"], "volume_infused": [250, 20, "mL"], "occlusion_pressure": [5, 1, "psi"], "battery_level": [85, 5, "%"], "rhythm": [1, 0, "normal"], "st_segment": [0, 0.5, "mm"], "qt_interval": [420, 15, "ms"], "pulse_rate": [72, 8, "bpm"], "perfusion_index": [2.0, 0.5, "%"], "etco2": [35, 2, "mmHg"], "insp_co2": [0.5, 0.2, "mmHg"], "temp_target": [37.0, 0, "\u00b0C"], "temp_actual": [36.8, 0.3, "\u00b0C"], "airflow": [15, 2, "CFM"], "battery_charge": [95, 3, "%"], "load_pct": [62, 5, "%"], "runtime_min": [45, 5, "min"], "active_calls": [2, 1, "calls"], "response_time": [45, 10, "sec"], "alarm_overrides": [3, 1, "/shift"], "sepsis_score": [2, 1, "score"], "alert_count": [1, 1, "alerts"], "model_confidence": [0.89, 0.05, "confidence"]};
+
+function renderAssets(filter) {
+  const grid = document.getElementById('asset-grid');
+  const filtered = filter === 'all' ? ASSETS : ASSETS.filter(a => a.category === filter);
+  grid.innerHTML = filtered.map(a => {
+    const cat = CATEGORIES.find(c => c.name === a.category);
+    const sensorsHtml = Object.entries(a.live_sensors).map(([name, reading]) => `
+      <div class="live-channel ${reading.status}">
+        <span style="font-size: 10px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name.replace(/_/g, ' ')}</span>
+        <span style="font-size: 13px; font-weight: 600;">${reading.value} ${reading.unit}</span>
+      </div>
+    `).join('');
+    return `<div class="asset-card ${a.status}">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div><span style="font-size: 24px; margin-right: 8px;">${cat ? cat.icon : ''}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;">${a.id}</span></div>
+        <span class="status-badge ${a.status}">${a.status}</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">${a.sub_type}</div>
+      <div class="sensor-readings">${sensorsHtml}</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+        <div><span style="color: var(--text-mute);">Lat:</span> ${a.location.lat}</div>
+        <div><span style="color: var(--text-mute);">Lon:</span> ${a.location.lon}</div>
+        <div><span style="color: var(--text-mute);">Installed:</span> ${a.install_date}</div>
+        <div><span style="color: var(--text-mute);">TS-FM:</span> ${a.ts_fm_confidence}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterAssets(category) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.closest('.filter-chip').classList.add('active');
+  renderAssets(category);
+}
+
+function updateSensors() {
+  let nominal = 0, warning = 0, critical = 0;
+  ASSETS.forEach(asset => {
+    asset.sensors.forEach(sensorType => {
+      const baseline = SENSOR_BASELINES[sensorType];
+      if (!baseline) return;
+      const [base, variance, unit] = baseline;
+      const phase = (Date.now() / 1000 + asset.id.charCodeAt(4) * 0.5) * 0.3;
+      const sine = Math.sin(phase) * variance * 0.3;
+      const noise = (Math.random() - 0.5) * variance * 0.4;
+      let value = base + sine + noise;
+      if (Math.random() < 0.003) value = base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      value = Math.round(value * 100) / 100;
+      const status = Math.abs(value - base) > variance * 2 ? 'warning' : 'nominal';
+      if (asset.live_sensors[sensorType]) {
+        asset.live_sensors[sensorType].value = value;
+        asset.live_sensors[sensorType].status = status;
+      }
+      if (status === 'nominal') nominal++; else if (status === 'warning') warning++; else critical++;
+    });
+  });
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-GB', {hour12: false});
+  document.getElementById('nominal-count').textContent = nominal;
+  document.getElementById('warning-count').textContent = warning;
+  document.getElementById('critical-count').textContent = critical;
+  // Re-render assets
+  const activeFilter = document.querySelector('.filter-chip.active')?.textContent?.split(' ')[0] || 'all';
+  renderAssets(activeFilter === 'All' ? 'all' : activeFilter);
+}
+
+renderAssets('all');
+updateSensors();
+setInterval(updateSensors, 3000);
+
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, {rootMargin: '-30% 0px -60% 0px'});
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

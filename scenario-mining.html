@@ -1,0 +1,3915 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Scenario: Mining</title>
+<meta name="description" content="Live scenario: Apex Mining — Copper Mountain Site. 66 assets, 236 sensors, synthetic telemetry streaming." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Scenario: Mining" />
+<meta property="og:description" content="Apex Mining — Copper Mountain Site: 66 assets, 236 sensors, live synthetic telemetry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .platform-map { background: linear-gradient(180deg, #0a1a2f 0%, #051020 100%); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin: 24px 0; position: relative; overflow: hidden; min-height: 260px; }
+  .platform-map-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: center; }
+  .platform-diagram { position: relative; height: 200px; background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08), transparent 70%); border: 1px solid rgba(0, 212, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .platform-stats-side { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-tile { padding: 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); text-align: center; }
+  .stat-tile .num { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-tile .lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+  .filter-chip { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+  .filter-chip:hover, .filter-chip.active { background: color-mix(in srgb, var(--cyan) 10%, transparent); border-color: var(--cyan); color: var(--cyan); }
+  .filter-chip .count { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--text-mute) 15%, transparent); font-size: 10px; }
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+  .asset-card { padding: 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden; }
+  .asset-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .asset-card.warning { border-color: var(--gold); }
+  .asset-card.critical { border-color: var(--magenta); border-width: 2px; }
+  .sensor-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; padding: 10px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border); }
+  .live-channel { display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 6px; background: var(--card); border-radius: 4px; border-left: 2px solid var(--text-mute); }
+  .live-channel.nominal { border-left-color: var(--green); }
+  .live-channel.warning { border-left-color: var(--gold); }
+  .live-channel.critical { border-left-color: var(--magenta); }
+  .status-badge { padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .status-badge.nominal { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .status-badge.warning { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .status-badge.critical, .status-badge.emergency { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .alert-item { padding: 14px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid; }
+  .alert-item.warning { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 5%, var(--card)); }
+  .alert-item.critical, .alert-item.emergency { border-left-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 5%, var(--card)); }
+  .audit-item { display: flex; gap: 12px; padding: 12px; border-left: 2px solid var(--cyan); margin-bottom: 8px; background: var(--card); border-radius: 0 8px 8px 0; }
+  .audit-item.action-required { border-left-color: var(--magenta); }
+  .audit-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 100px; }
+  .audit-result { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+  .audit-result.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .audit-result.pass-with-notes { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); }
+  .compliance-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 4px; }
+  .compliance-badge.pass { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .compliance-badge.pending { background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .rul-bar { height: 8px; border-radius: 4px; background: var(--bg-2); overflow: hidden; }
+  .rul-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--magenta)); }
+</style>
+</head>
+<body id="scenario-mining">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore O&G</a>
+    <a href="scenario-mining.html" class="active">Mining</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live"><span class="label">Live Dashboard</span></a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="sectors.html">Sectors</a><span class="sep">/</span><span>Mining</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Live Scenario · Synthetic Telemetry Streaming</div>
+    <h1>Mining <span class="accent">Live Scenario</span></h1>
+    <p class="lead">A live scenario demonstration of AISensorEdgeComp deployed at <strong>Apex Mining — Copper Mountain Site</strong> in Atacama Desert, Chile (elevation 3,200m). 66 assets across 10 categories, 236 sensor endpoints, real-time TS-FM anomaly detection, and full audit/compliance tracking — all running on synthetic data.</p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">Open Live MVP &rarr;</a>
+      <a href="roi-mining.html" class="btn btn-ghost">Mining ROI Calculator →</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Scenario</h4>
+    <a href="#platform-overview">Platform Overview</a>
+    <a href="#asset-registry">Asset Registry</a>
+    <a href="#live-readings">Live Sensor Readings</a>
+    <a href="#alerts">Active Alerts</a>
+    <a href="#maintenance">Maintenance Log</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#rul">RUL Predictions</a>
+    <a href="#compliance">Compliance</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="doc-section" id="platform-overview">
+      <div class="section-label">Platform Profile</div>
+      <h2>Apex Mining — Copper Mountain Site</h2>
+      <p>Operated by Apex Mining Corp. Installed 2012-08-01 with a design life to 2037-08-01. 120k tons/day copper ore, 95% extraction efficiency. 450 workers (2 shifts) + 60 remote ops.</p>
+      <div class="platform-map">
+        <div class="platform-map-content">
+          <div class="platform-diagram">
+            <div style="font-size: 48px; margin-bottom: 8px;">🏥</div>
+            <div class="platform-info">
+              <div style="font-size: 16px; font-weight: 600; color: var(--text);">Mining</div>
+              <div style="font-size: 12px; color: var(--text-dim);">Atacama Desert, Chile (elevation 3,200m)</div>
+              <div style="font-size: 11px; color: var(--cyan); margin-top: 4px;">-32.7893°, -70.4579°</div>
+            </div>
+          </div>
+          <div class="platform-stats-side">
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">66</div><div class="lbl">Assets</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--violet);">10</div><div class="lbl">Categories</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">236</div><div class="lbl">Sensors</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--green);">56</div><div class="lbl">Nominal</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--gold);">7</div><div class="lbl">Warning</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--magenta);">3</div><div class="lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+      <table class="data-table">
+        <tbody>
+          <tr><td style="width: 200px;"><strong>Name</strong></td><td>Apex Mining — Copper Mountain Site</td></tr>
+          <tr><td><strong>Operator</strong></td><td>Apex Mining Corp</td></tr>
+          <tr><td><strong>Location</strong></td><td>Atacama Desert, Chile (elevation 3,200m)</td></tr>
+          <tr><td><strong>Installed</strong></td><td>2012-08-01</td></tr>
+          <tr><td><strong>Design Life</strong></td><td>2037-08-01</td></tr>
+          <tr><td><strong>Capacity</strong></td><td>120k tons/day copper ore, 95% extraction efficiency</td></tr>
+          <tr><td><strong>Compliance</strong></td><td><span class="compliance-badge pass">MSHA 30 CFR ✓</span><span class="compliance-badge pass">ISO 19434 ✓</span><span class="compliance-badge pass">Chilean SERNAGEOMIN ✓</span><span class="compliance-badge pass">ISO 14001 ✓</span><span class="compliance-badge pending">IEC 62443 (industrial cybersecurity)</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ASSET REGISTRY -->
+    <section class="doc-section" id="asset-registry">
+      <div class="section-label">Asset Registry</div>
+      <h2>66 assets across <span class="accent">10 categories</span></h2>
+      <p>Each asset has a unique ID, geolocation, install/expire dates, monthly audit schedule, sensor readings (live-updated), TS-FM confidence scores, and RUL predictions.</p>
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" onclick="filterAssets('all')">All <span class="count">66</span></button>
+        <button class="filter-chip" onclick="filterAssets('Haul Trucks')" >🚛 Haul Trucks <span class="count">12</span></button><button class="filter-chip" onclick="filterAssets('Excavators')" >⛏️ Excavators <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('Crushers')" >🪨 Crushers <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Conveyors')" >🔗 Conveyors <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Ventilation Fans')" >💨 Ventilation Fans <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Gas Detectors (Underground)')" >⚠️ Gas Detectors (Underground) <span class="count">20</span></button><button class="filter-chip" onclick="filterAssets('Water Pumps')" >🔧 Water Pumps <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('Dragline')" >🏗️ Dragline <span class="count">2</span></button><button class="filter-chip" onclick="filterAssets('Processing Plant')" >🏭 Processing Plant <span class="count">1</span></button><button class="filter-chip" onclick="filterAssets('Power Generation')" >⚡ Power Generation <span class="count">3</span></button>
+      </div>
+      <div class="asset-grid" id="asset-grid"></div>
+    </section>
+
+    <!-- LIVE READINGS -->
+    <section class="doc-section" id="live-readings">
+      <div class="section-label">Real-Time Sensor Stream</div>
+      <h2>Live sensor readings <span class="accent">(updates every 3s)</span></h2>
+      <p>All 236 sensor endpoints stream synthetic telemetry through the AISensorEdgeComp ingest pipeline.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;"><span style="height: 8px; width: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite;"></span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span></div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Nominal: <span id="nominal-count" style="color: var(--green);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Warning: <span id="warning-count" style="color: var(--gold);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Critical: <span id="critical-count" style="color: var(--magenta);">--</span></span>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="doc-section" id="alerts">
+      <div class="section-label">Active Alerts</div>
+      <h2>13 active alerts from <span class="accent">TS-FM anomaly detection</span></h2>
+      <div>
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Komatsu 980E 360t — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Haul Trucks TRK-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-29903 · Asset: TRK-002 · TS-FM confidence: 0.87 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Komatsu 980E 360t — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Haul Trucks TRK-005</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-55034 · Asset: TRK-005 · TS-FM confidence: 0.85 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Tertiary cone — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Crushers CRH-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-21117 · Asset: CRH-003 · TS-FM confidence: 0.85 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Stacker — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Conveyors CNV-007</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-45511 · Asset: CNV-007 · TS-FM confidence: 0.84 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">CO detector — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detectors (Underground) GAS-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-97413 · Asset: GAS-002 · TS-FM confidence: 0.98 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">CO detector — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detectors (Underground) GAS-006</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-14813 · Asset: GAS-006 · TS-FM confidence: 0.89 · Unacknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">CH4 detector — WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detectors (Underground) GAS-009</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-25321 · Asset: GAS-009 · TS-FM confidence: 0.96 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">O2 detector — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detectors (Underground) GAS-011</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-86279 · Asset: GAS-011 · TS-FM confidence: 0.9 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Slurry pump — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Water Pumps PMP-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-10273 · Asset: PMP-002 · TS-FM confidence: 0.92 · Acknowledged
+          </div>
+        </div>
+    
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Process water — CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Water Pumps PMP-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-45092 · Asset: PMP-003 · TS-FM confidence: 0.91 · Acknowledged
+          </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- MAINTENANCE -->
+    <section class="doc-section" id="maintenance">
+      <div class="section-label">Maintenance Log</div>
+      <h2>227 maintenance events <span class="accent">YTD</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Asset</th><th>Type</th><th>By</th><th>Duration</th><th>Cost</th><th>Description</th></tr></thead>
+        <tbody><tr><td>2026-08-30</td><td><strong>EXC-005</strong></td><td>calibration</td><td>Tech 8</td><td>1h</td><td>$19,645</td><td>Calibration on Hitachi EX8000</td></tr><tr><td>2026-08-22</td><td><strong>PMP-005</strong></td><td>calibration</td><td>Tech 7</td><td>14h</td><td>$20,550</td><td>Calibration on Slurry pump</td></tr><tr><td>2026-08-16</td><td><strong>CNV-004</strong></td><td>repair</td><td>Tech 6</td><td>1h</td><td>$20,295</td><td>Fault on Reclaim</td></tr><tr><td>2026-08-15</td><td><strong>CNV-004</strong></td><td>replacement</td><td>Tech 3</td><td>20h</td><td>$23,246</td><td>Fault on Reclaim</td></tr><tr><td>2026-08-13</td><td><strong>GAS-020</strong></td><td>replacement</td><td>Tech 4</td><td>24h</td><td>$7,000</td><td>Inspection on NO2 detector</td></tr><tr><td>2026-08-09</td><td><strong>GAS-004</strong></td><td>calibration</td><td>Tech 8</td><td>15h</td><td>$15,962</td><td>Replacement on NO2 detector</td></tr><tr><td>2026-08-05</td><td><strong>TRK-007</strong></td><td>replacement</td><td>Tech 3</td><td>7h</td><td>$14,619</td><td>Replacement on CAT 797F 400t</td></tr><tr><td>2026-08-01</td><td><strong>DGL-001</strong></td><td>calibration</td><td>Tech 4</td><td>18h</td><td>$18,492</td><td>Calibration on Walking dragline 4000t</td></tr><tr><td>2026-07-31</td><td><strong>TRK-002</strong></td><td>fault</td><td>Tech 2</td><td>22h</td><td>$20,825</td><td>Calibration on Komatsu 980E 360t</td></tr><tr><td>2026-07-31</td><td><strong>TRK-008</strong></td><td>fault</td><td>Tech 7</td><td>23h</td><td>$12,709</td><td>Fault on Komatsu 980E 360t</td></tr><tr><td>2026-07-20</td><td><strong>GAS-019</strong></td><td>inspection</td><td>Tech 1</td><td>9h</td><td>$6,436</td><td>Inspection on O2 detector</td></tr><tr><td>2026-07-17</td><td><strong>EXC-005</strong></td><td>inspection</td><td>Tech 6</td><td>15h</td><td>$13,640</td><td>Fault on Hitachi EX8000</td></tr><tr><td>2026-07-17</td><td><strong>CRH-004</strong></td><td>inspection</td><td>Tech 1</td><td>22h</td><td>$23,950</td><td>Repair on SAG mill</td></tr><tr><td>2026-07-16</td><td><strong>TRK-012</strong></td><td>fault</td><td>Tech 5</td><td>16h</td><td>$10,939</td><td>Fault on Liebherr T282C 400t</td></tr><tr><td>2026-07-15</td><td><strong>CRH-004</strong></td><td>inspection</td><td>Tech 2</td><td>8h</td><td>$9,322</td><td>Inspection on SAG mill</td></tr></tbody>
+      </table>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 15 of 227 events.</p>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section class="doc-section" id="audit">
+      <div class="section-label">Audit Trail</div>
+      <h2>60 audit entries <span class="accent">(monthly cycle)</span></h2>
+      <div>
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-011 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Safety test passed.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-25</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-009 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-18</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-001 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-18</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">EXC-002 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-15</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">EXC-003 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-14</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CRH-002 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-11</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-011 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-01</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-001 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Compliance verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-01</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-006 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-008 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-28</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-005 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    
+        <div class="audit-item pass">
+          <div class="audit-date">2026-07-23</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TRK-006 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+    </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 12 of 60 entries.</p>
+    </section>
+
+    <!-- RUL -->
+    <section class="doc-section" id="rul">
+      <div class="section-label">Remaining Useful Life</div>
+      <h2>RUL predictions <span class="accent">from TS-FM + federated learning</span></h2>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Sub-type</th><th>RUL (hours)</th><th>RUL (years)</th><th>Confidence</th><th>Health</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><strong>TRK-001</strong></td>
+          <td>CAT 797F 400t</td>
+          <td>21,417</td>
+          <td>2.4</td>
+          <td>0.88</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 42.834%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-002</strong></td>
+          <td>Komatsu 980E 360t</td>
+          <td>11,904</td>
+          <td>1.4</td>
+          <td>0.87</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 23.808%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-003</strong></td>
+          <td>Liebherr T282C 400t</td>
+          <td>22,089</td>
+          <td>2.5</td>
+          <td>0.96</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 44.178%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-004</strong></td>
+          <td>CAT 797F 400t</td>
+          <td>29,662</td>
+          <td>3.4</td>
+          <td>0.95</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 59.324%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-005</strong></td>
+          <td>Komatsu 980E 360t</td>
+          <td>17,333</td>
+          <td>2.0</td>
+          <td>0.85</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 34.666%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-006</strong></td>
+          <td>Liebherr T282C 400t</td>
+          <td>5,513</td>
+          <td>0.6</td>
+          <td>0.92</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 11.026%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-008</strong></td>
+          <td>Komatsu 980E 360t</td>
+          <td>23,388</td>
+          <td>2.7</td>
+          <td>0.95</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 46.776%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-009</strong></td>
+          <td>Liebherr T282C 400t</td>
+          <td>14,600</td>
+          <td>1.7</td>
+          <td>0.85</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 29.2%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-010</strong></td>
+          <td>CAT 797F 400t</td>
+          <td>12,848</td>
+          <td>1.5</td>
+          <td>0.84</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 25.696%"></div></div></td>
+        </tr>
+    
+        <tr>
+          <td><strong>TRK-011</strong></td>
+          <td>Komatsu 980E 360t</td>
+          <td>2,657</td>
+          <td>0.3</td>
+          <td>0.92</td>
+          <td><div class="rul-bar" style="width: 100px; display: inline-block;"><div class="rul-bar-fill" style="width: 5.314%"></div></div></td>
+        </tr>
+    </tbody>
+      </table>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="doc-section" id="compliance">
+      <div class="section-label">Compliance Status</div>
+      <h2>Regulatory compliance <span class="accent">dashboard</span></h2>
+      <p><span class="compliance-badge pass">MSHA 30 CFR ✓</span><span class="compliance-badge pass">ISO 19434 ✓</span><span class="compliance-badge pass">Chilean SERNAGEOMIN ✓</span><span class="compliance-badge pass">ISO 14001 ✓</span><span class="compliance-badge pending">IEC 62443 (industrial cybersecurity)</span></p>
+    </section>
+
+    <!-- PROBLEM DEEP DIVES -->
+    <section class="doc-section">
+      <div class="section-label">Related Problem Deep Dives</div>
+      <h2>How AISensorEdgeComp solves the four problems <span class="accent">at this facility</span></h2>
+      <p style="color: var(--text-dim); margin-bottom: 16px;">This scenario faces all four structural problems. Here's how the platform addresses each — and how they compound.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="protocol-heterogeneity.html" class="btn btn-ghost btn-sm">Protocol Heterogeneity →</a> <a href="calibration-drift.html" class="btn btn-ghost btn-sm">Calibration Drift (gas) →</a> <a href="edge-cloud-placement.html" class="btn btn-ghost btn-sm">Edge-Cloud Placement (remote) →</a> <a href="unlabeled-industrial-data.html" class="btn btn-ghost btn-sm">Unlabeled Data (truck) →</a>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="problem.html#compound-value" class="btn btn-ghost btn-sm">Read about the compound effect →</a>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, this scenario <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + liquid placement + Graph RAG that powers this mining scenario.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">Open Live Dashboard</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="roi-mining.html">Mining ROI Calculator</a>
+    <a href="problem.html">The 4 Problems</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Scenario: Mining &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const ASSETS = [
+  {
+    "id": "TRK-001",
+    "category": "Haul Trucks",
+    "sub_type": "CAT 797F 400t",
+    "location": {
+      "lat": -32.790634,
+      "lon": -70.457571,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-03-02",
+    "expire_date": "2035-02-27",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 21417,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 89.67,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.3,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.68,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 375.54,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 62.58,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-002",
+    "category": "Haul Trucks",
+    "sub_type": "Komatsu 980E 360t",
+    "location": {
+      "lat": -32.787826,
+      "lon": -70.457821,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-06-14",
+    "expire_date": "2029-06-11",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 11904,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 90.45,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.05,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.63,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 376.89,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 63.01,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-003",
+    "category": "Haul Trucks",
+    "sub_type": "Liebherr T282C 400t",
+    "location": {
+      "lat": -32.790981,
+      "lon": -70.45757,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-05-27",
+    "expire_date": "2036-05-23",
+    "last_audit": "2026-08-12",
+    "next_audit": "2026-09-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 22089,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 92.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.23,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.48,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 384.97,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 66.2,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-004",
+    "category": "Haul Trucks",
+    "sub_type": "CAT 797F 400t",
+    "location": {
+      "lat": -32.787542,
+      "lon": -70.456523,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-01-16",
+    "expire_date": "2027-01-15",
+    "last_audit": "2026-08-31",
+    "next_audit": "2026-09-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 29662,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 93.03,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 51.69,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.48,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 383.26,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 67.48,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-005",
+    "category": "Haul Trucks",
+    "sub_type": "Komatsu 980E 360t",
+    "location": {
+      "lat": -32.789945,
+      "lon": -70.459732,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-07-29",
+    "expire_date": "2031-07-27",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 17333,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 94.32,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.8,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.68,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 375.38,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 64.69,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-006",
+    "category": "Haul Trucks",
+    "sub_type": "Liebherr T282C 400t",
+    "location": {
+      "lat": -32.787372,
+      "lon": -70.458935,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-02-27",
+    "expire_date": "2038-02-23",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 5513,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 94.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.75,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.5,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 382.5,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 66.77,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-007",
+    "category": "Haul Trucks",
+    "sub_type": "CAT 797F 400t",
+    "location": {
+      "lat": -32.791101,
+      "lon": -70.459051,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-08-12",
+    "expire_date": "2026-08-11",
+    "last_audit": "2026-07-15",
+    "next_audit": "2026-08-14",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 37771,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 94.88,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.41,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.33,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 381.55,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 67.96,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-008",
+    "category": "Haul Trucks",
+    "sub_type": "Komatsu 980E 360t",
+    "location": {
+      "lat": -32.79109,
+      "lon": -70.457714,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-04-30",
+    "expire_date": "2029-04-27",
+    "last_audit": "2026-07-31",
+    "next_audit": "2026-08-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 23388,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 94.73,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.56,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.68,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 382.85,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 66.52,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-009",
+    "category": "Haul Trucks",
+    "sub_type": "Liebherr T282C 400t",
+    "location": {
+      "lat": -32.787331,
+      "lon": -70.456891,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-02-16",
+    "expire_date": "2035-02-12",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 14600,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 93.0,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 51.74,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.67,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 375.12,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 62.81,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-010",
+    "category": "Haul Trucks",
+    "sub_type": "CAT 797F 400t",
+    "location": {
+      "lat": -32.790931,
+      "lon": -70.45949,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-11-05",
+    "expire_date": "2031-11-03",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 12848,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 92.33,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.52,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.69,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 378.96,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 62.82,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-011",
+    "category": "Haul Trucks",
+    "sub_type": "Komatsu 980E 360t",
+    "location": {
+      "lat": -32.78804,
+      "lon": -70.459024,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-03-09",
+    "expire_date": "2031-03-07",
+    "last_audit": "2026-08-10",
+    "next_audit": "2026-09-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 2657,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 94.42,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.42,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.34,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 375.96,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 65.64,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TRK-012",
+    "category": "Haul Trucks",
+    "sub_type": "Liebherr T282C 400t",
+    "location": {
+      "lat": -32.789547,
+      "lon": -70.459375,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2022-07-12",
+    "expire_date": "2027-07-11",
+    "last_audit": "2026-07-29",
+    "next_audit": "2026-08-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 30117,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "engine_temp",
+      "vibration",
+      "tire_pressure",
+      "payload",
+      "fuel_level"
+    ],
+    "extra": {
+      "payload_t": "360-400",
+      "engine_kw": "2800-3500",
+      "autonomous_ready": "yes"
+    },
+    "live_sensors": {
+      "engine_temp": {
+        "value": 91.95,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.62,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "tire_pressure": {
+        "value": 7.37,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "payload": {
+        "value": 382.43,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 64.39,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-001",
+    "category": "Excavators",
+    "sub_type": "Komatsu PC8000",
+    "location": {
+      "lat": -32.789963,
+      "lon": -70.457115,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2019-08-16",
+    "expire_date": "2024-08-14",
+    "last_audit": "2026-07-31",
+    "next_audit": "2026-08-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 3233,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 325.33,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 90.31,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 52.58,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 44.4,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-002",
+    "category": "Excavators",
+    "sub_type": "Hitachi EX8000",
+    "location": {
+      "lat": -32.788989,
+      "lon": -70.456307,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-05-07",
+    "expire_date": "2025-05-06",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 21514,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 317.26,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 94.58,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.28,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 42.64,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-003",
+    "category": "Excavators",
+    "sub_type": "Liebherr R9800",
+    "location": {
+      "lat": -32.788802,
+      "lon": -70.459425,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-05-29",
+    "expire_date": "2030-05-27",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 5184,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 326.67,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 90.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.09,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 46.04,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-004",
+    "category": "Excavators",
+    "sub_type": "Komatsu PC8000",
+    "location": {
+      "lat": -32.790046,
+      "lon": -70.45834,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2020-12-17",
+    "expire_date": "2035-12-14",
+    "last_audit": "2026-08-08",
+    "next_audit": "2026-09-07",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 42819,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 310.17,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 91.99,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 54.35,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 47.02,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-005",
+    "category": "Excavators",
+    "sub_type": "Hitachi EX8000",
+    "location": {
+      "lat": -32.791057,
+      "lon": -70.456886,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-02-27",
+    "expire_date": "2027-02-26",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 46650,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 325.61,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 90.47,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 48.87,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 45.97,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "EXC-006",
+    "category": "Excavators",
+    "sub_type": "Liebherr R9800",
+    "location": {
+      "lat": -32.790195,
+      "lon": -70.457301,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2019-10-26",
+    "expire_date": "2029-10-23",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 48972,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "hydraulic_pressure",
+      "engine_temp",
+      "vibration",
+      "bucket_cycles"
+    ],
+    "extra": {
+      "bucket_m3": "42-50",
+      "operating_weight_t": "800-920"
+    },
+    "live_sensors": {
+      "hydraulic_pressure": {
+        "value": 329.62,
+        "unit": "bar",
+        "status": "nominal"
+      },
+      "engine_temp": {
+        "value": 90.6,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.97,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "bucket_cycles": {
+        "value": 44.46,
+        "unit": "/hr",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRH-001",
+    "category": "Crushers",
+    "sub_type": "Primary gyratory",
+    "location": {
+      "lat": -32.787594,
+      "lon": -70.456887,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-07-08",
+    "expire_date": "2035-07-05",
+    "last_audit": "2026-08-18",
+    "next_audit": "2026-09-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 34415,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "vibration",
+      "motor_current",
+      "throughput",
+      "bearing_temp"
+    ],
+    "extra": {
+      "type": "gyratory / cone / SAG",
+      "throughput_tph": "3000-5000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 47.88,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 181.24,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "throughput": {
+        "value": 4516.8,
+        "unit": "tph",
+        "status": "nominal"
+      },
+      "bearing_temp": {
+        "value": 70.64,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRH-002",
+    "category": "Crushers",
+    "sub_type": "Secondary cone",
+    "location": {
+      "lat": -32.787495,
+      "lon": -70.459197,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-02-09",
+    "expire_date": "2035-02-05",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 3689,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "vibration",
+      "motor_current",
+      "throughput",
+      "bearing_temp"
+    ],
+    "extra": {
+      "type": "gyratory / cone / SAG",
+      "throughput_tph": "3000-5000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 52.09,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 173.26,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "throughput": {
+        "value": 4564.07,
+        "unit": "tph",
+        "status": "nominal"
+      },
+      "bearing_temp": {
+        "value": 65.4,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRH-003",
+    "category": "Crushers",
+    "sub_type": "Tertiary cone",
+    "location": {
+      "lat": -32.790462,
+      "lon": -70.458365,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-03-21",
+    "expire_date": "2028-03-19",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 22400,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "vibration",
+      "motor_current",
+      "throughput",
+      "bearing_temp"
+    ],
+    "extra": {
+      "type": "gyratory / cone / SAG",
+      "throughput_tph": "3000-5000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 45.99,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 189.07,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "throughput": {
+        "value": 4404.08,
+        "unit": "tph",
+        "status": "nominal"
+      },
+      "bearing_temp": {
+        "value": 68.82,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRH-004",
+    "category": "Crushers",
+    "sub_type": "SAG mill",
+    "location": {
+      "lat": -32.789647,
+      "lon": -70.459342,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-04-30",
+    "expire_date": "2028-04-28",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 25020,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "vibration",
+      "motor_current",
+      "throughput",
+      "bearing_temp"
+    ],
+    "extra": {
+      "type": "gyratory / cone / SAG",
+      "throughput_tph": "3000-5000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 54.02,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 179.95,
+        "unit": "A",
+        "status": "nominal"
+      },
+      "throughput": {
+        "value": 4432.7,
+        "unit": "tph",
+        "status": "nominal"
+      },
+      "bearing_temp": {
+        "value": 70.88,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-001",
+    "category": "Conveyors",
+    "sub_type": "Overland 5km",
+    "location": {
+      "lat": -32.789773,
+      "lon": -70.459787,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-02-27",
+    "expire_date": "2036-02-24",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 31021,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 3.99,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 48.61,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.38,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3501.74,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-002",
+    "category": "Conveyors",
+    "sub_type": "Inline transfer",
+    "location": {
+      "lat": -32.789071,
+      "lon": -70.459069,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2021-04-07",
+    "expire_date": "2036-04-03",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 29761,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 3.92,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 51.33,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 54.41,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3467.3,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-003",
+    "category": "Conveyors",
+    "sub_type": "Stacker",
+    "location": {
+      "lat": -32.790201,
+      "lon": -70.457761,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-08-13",
+    "expire_date": "2036-08-09",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 39793,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 3.98,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 45.0,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 51.43,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3473.88,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-004",
+    "category": "Conveyors",
+    "sub_type": "Reclaim",
+    "location": {
+      "lat": -32.787686,
+      "lon": -70.456138,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2023-12-10",
+    "expire_date": "2033-12-07",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 18696,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 4.04,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 48.75,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 47.46,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3594.42,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-005",
+    "category": "Conveyors",
+    "sub_type": "Overland 5km",
+    "location": {
+      "lat": -32.789216,
+      "lon": -70.457003,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-09-19",
+    "expire_date": "2025-09-18",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 25776,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 3.93,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 45.08,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 54.49,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3547.24,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-006",
+    "category": "Conveyors",
+    "sub_type": "Inline transfer",
+    "location": {
+      "lat": -32.790831,
+      "lon": -70.456348,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2023-08-30",
+    "expire_date": "2028-08-28",
+    "last_audit": "2026-07-29",
+    "next_audit": "2026-08-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 4457,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 4.08,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 50.79,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 52.67,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3410.88,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-007",
+    "category": "Conveyors",
+    "sub_type": "Stacker",
+    "location": {
+      "lat": -32.78758,
+      "lon": -70.457387,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-08-01",
+    "expire_date": "2028-07-30",
+    "last_audit": "2026-08-24",
+    "next_audit": "2026-09-23",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 31205,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 4.06,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 45.59,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 51.84,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3561.31,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CNV-008",
+    "category": "Conveyors",
+    "sub_type": "Reclaim",
+    "location": {
+      "lat": -32.790281,
+      "lon": -70.45731,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-10-25",
+    "expire_date": "2027-10-24",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 48536,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "belt_speed",
+      "motor_temp",
+      "vibration",
+      "material_flow"
+    ],
+    "extra": {
+      "length_m": "200-5000",
+      "speed_ms": "3-5"
+    },
+    "live_sensors": {
+      "belt_speed": {
+        "value": 4.06,
+        "unit": "m/s",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 45.9,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 54.8,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "material_flow": {
+        "value": 3418.14,
+        "unit": "tph",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-001",
+    "category": "Ventilation Fans",
+    "sub_type": "Main surface fan",
+    "location": {
+      "lat": -32.789471,
+      "lon": -70.456761,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2022-06-19",
+    "expire_date": "2032-06-16",
+    "last_audit": "2026-07-29",
+    "next_audit": "2026-08-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 16863,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "airflow",
+      "pressure",
+      "vibration",
+      "power"
+    ],
+    "extra": {
+      "diameter_m": "3-4",
+      "power_kw": "500-1500"
+    },
+    "live_sensors": {
+      "airflow": {
+        "value": 240.77,
+        "unit": "m\u00b3/s",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 49.03,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 50.51,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "power": {
+        "value": 867.92,
+        "unit": "kW",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-002",
+    "category": "Ventilation Fans",
+    "sub_type": "Underground auxiliary",
+    "location": {
+      "lat": -32.787543,
+      "lon": -70.457996,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-04-27",
+    "expire_date": "2029-04-24",
+    "last_audit": "2026-07-25",
+    "next_audit": "2026-08-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 10978,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "airflow",
+      "pressure",
+      "vibration",
+      "power"
+    ],
+    "extra": {
+      "diameter_m": "3-4",
+      "power_kw": "500-1500"
+    },
+    "live_sensors": {
+      "airflow": {
+        "value": 243.16,
+        "unit": "m\u00b3/s",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 51.81,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.63,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "power": {
+        "value": 833.24,
+        "unit": "kW",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-003",
+    "category": "Ventilation Fans",
+    "sub_type": "Booster fan",
+    "location": {
+      "lat": -32.788881,
+      "lon": -70.459248,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2021-11-19",
+    "expire_date": "2026-11-18",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.82,
+    "rul_hours": 10532,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "airflow",
+      "pressure",
+      "vibration",
+      "power"
+    ],
+    "extra": {
+      "diameter_m": "3-4",
+      "power_kw": "500-1500"
+    },
+    "live_sensors": {
+      "airflow": {
+        "value": 252.22,
+        "unit": "m\u00b3/s",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 46.27,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 48.21,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "power": {
+        "value": 831.8,
+        "unit": "kW",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VENT-004",
+    "category": "Ventilation Fans",
+    "sub_type": "Main surface fan",
+    "location": {
+      "lat": -32.789576,
+      "lon": -70.458224,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-05-09",
+    "expire_date": "2029-05-06",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 45626,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "airflow",
+      "pressure",
+      "vibration",
+      "power"
+    ],
+    "extra": {
+      "diameter_m": "3-4",
+      "power_kw": "500-1500"
+    },
+    "live_sensors": {
+      "airflow": {
+        "value": 255.44,
+        "unit": "m\u00b3/s",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 49.47,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 53.1,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "power": {
+        "value": 867.62,
+        "unit": "kW",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-001",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CH4 detector",
+    "location": {
+      "lat": -32.790759,
+      "lon": -70.456068,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2020-02-16",
+    "expire_date": "2035-02-12",
+    "last_audit": "2026-07-09",
+    "next_audit": "2026-08-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 4437,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2586.73,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 47.63,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-002",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CO detector",
+    "location": {
+      "lat": -32.789605,
+      "lon": -70.458021,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2019-01-10",
+    "expire_date": "2034-01-06",
+    "last_audit": "2026-08-30",
+    "next_audit": "2026-09-29",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 22229,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2652.29,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 51.81,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-003",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "O2 detector",
+    "location": {
+      "lat": -32.788135,
+      "lon": -70.457138,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-10-13",
+    "expire_date": "2028-10-11",
+    "last_audit": "2026-07-20",
+    "next_audit": "2026-08-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 7109,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2702.7,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 50.53,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-004",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "NO2 detector",
+    "location": {
+      "lat": -32.789753,
+      "lon": -70.455974,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-10-13",
+    "expire_date": "2028-10-11",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 13133,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2509.24,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 51.46,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-005",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CH4 detector",
+    "location": {
+      "lat": -32.787836,
+      "lon": -70.459281,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-02-19",
+    "expire_date": "2027-02-18",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 22733,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2841.12,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 46.33,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-006",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CO detector",
+    "location": {
+      "lat": -32.790345,
+      "lon": -70.457186,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-08-30",
+    "expire_date": "2025-08-29",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 31955,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2487.03,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 48.44,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-007",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "O2 detector",
+    "location": {
+      "lat": -32.787401,
+      "lon": -70.458254,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-02-08",
+    "expire_date": "2035-02-04",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 21773,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2137.31,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 53.26,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-008",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "NO2 detector",
+    "location": {
+      "lat": -32.787828,
+      "lon": -70.459886,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2023-01-29",
+    "expire_date": "2033-01-26",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 19804,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2724.19,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 49.97,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-009",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CH4 detector",
+    "location": {
+      "lat": -32.789273,
+      "lon": -70.458246,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-08-01",
+    "expire_date": "2029-07-29",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 11229,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2938.45,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 53.53,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-010",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CO detector",
+    "location": {
+      "lat": -32.788485,
+      "lon": -70.457656,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2019-10-23",
+    "expire_date": "2029-10-20",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 13141,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2555.45,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 47.27,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-011",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "O2 detector",
+    "location": {
+      "lat": -32.789241,
+      "lon": -70.456046,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2020-12-14",
+    "expire_date": "2030-12-12",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 19305,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2058.38,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 52.98,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-012",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "NO2 detector",
+    "location": {
+      "lat": -32.788135,
+      "lon": -70.458382,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2023-11-17",
+    "expire_date": "2033-11-14",
+    "last_audit": "2026-07-25",
+    "next_audit": "2026-08-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 40129,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2824.81,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 50.93,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-013",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CH4 detector",
+    "location": {
+      "lat": -32.789373,
+      "lon": -70.456719,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-03-01",
+    "expire_date": "2025-02-28",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 21416,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2359.14,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 54.93,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-014",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CO detector",
+    "location": {
+      "lat": -32.790373,
+      "lon": -70.456769,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2022-09-18",
+    "expire_date": "2037-09-14",
+    "last_audit": "2026-08-22",
+    "next_audit": "2026-09-21",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 45516,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2881.75,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 52.39,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-015",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "O2 detector",
+    "location": {
+      "lat": -32.791,
+      "lon": -70.459878,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2020-11-15",
+    "expire_date": "2025-11-14",
+    "last_audit": "2026-07-11",
+    "next_audit": "2026-08-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 21605,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2613.38,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 46.79,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-016",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "NO2 detector",
+    "location": {
+      "lat": -32.789391,
+      "lon": -70.456548,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-04-25",
+    "expire_date": "2032-04-22",
+    "last_audit": "2026-08-26",
+    "next_audit": "2026-09-25",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 19382,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2607.34,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 54.48,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-017",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CH4 detector",
+    "location": {
+      "lat": -32.787769,
+      "lon": -70.458506,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2019-02-26",
+    "expire_date": "2034-02-22",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 39586,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2554.05,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 48.89,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-018",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "CO detector",
+    "location": {
+      "lat": -32.790799,
+      "lon": -70.458123,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2023-09-12",
+    "expire_date": "2033-09-09",
+    "last_audit": "2026-07-29",
+    "next_audit": "2026-08-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 17307,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2971.9,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 51.8,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-019",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "O2 detector",
+    "location": {
+      "lat": -32.789695,
+      "lon": -70.459288,
+      "elevation_m": "Level 4"
+    },
+    "install_date": "2022-08-14",
+    "expire_date": "2032-08-11",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 30595,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2565.11,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 54.1,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GAS-020",
+    "category": "Gas Detectors (Underground)",
+    "sub_type": "NO2 detector",
+    "location": {
+      "lat": -32.79061,
+      "lon": -70.459216,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-07-24",
+    "expire_date": "2031-07-22",
+    "last_audit": "2026-08-11",
+    "next_audit": "2026-09-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 26934,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "gas_conc",
+      "sensor_health"
+    ],
+    "extra": {
+      "ch4_alarm_ppm": "10000",
+      "evacuation_threshold": "15000 ppm CH4"
+    },
+    "live_sensors": {
+      "gas_conc": {
+        "value": 2460.95,
+        "unit": "ppm CH4",
+        "status": "nominal"
+      },
+      "sensor_health": {
+        "value": 50.97,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-001",
+    "category": "Water Pumps",
+    "sub_type": "Dewatering pump",
+    "location": {
+      "lat": -32.788625,
+      "lon": -70.457211,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-05-13",
+    "expire_date": "2027-05-12",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 12939,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 519.51,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 51.72,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 51.29,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 45.74,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-002",
+    "category": "Water Pumps",
+    "sub_type": "Slurry pump",
+    "location": {
+      "lat": -32.790755,
+      "lon": -70.45969,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-12-30",
+    "expire_date": "2038-12-26",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 15640,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 508.74,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 47.79,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 47.06,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 50.85,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-003",
+    "category": "Water Pumps",
+    "sub_type": "Process water",
+    "location": {
+      "lat": -32.788537,
+      "lon": -70.459048,
+      "elevation_m": "Roof"
+    },
+    "install_date": "2021-07-02",
+    "expire_date": "2036-06-28",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 20399,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 487.98,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 48.39,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.96,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 46.19,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-004",
+    "category": "Water Pumps",
+    "sub_type": "Dewatering pump",
+    "location": {
+      "lat": -32.788831,
+      "lon": -70.456216,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-02-21",
+    "expire_date": "2035-02-17",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 15939,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 518.74,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 54.47,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 45.19,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 47.59,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-005",
+    "category": "Water Pumps",
+    "sub_type": "Slurry pump",
+    "location": {
+      "lat": -32.787827,
+      "lon": -70.4569,
+      "elevation_m": "ICU Bay"
+    },
+    "install_date": "2020-05-10",
+    "expire_date": "2025-05-09",
+    "last_audit": "2026-07-16",
+    "next_audit": "2026-08-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 7746,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 484.56,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 52.48,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 47.56,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 46.55,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-006",
+    "category": "Water Pumps",
+    "sub_type": "Process water",
+    "location": {
+      "lat": -32.791097,
+      "lon": -70.45976,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2019-07-22",
+    "expire_date": "2034-07-18",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 42309,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "flow",
+      "pressure",
+      "vibration",
+      "motor_temp"
+    ],
+    "extra": {
+      "type": "centrifugal / submersible",
+      "flow_m3h": "200-800"
+    },
+    "live_sensors": {
+      "flow": {
+        "value": 491.24,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 46.18,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 46.51,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 46.85,
+        "unit": "units",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DGL-001",
+    "category": "Dragline",
+    "sub_type": "Walking dragline 4000t",
+    "location": {
+      "lat": -32.790931,
+      "lon": -70.456152,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2023-02-20",
+    "expire_date": "2038-02-16",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 14891,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "vibration",
+      "motor_temp",
+      "hoist_load",
+      "drag_pressure"
+    ],
+    "extra": {
+      "bucket_m3": "60-80",
+      "operating_weight_t": "2500-4000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 51.2,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 48.47,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "hoist_load": {
+        "value": 175.91,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "drag_pressure": {
+        "value": 218.4,
+        "unit": "bar",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DGL-002",
+    "category": "Dragline",
+    "sub_type": "Walking dragline 2500t",
+    "location": {
+      "lat": -32.791203,
+      "lon": -70.456081,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2021-10-09",
+    "expire_date": "2036-10-05",
+    "last_audit": "2026-07-12",
+    "next_audit": "2026-08-11",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 24178,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "vibration",
+      "motor_temp",
+      "hoist_load",
+      "drag_pressure"
+    ],
+    "extra": {
+      "bucket_m3": "60-80",
+      "operating_weight_t": "2500-4000"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 54.31,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "motor_temp": {
+        "value": 50.23,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "hoist_load": {
+        "value": 185.66,
+        "unit": "t",
+        "status": "nominal"
+      },
+      "drag_pressure": {
+        "value": 221.22,
+        "unit": "bar",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PRC-001",
+    "category": "Processing Plant",
+    "sub_type": "Flotation circuit",
+    "location": {
+      "lat": -32.788363,
+      "lon": -70.457766,
+      "elevation_m": "Basement"
+    },
+    "install_date": "2021-06-12",
+    "expire_date": "2031-06-10",
+    "last_audit": "2026-08-29",
+    "next_audit": "2026-09-28",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 49282,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "ph",
+      "reagent_flow",
+      "cell_temp",
+      "recovery_pct"
+    ],
+    "extra": {
+      "process": "froth flotation",
+      "capacity_tph": "5000"
+    },
+    "live_sensors": {
+      "ph": {
+        "value": 9.53,
+        "unit": "pH",
+        "status": "nominal"
+      },
+      "reagent_flow": {
+        "value": 117.68,
+        "unit": "L/min",
+        "status": "nominal"
+      },
+      "cell_temp": {
+        "value": 53.93,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "recovery_pct": {
+        "value": 91.12,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-001",
+    "category": "Power Generation",
+    "sub_type": "Diesel gen 2MW",
+    "location": {
+      "lat": -32.790791,
+      "lon": -70.456965,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2022-12-08",
+    "expire_date": "2027-12-07",
+    "last_audit": "2026-08-11",
+    "next_audit": "2026-09-10",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 22888,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "power_kw",
+      "fuel_level",
+      "irradiance",
+      "load_pct"
+    ],
+    "extra": {
+      "total_mw": "9 (4 diesel + 5 solar)",
+      "renewable_pct": "55%"
+    },
+    "live_sensors": {
+      "power_kw": {
+        "value": 50.02,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 64.16,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "irradiance": {
+        "value": 927.88,
+        "unit": "W/m\u00b2",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 65.87,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-002",
+    "category": "Power Generation",
+    "sub_type": "Diesel gen 2MW",
+    "location": {
+      "lat": -32.788682,
+      "lon": -70.455946,
+      "elevation_m": "Ground"
+    },
+    "install_date": "2020-04-03",
+    "expire_date": "2030-04-01",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 12347,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "power_kw",
+      "fuel_level",
+      "irradiance",
+      "load_pct"
+    ],
+    "extra": {
+      "total_mw": "9 (4 diesel + 5 solar)",
+      "renewable_pct": "55%"
+    },
+    "live_sensors": {
+      "power_kw": {
+        "value": 51.67,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 64.37,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "irradiance": {
+        "value": 964.46,
+        "unit": "W/m\u00b2",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 72.38,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-003",
+    "category": "Power Generation",
+    "sub_type": "Solar PV 5MW",
+    "location": {
+      "lat": -32.787763,
+      "lon": -70.459103,
+      "elevation_m": "Level 3"
+    },
+    "install_date": "2021-02-11",
+    "expire_date": "2026-02-10",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 23557,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "power_kw",
+      "fuel_level",
+      "irradiance",
+      "load_pct"
+    ],
+    "extra": {
+      "total_mw": "9 (4 diesel + 5 solar)",
+      "renewable_pct": "55%"
+    },
+    "live_sensors": {
+      "power_kw": {
+        "value": 52.14,
+        "unit": "units",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 63.0,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "irradiance": {
+        "value": 921.59,
+        "unit": "W/m\u00b2",
+        "status": "nominal"
+      },
+      "load_pct": {
+        "value": 66.1,
+        "unit": "%",
+        "status": "nominal"
+      }
+    }
+  }
+];
+const CATEGORIES = [{"name": "Haul Trucks", "icon": "\ud83d\ude9b", "count": 12}, {"name": "Excavators", "icon": "\u26cf\ufe0f", "count": 6}, {"name": "Crushers", "icon": "\ud83e\udea8", "count": 4}, {"name": "Conveyors", "icon": "\ud83d\udd17", "count": 8}, {"name": "Ventilation Fans", "icon": "\ud83d\udca8", "count": 4}, {"name": "Gas Detectors (Underground)", "icon": "\u26a0\ufe0f", "count": 20}, {"name": "Water Pumps", "icon": "\ud83d\udd27", "count": 6}, {"name": "Dragline", "icon": "\ud83c\udfd7\ufe0f", "count": 2}, {"name": "Processing Plant", "icon": "\ud83c\udfed", "count": 1}, {"name": "Power Generation", "icon": "\u26a1", "count": 3}];
+const SENSOR_BASELINES = {"engine_temp": [92, 3, "\u00b0C"], "tire_pressure": [7.5, 0.2, "bar"], "payload": [380, 5, "t"], "fuel_level": [65, 3, "%"], "hydraulic_pressure": [320, 10, "bar"], "bucket_cycles": [45, 3, "/hr"], "motor_current": [180, 10, "A"], "throughput": [4500, 100, "tph"], "bearing_temp": [68, 3, "\u00b0C"], "belt_speed": [4.0, 0.1, "m/s"], "material_flow": [3500, 100, "tph"], "airflow": [250, 10, "m\u00b3/s"], "power": [850, 30, "kW"], "gas_conc": [2500, 500, "ppm CH4"], "flow": [500, 20, "m\u00b3/h"], "hoist_load": [180, 10, "t"], "drag_pressure": [220, 5, "bar"], "ph": [9.5, 0.2, "pH"], "reagent_flow": [120, 5, "L/min"], "recovery_pct": [92, 1, "%"], "irradiance": [950, 30, "W/m\u00b2"], "load_pct": [70, 5, "%"]};
+
+function renderAssets(filter) {
+  const grid = document.getElementById('asset-grid');
+  const filtered = filter === 'all' ? ASSETS : ASSETS.filter(a => a.category === filter);
+  grid.innerHTML = filtered.map(a => {
+    const cat = CATEGORIES.find(c => c.name === a.category);
+    const sensorsHtml = Object.entries(a.live_sensors).map(([name, reading]) => `
+      <div class="live-channel ${reading.status}">
+        <span style="font-size: 10px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name.replace(/_/g, ' ')}</span>
+        <span style="font-size: 13px; font-weight: 600;">${reading.value} ${reading.unit}</span>
+      </div>
+    `).join('');
+    return `<div class="asset-card ${a.status}">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div><span style="font-size: 24px; margin-right: 8px;">${cat ? cat.icon : ''}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;">${a.id}</span></div>
+        <span class="status-badge ${a.status}">${a.status}</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">${a.sub_type}</div>
+      <div class="sensor-readings">${sensorsHtml}</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+        <div><span style="color: var(--text-mute);">Lat:</span> ${a.location.lat}</div>
+        <div><span style="color: var(--text-mute);">Lon:</span> ${a.location.lon}</div>
+        <div><span style="color: var(--text-mute);">Installed:</span> ${a.install_date}</div>
+        <div><span style="color: var(--text-mute);">TS-FM:</span> ${a.ts_fm_confidence}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterAssets(category) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.closest('.filter-chip').classList.add('active');
+  renderAssets(category);
+}
+
+function updateSensors() {
+  let nominal = 0, warning = 0, critical = 0;
+  ASSETS.forEach(asset => {
+    asset.sensors.forEach(sensorType => {
+      const baseline = SENSOR_BASELINES[sensorType];
+      if (!baseline) return;
+      const [base, variance, unit] = baseline;
+      const phase = (Date.now() / 1000 + asset.id.charCodeAt(4) * 0.5) * 0.3;
+      const sine = Math.sin(phase) * variance * 0.3;
+      const noise = (Math.random() - 0.5) * variance * 0.4;
+      let value = base + sine + noise;
+      if (Math.random() < 0.003) value = base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      value = Math.round(value * 100) / 100;
+      const status = Math.abs(value - base) > variance * 2 ? 'warning' : 'nominal';
+      if (asset.live_sensors[sensorType]) {
+        asset.live_sensors[sensorType].value = value;
+        asset.live_sensors[sensorType].status = status;
+      }
+      if (status === 'nominal') nominal++; else if (status === 'warning') warning++; else critical++;
+    });
+  });
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-GB', {hour12: false});
+  document.getElementById('nominal-count').textContent = nominal;
+  document.getElementById('warning-count').textContent = warning;
+  document.getElementById('critical-count').textContent = critical;
+  // Re-render assets
+  const activeFilter = document.querySelector('.filter-chip.active')?.textContent?.split(' ')[0] || 'all';
+  renderAssets(activeFilter === 'All' ? 'all' : activeFilter);
+}
+
+renderAssets('all');
+updateSensors();
+setInterval(updateSensors, 3000);
+
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, {rootMargin: '-30% 0px -60% 0px'});
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
