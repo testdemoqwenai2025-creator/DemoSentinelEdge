@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Fault Injection Simulator</title>
+<meta name="description" content="Inject faults and watch the AISensorEdgeComp platform respond in real time — TS-FM anomaly detection, Graph RAG citation chains, alert routing. 6 fault scenarios across 5 sectors." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Fault Injection Simulator — Watch the Platform Respond" />
+<meta property="og:description" content="Inject bearing faults, gas leaks, pipeline pressure drops, reactor runaways — watch TS-FM + Graph RAG respond in real time." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/fault-injection.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .fi-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 40px 60px;
+  }
+
+  .fi-scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .fi-scenario-card {
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .fi-scenario-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--scenario-color, var(--cyan));
+  }
+  .fi-scenario-card:hover {
+    border-color: var(--scenario-color, var(--cyan));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--scenario-color, var(--cyan)) 20%, transparent);
+  }
+  .fi-scenario-card.active {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--scenario-color, var(--cyan)) 12%, var(--card)), var(--card));
+    border-color: var(--scenario-color, var(--cyan));
+    box-shadow: 0 0 24px color-mix(in srgb, var(--scenario-color, var(--cyan)) 30%, transparent);
+  }
+  .fi-scenario-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .fi-scenario-icon {
+    font-size: 24px;
+  }
+  .fi-scenario-name {
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .fi-scenario-sector {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 2px;
+  }
+  .fi-scenario-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Main injection panel */
+  .fi-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+  @media (max-width: 900px) {
+    .fi-panel { grid-template-columns: 1fr; }
+  }
+
+  .fi-left-panel, .fi-right-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  /* Sensor gauge */
+  .fi-gauge {
+    text-align: center;
+    padding: 24px;
+    background: var(--bg-2);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    transition: border-color 0.5s;
+  }
+  .fi-gauge.critical { border-color: var(--magenta); box-shadow: 0 0 24px color-mix(in srgb, var(--magenta) 30%, transparent); }
+  .fi-gauge.warning { border-color: var(--gold); }
+  .fi-gauge-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .fi-gauge-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    transition: color 0.5s;
+  }
+  .fi-gauge.critical .fi-gauge-value { color: var(--magenta); }
+  .fi-gauge.warning .fi-gauge-value { color: var(--gold); }
+  .fi-gauge-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .fi-gauge-range {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 12px;
+  }
+  .fi-gauge-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--green) 0%, var(--gold) 60%, var(--magenta) 100%);
+    margin: 6px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .fi-gauge-bar-indicator {
+    position: absolute;
+    top: -3px;
+    width: 4px;
+    height: 14px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: left 0.5s ease-out;
+  }
+
+  /* TS-FM confidence meter */
+  .fi-tsfm {
+    padding: 16px;
+    background: var(--bg-2);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .fi-tsfm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .fi-tsfm-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .fi-tsfm-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .fi-tsfm-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+  }
+  .fi-tsfm-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--text-mute), var(--cyan), var(--violet));
+    transition: width 0.5s;
+  }
+  .fi-tsfm-threshold {
+    position: absolute;
+    top: -2px;
+    left: 85%;
+    width: 2px;
+    height: 10px;
+    background: var(--magenta);
+  }
+  .fi-tsfm-threshold-label {
+    position: absolute;
+    top: 10px;
+    left: 85%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--magenta);
+    white-space: nowrap;
+  }
+
+  /* Inject button */
+  .fi-inject-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--magenta), #ef4444);
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--magenta) 30%, transparent);
+  }
+  .fi-inject-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--magenta) 50%, transparent);
+  }
+  .fi-inject-btn:disabled {
+    background: var(--text-mute);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .fi-reset-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+  }
+  .fi-reset-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* Pipeline stages (right panel) */
+  .fi-pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .fi-stage {
+    padding: 14px 16px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text-mute);
+    border-radius: 8px;
+    transition: all 0.3s;
+    opacity: 0.5;
+  }
+  .fi-stage.active {
+    opacity: 1;
+    border-left-color: var(--cyan);
+    background: color-mix(in srgb, var(--cyan) 5%, var(--bg-2));
+  }
+  .fi-stage.complete {
+    opacity: 1;
+    border-left-color: var(--green);
+  }
+  .fi-stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .fi-stage-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fi-stage-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-mute);
+  }
+  .fi-stage.active .fi-stage-status { background: color-mix(in srgb, var(--cyan) 20%, transparent); color: var(--cyan); }
+  .fi-stage.complete .fi-stage-status { background: color-mix(in srgb, var(--green) 20%, transparent); color: var(--green); }
+  .fi-stage-body {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Evidence chain */
+  .fi-evidence {
+    margin-top: 16px;
+  }
+  .fi-evidence-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fi-evidence-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .fi-evidence-item {
+    padding: 10px 12px;
+    background: var(--bg-2);
+    border-left: 2px solid var(--cyan);
+    border-radius: 0 6px 6px 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.4s;
+  }
+  .fi-evidence-item.shown {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .fi-evidence-node {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    margin-bottom: 2px;
+  }
+  .fi-evidence-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .fi-evidence-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-mute);
+    margin-top: 4px;
+  }
+
+  /* Final answer */
+  .fi-answer {
+    margin-top: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--bg-2)), color-mix(in srgb, var(--violet) 8%, var(--bg-2)));
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .fi-answer.shown { opacity: 1; }
+  .fi-answer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .fi-answer-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .fi-answer-confidence {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--green) 15%, transparent);
+    color: var(--green);
+  }
+  .fi-answer-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Alert routing */
+  .fi-routing {
+    margin-top: 16px;
+    padding: 14px;
+    background: color-mix(in srgb, var(--magenta) 8%, var(--bg-2));
+    border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .fi-routing.shown { opacity: 1; }
+  .fi-routing-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--magenta);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .fi-routing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .fi-routing-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fi-routing-item::before {
+    content: '→';
+    color: var(--magenta);
+  }
+
+  /* Scenario description panel */
+  .fi-scenario-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .fi-scenario-detail-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .fi-scenario-detail-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body id="fault-injection">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore Scenario</a>
+    <a href="fault-injection.html" class="active">Fault Injection</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 40vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="engineering.html">Engineering</a><span class="sep">/</span>
+      <span>Fault Injection Simulator</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>Interactive · 6 fault scenarios · Watch the platform respond</div>
+    <h1>Fault Injection <span class="accent">Simulator</span></h1>
+    <p class="lead">
+      Pick a fault scenario. Hit "Inject Fault." Watch the platform respond in real time —
+      the sensor reading jumps, TS-FM confidence crosses threshold, anomaly token emits,
+      Graph RAG traverses the asset graph, citation chain assembles, alert routes to the
+      right operator. This is the same pipeline that runs on every design-partner deployment.
+    </p>
+  </div>
+</section>
+
+<div class="fi-layout">
+
+  <!-- SCENARIO PICKER -->
+  <section>
+    <div class="section-label">Step 1 — Pick a fault scenario</div>
+    <h2 style="font-size: 24px; margin-bottom: 16px;">6 scenarios across <span class="accent">5 sectors</span></h2>
+    <div class="fi-scenarios-grid" id="scenarios-grid">
+      
+      <div class="fi-scenario-card active" data-scenario="bearing-fault" style="--scenario-color: #ec4899;" onclick="selectScenario('bearing-fault')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">🌀</span>
+          <div>
+            <div class="fi-scenario-name">Bearing Fault — Compressor A</div>
+            <div class="fi-scenario-sector">Oil & Gas / Manufacturing</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Inner race spall on bearing 1 of Export Gas Compressor A. Vibration RMS jumps from 4.5 mm/s to 11.8 mm/s (2.6× baseline)...</div>
+      </div>
+      
+      <div class="fi-scenario-card " data-scenario="gas-leak" style="--scenario-color: #ef4444;" onclick="selectScenario('gas-leak')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">💨</span>
+          <div>
+            <div class="fi-scenario-name">Methane Leak — Wellhead Bay 4</div>
+            <div class="fi-scenario-sector">Oil & Gas</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Methane leak at wellhead Bay 4. CH4 concentration jumps from 5 ppm to 285 ppm (57× baseline). Exceeds OSHA 1910.146 alar...</div>
+      </div>
+      
+      <div class="fi-scenario-card " data-scenario="pipeline-pressure-drop" style="--scenario-color: #06b6d4;" onclick="selectScenario('pipeline-pressure-drop')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">🔗</span>
+          <div>
+            <div class="fi-scenario-name">Pipeline Pressure Drop — Export Line</div>
+            <div class="fi-scenario-sector">Oil & Gas / Energy</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Pressure drop on subsea export pipeline at km 12. Pressure drops from 1850 psi to 1240 psi (33% drop) over 90 seconds. S...</div>
+      </div>
+      
+      <div class="fi-scenario-card " data-scenario="reactor-runaway" style="--scenario-color: #f97316;" onclick="selectScenario('reactor-runaway')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">⚗️</span>
+          <div>
+            <div class="fi-scenario-name">Reactor Temperature Runaway</div>
+            <div class="fi-scenario-sector">Chemical Plant</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Exothermic reactor A temperature runaway. Jacket temperature rises from 145°C to 188°C in 4 minutes (rate of change +10....</div>
+      </div>
+      
+      <div class="fi-scenario-card " data-scenario="transformer-pd" style="--scenario-color: #fbbf24;" onclick="selectScenario('transformer-pd')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">⚡</span>
+          <div>
+            <div class="fi-scenario-name">Transformer Partial Discharge</div>
+            <div class="fi-scenario-sector">Smart Grid</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Partial discharge activity on transformer T1 at Substation NY-42. PD magnitude jumps from 50 pC to 850 pC (17× baseline)...</div>
+      </div>
+      
+      <div class="fi-scenario-card " data-scenario="icu-ventilator" style="--scenario-color: #a855f7;" onclick="selectScenario('icu-ventilator')">
+        <div class="fi-scenario-header">
+          <span class="fi-scenario-icon">🏥</span>
+          <div>
+            <div class="fi-scenario-name">Ventilator Disconnect — ICU Patient</div>
+            <div class="fi-scenario-sector">Hospital ICU</div>
+          </div>
+        </div>
+        <div class="fi-scenario-desc">Ventilator disconnect for ICU Patient P-1234 (Room 412). Flow drops to 0 L/min — circuit disconnect or patient extubatio...</div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- SCENARIO DETAIL -->
+  <div class="fi-scenario-detail" id="scenario-detail">
+    <div class="fi-scenario-detail-title">Fault description</div>
+    <div class="fi-scenario-detail-text" id="scenario-detail-text">—</div>
+  </div>
+
+  <!-- INJECTION PANEL -->
+  <div class="fi-panel">
+    <!-- LEFT: sensor + TS-FM + inject button -->
+    <div class="fi-left-panel">
+      <div class="section-label" style="margin-bottom: 16px;">Step 2 — Observe sensor + inject fault</div>
+
+      <div class="fi-gauge" id="sensor-gauge">
+        <div class="fi-gauge-label" id="sensor-id-display">vib_a3_l3_compressor_a_bearing1</div>
+        <div class="fi-gauge-value" id="sensor-value-display">4.50</div>
+        <div class="fi-gauge-unit" id="sensor-unit-display">mm/s RMS</div>
+        <div class="fi-gauge-bar">
+          <div class="fi-gauge-bar-indicator" id="gauge-indicator" style="left: 30%;"></div>
+        </div>
+        <div class="fi-gauge-range">
+          <span id="range-low">3.5</span>
+          <span id="range-mid">6.0 (alert threshold)</span>
+          <span id="range-high">12.0</span>
+        </div>
+      </div>
+
+      <div class="fi-tsfm">
+        <div class="fi-tsfm-header">
+          <span class="fi-tsfm-label">TS-FM anomaly confidence</span>
+          <span class="fi-tsfm-value" id="tsfm-value">0.12</span>
+        </div>
+        <div class="fi-tsfm-bar">
+          <div class="fi-tsfm-bar-fill" id="tsfm-bar" style="width: 12%;"></div>
+          <div class="fi-tsfm-threshold"></div>
+          <div class="fi-tsfm-threshold-label">0.85</div>
+        </div>
+      </div>
+
+      <button class="fi-inject-btn" id="inject-btn" onclick="injectFault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Inject Fault
+      </button>
+      <button class="fi-reset-btn" onclick="resetSimulation()">↺ Reset simulation</button>
+    </div>
+
+    <!-- RIGHT: pipeline + evidence chain + answer -->
+    <div class="fi-right-panel">
+      <div class="section-label" style="margin-bottom: 16px;">Step 3 — Watch the platform respond</div>
+
+      <div class="fi-pipeline">
+        <div class="fi-stage" id="stage-1">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+              Edge gateway detects anomaly
+            </span>
+            <span class="fi-stage-status" id="stage-1-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-1-body">Hailo-8 edge gateway computes RMS features, detects threshold crossing</div>
+        </div>
+
+        <div class="fi-stage" id="stage-2">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              TS-FM inference (edge)
+            </span>
+            <span class="fi-stage-status" id="stage-2-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-2-body">350M-param TS-FM runs on 30s window, confidence score computed</div>
+        </div>
+
+        <div class="fi-stage" id="stage-3">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              Anomaly token → Kafka
+            </span>
+            <span class="fi-stage-status" id="stage-3-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-3-body">If confidence > 0.85: emit anomaly token to alerts.processed topic (99.7% bandwidth cut)</div>
+        </div>
+
+        <div class="fi-stage" id="stage-4">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+              Graph RAG traversal (cloud)
+            </span>
+            <span class="fi-stage-status" id="stage-4-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-4-body">Traverse asset graph: sensor → asset → maintenance log → ERP record → causal test</div>
+        </div>
+
+        <div class="fi-stage" id="stage-5">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              LLM composes alert + citations
+            </span>
+            <span class="fi-stage-status" id="stage-5-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-5-body">Natural-language alert composed with citation chain + recommended action</div>
+        </div>
+
+        <div class="fi-stage" id="stage-6">
+          <div class="fi-stage-header">
+            <span class="fi-stage-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.5-1.5A11.5 11.5 0 0 0 19 11a7 7 0 1 0-14 0 11.5 11.5 0 0 0 .5 4.5L4 17h5"/></svg>
+              Alert routed to operators
+            </span>
+            <span class="fi-stage-status" id="stage-6-status">idle</span>
+          </div>
+          <div class="fi-stage-body" id="stage-6-body">PagerDuty / Slack / SMS / email — routed per severity + on-call schedule</div>
+        </div>
+      </div>
+
+      <!-- EVIDENCE CHAIN -->
+      <div class="fi-evidence" id="evidence-section" style="display: none;">
+        <div class="fi-evidence-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7h18v-7a2 2 0 0 0-2-2h-4M9 11V5a3 3 0 0 1 6 0v6"/></svg>
+          Graph RAG evidence chain
+        </div>
+        <div class="fi-evidence-chain" id="evidence-chain">
+          <!-- Evidence items injected here -->
+        </div>
+      </div>
+
+      <!-- FINAL ANSWER -->
+      <div class="fi-answer" id="final-answer" style="display: none;">
+        <div class="fi-answer-header">
+          <span class="fi-answer-title">LLM-composed alert</span>
+          <span class="fi-answer-confidence" id="answer-confidence">conf: 0.91</span>
+        </div>
+        <div class="fi-answer-text" id="answer-text">—</div>
+      </div>
+
+      <!-- ALERT ROUTING -->
+      <div class="fi-routing" id="alert-routing" style="display: none;">
+        <div class="fi-routing-title">→ Alert routed to</div>
+        <div class="fi-routing-list" id="routing-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="doc-section" style="margin-top: 60px;">
+    <div class="section-label">What you're watching</div>
+    <h2>The platform pipeline, <span class="accent">end to end.</span></h2>
+    <p>Every fault you inject above runs through the same 6-stage pipeline that runs on every design-partner deployment. Here's what's happening at each stage:</p>
+    <div class="card-grid-2">
+      <div class="card">
+        <h3>Stage 1-2: Edge detection + TS-FM inference</h3>
+        <p>The Hailo-8 edge gateway (2.5W, 26 TOPS) computes features on the raw sensor stream every second. When a feature crosses a threshold, it triggers TS-FM inference on a 30-second window. The TS-FM (350M params, pretrained on 50M hours of industrial data) outputs an anomaly confidence in [0,1]. When confidence > 0.85, an anomaly token is emitted.</p>
+      </div>
+      <div class="card">
+        <h3>Stage 3-4: Kafka + Graph RAG</h3>
+        <p>The anomaly token is published to the <code>alerts.processed</code> Kafka topic (99.7% bandwidth reduction vs. streaming raw data). The Graph RAG layer consumes the token and traverses the asset knowledge graph — sensor → asset → maintenance log → ERP records — gathering evidence to ground the LLM's answer.</p>
+      </div>
+      <div class="card">
+        <h3>Stage 5: LLM composes alert with citations</h3>
+        <p>The LLM (fine-tuned on industrial alerting corpus) composes a natural-language alert using the evidence chain. Every claim in the alert links back to a specific sensor reading, maintenance record, or ERP entry — auditable provenance, not black-box AI.</p>
+      </div>
+      <div class="card">
+        <h3>Stage 6: Alert routing</h3>
+        <p>Alerts are routed by severity: <code>info</code> → dashboard; <code>warning</code> → Slack + email; <code>critical</code> → PagerDuty page + console; <code>emergency</code> → immediate page + PA system + ERP auto-actions (e.g., revoke hot work permits).</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, in production <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM anomaly detection you just simulated. Watch it on real streaming data.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="system-design.html">System Design</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore Scenario</a>
+    <a href="roi-calculator.html">ROI Calculator</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Fault Injection Simulator &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+// =====================================================================
+// Fault scenarios (embedded)
+// =====================================================================
+const SCENARIOS = [{"id": "bearing-fault", "name": "Bearing Fault \u2014 Compressor A", "sector": "Oil & Gas / Manufacturing", "icon": "\ud83c\udf00", "color": "#ec4899", "sensor_id": "vib_a3_l3_compressor_a_bearing1", "sensor_kind": "vibration", "unit": "mm/s RMS", "baseline": 4.5, "normal_range": [3.5, 6.0], "alert_range": [6.0, 12.0], "fault_value": 11.8, "fault_description": "Inner race spall on bearing 1 of Export Gas Compressor A. Vibration RMS jumps from 4.5 mm/s to 11.8 mm/s (2.6\u00d7 baseline).", "evidence_chain": [{"node": "vib_a3_l3_compressor_a_bearing1", "kind": "sensor", "evidence": "Vibration RMS elevated 2.6\u00d7 baseline at 04:32:17 UTC", "ts": "04:32:17"}, {"node": "compressor_a.asset_record", "kind": "asset", "evidence": "Compressor A installed 2018-06-15, last bearing inspection 2026-03-12 (180 days ago)", "ts": "04:32:17"}, {"node": "maintenance.log.2026-03-12", "kind": "maintenance_event", "evidence": "Last bearing inspection noted 'minor wear on inner race \u2014 monitor', no replacement scheduled", "ts": "04:32:18"}, {"node": "erp.work_order.wo-78432", "kind": "erp_record", "evidence": "Open work order for Compressor A bearing 1 replacement, parts ETA 2026-09-12", "ts": "04:32:19"}, {"node": "causal_test.bearing_fault\u2192throughput", "kind": "causal_test", "evidence": "do-calculus: P(throughput drop | intervene(bearing_health=poor)) = 0.87", "ts": "04:32:20"}], "graph_rag_answer": "Bearing 1 on Compressor A showed early-stage inner race spall at 04:32 UTC, causing the controller to derate the compressor for safety. Throughput is predicted to drop 18% within 2 hours. Maintenance was already scheduled for 2026-09-12 (work order WO-78432). Recommend expediting the work order and reducing compressor load to 70% until replacement.", "confidence": 0.91, "severity": "critical", "alert_routing": ["Plant Manager (Page 1)", "Reliability Engineer (Email)", "Maintenance Scheduler (Email)"]}, {"id": "gas-leak", "name": "Methane Leak \u2014 Wellhead Bay 4", "sector": "Oil & Gas", "icon": "\ud83d\udca8", "color": "#ef4444", "sensor_id": "gas_a3_l3_ch4_detector_bay4", "sensor_kind": "gas_concentration", "unit": "ppm", "baseline": 5.0, "normal_range": [0, 50], "alert_range": [50, 500], "fault_value": 285.0, "fault_description": "Methane leak at wellhead Bay 4. CH4 concentration jumps from 5 ppm to 285 ppm (57\u00d7 baseline). Exceeds OSHA 1910.146 alarm threshold (50 ppm) by 5.7\u00d7.", "evidence_chain": [{"node": "gas_a3_l3_ch4_detector_bay4", "kind": "sensor", "evidence": "CH4 concentration 285 ppm at 14:18:03 UTC (57\u00d7 baseline, 5.7\u00d7 alarm threshold)", "ts": "14:18:03"}, {"node": "wellhead_bay_4.asset_record", "kind": "asset", "evidence": "Wellhead Bay 4 installed 2018-06-15, last leak test 2026-08-15 (21 days ago)", "ts": "14:18:03"}, {"node": "wind_speed_sensor.bay_4", "kind": "sensor", "evidence": "Wind 8.5 m/s from 245\u00b0 \u2014 leak plume trending SE toward accommodation module", "ts": "14:18:04"}, {"node": "causal_test.leak\u2192source", "kind": "causal_test", "evidence": "Plume dispersion model + 3 nearest gas detectors: source localized to flange F-12 on Bay 4 wellhead (confidence 0.89)", "ts": "14:18:05"}, {"node": "erp.permit_to_work.current", "kind": "erp_record", "evidence": "Hot work permit PTW-0421 active on Bay 4 \u2014 REVOKE IMMEDIATELY", "ts": "14:18:06"}], "graph_rag_answer": "Methane leak detected at wellhead Bay 4 (285 ppm, 5.7\u00d7 alarm threshold). Source localized to flange F-12 via plume dispersion + multi-detector triangulation. Wind is trending the plume toward the accommodation module. Hot work permit PTW-0421 on Bay 4 has been auto-revoked. ESD-7 (wellhead bay 4 isolation valve) is closing \u2014 expect production drop on Well W-003.", "confidence": 0.89, "severity": "emergency", "alert_routing": ["HSE Officer (Page 1 \u2014 IMMEDIATE)", "Control Room Operator (Console)", "Platform Manager (Page 1)", "All Personnel (PA system)"]}, {"id": "pipeline-pressure-drop", "name": "Pipeline Pressure Drop \u2014 Export Line", "sector": "Oil & Gas / Energy", "icon": "\ud83d\udd17", "color": "#06b6d4", "sensor_id": "press_export_line_km12", "sensor_kind": "pressure", "unit": "psi", "baseline": 1850, "normal_range": [1700, 2000], "alert_range": [1200, 1700], "fault_value": 1240, "fault_description": "Pressure drop on subsea export pipeline at km 12. Pressure drops from 1850 psi to 1240 psi (33% drop) over 90 seconds. Suggests possible pipeline leak or blockage.", "evidence_chain": [{"node": "press_export_line_km12", "kind": "sensor", "evidence": "Pipeline pressure dropped 610 psi (33%) in 90 seconds at km 12", "ts": "22:47:11"}, {"node": "press_export_line_km11", "kind": "sensor", "evidence": "Upstream sensor at km 11: 1870 psi (normal) \u2014 pressure drop localized between km 11 and km 12", "ts": "22:47:12"}, {"node": "press_export_line_km13", "kind": "sensor", "evidence": "Downstream sensor at km 13: 1180 psi (also dropped) \u2014 leak is between km 12 and km 13", "ts": "22:47:12"}, {"node": "flow_export_line", "kind": "sensor", "evidence": "Flow rate increased 8% \u2014 mass balance suggests leak size ~450 bbl/day", "ts": "22:47:13"}, {"node": "causal_test.leak_size_estimation", "kind": "causal_test", "evidence": "Mass balance: leak \u2248 450 bbl/day, location 12.4 km from platform (confidence 0.93)", "ts": "22:47:14"}], "graph_rag_answer": "Pipeline leak detected on subsea export line between km 12 and km 13. Pressure dropped 33% in 90 seconds; mass balance estimates leak at ~450 bbl/day. Auto-ESD triggered on export line \u2014 production will halt within 5 minutes. Recommend dispatching ROV for visual inspection and activating oil spill response plan per OPA-90.", "confidence": 0.93, "severity": "critical", "alert_routing": ["Pipeline Control (Page 1)", "HSE Officer (Page 1)", "Coast Guard Notification (Auto-triggered)", "ERP \u2014 Oil Spill Response Plan"]}, {"id": "reactor-runaway", "name": "Reactor Temperature Runaway", "sector": "Chemical Plant", "icon": "\u2697\ufe0f", "color": "#f97316", "sensor_id": "temp_reactor_a_jacket", "sensor_kind": "temperature", "unit": "\u00b0C", "baseline": 145, "normal_range": [140, 155], "alert_range": [165, 250], "fault_value": 188, "fault_description": "Exothermic reactor A temperature runaway. Jacket temperature rises from 145\u00b0C to 188\u00b0C in 4 minutes (rate of change +10.75\u00b0C/min, threshold +2\u00b0C/min). Risk of thermal decomposition.", "evidence_chain": [{"node": "temp_reactor_a_jacket", "kind": "sensor", "evidence": "Reactor A jacket temperature 188\u00b0C at 06:14:22 UTC (+43\u00b0C in 4 min, rate +10.75\u00b0C/min)", "ts": "06:14:22"}, {"node": "temp_reactor_a_internal", "kind": "sensor", "evidence": "Internal temperature 191\u00b0C (5\u00b0C above SIS trip point 186\u00b0C) \u2014 SIS should have tripped", "ts": "06:14:23"}, {"node": "reactor_a.sis_status", "kind": "asset", "evidence": "SIS trip signal sent at 06:14:23 but reactor shutdown valve (SDV-12) reports OPEN \u2014 possible SIS failure", "ts": "06:14:24"}, {"node": "causal_test.cooling_failure\u2192runaway", "kind": "causal_test", "evidence": "Causal graph: cooling water flow dropped to 30% at 06:11:00 \u2014 cooling valve CV-8 stuck. Runaway caused by cooling failure (confidence 0.94)", "ts": "06:14:25"}, {"node": "maintenance.log.cooling_valve_cv8", "kind": "maintenance_event", "evidence": "CV-8 last serviced 2026-06-15 (82 days ago) \u2014 noted 'sticking observed, lubricate next cycle'", "ts": "06:14:26"}], "graph_rag_answer": "Reactor A thermal runaway \u2014 jacket temperature 188\u00b0C, rate +10.75\u00b0C/min. Root cause: cooling water valve CV-8 stuck at 30% flow (last serviced 2026-06-15, sticking noted but not addressed). SIS trip signal sent but shutdown valve SDV-12 reports OPEN \u2014 possible SIS failure. MANUAL INTERVENTION REQUIRED: activate emergency cooling, depressurize to flare, evacuate reactor bay.", "confidence": 0.94, "severity": "emergency", "alert_routing": ["Control Room (Console + Siren)", "Process Safety Engineer (Page 1 \u2014 IMMEDIATE)", "Plant Manager (Page 1)", "Emergency Response Team (Activate)"]}, {"id": "transformer-pd", "name": "Transformer Partial Discharge", "sector": "Smart Grid", "icon": "\u26a1", "color": "#fbbf24", "sensor_id": "pd_substation_ny42_transformer_t1", "sensor_kind": "partial_discharge", "unit": "pC", "baseline": 50, "normal_range": [0, 100], "alert_range": [200, 2000], "fault_value": 850, "fault_description": "Partial discharge activity on transformer T1 at Substation NY-42. PD magnitude jumps from 50 pC to 850 pC (17\u00d7 baseline). Indicates insulation degradation in HV winding.", "evidence_chain": [{"node": "pd_substation_ny42_transformer_t1", "kind": "sensor", "evidence": "PD activity 850 pC at 13:42:11 UTC (17\u00d7 baseline, 4.25\u00d7 alarm threshold)", "ts": "13:42:11"}, {"node": "dga_substation_ny42_transformer_t1", "kind": "sensor", "evidence": "Dissolved gas analysis: acetylene 85 ppm (up from 12 ppm 30 days ago) \u2014 confirms arcing in oil", "ts": "13:42:12"}, {"node": "transformer_t1.asset_record", "kind": "asset", "evidence": "Transformer T1 installed 2009-04-12 (17 years old), design life 30 years, last DGA test 2026-08-01", "ts": "13:42:12"}, {"node": "causal_test.pd_location", "kind": "causal_test", "evidence": "PD pattern analysis: discharge localized to HV winding tap changer (confidence 0.91) \u2014 replaceable component", "ts": "13:42:13"}, {"node": "erp.load_transfer_options", "kind": "erp_record", "evidence": "Adjacent substation NY-43 has 40% spare capacity \u2014 load transfer feasible for planned outage", "ts": "13:42:14"}], "graph_rag_answer": "Partial discharge on transformer T1 at NY-42 \u2014 850 pC (17\u00d7 baseline), confirmed by DGA (acetylene 85 ppm, up 7\u00d7 in 30 days). Discharge localized to HV winding tap changer (replaceable). Transformer is 17 years old (design life 30). Adjacent substation NY-43 has 40% spare capacity \u2014 load transfer feasible. Recommend planned outage within 7 days for tap changer replacement; condition-based replacement, not failure-based.", "confidence": 0.91, "severity": "critical", "alert_routing": ["Substation Operations (Page 2)", "Transformer Engineering (Email)", "Asset Management (Email)", "Grid Operations Center (Console)"]}, {"id": "icu-ventilator", "name": "Ventilator Disconnect \u2014 ICU Patient", "sector": "Hospital ICU", "icon": "\ud83c\udfe5", "color": "#a855f7", "sensor_id": "flow_ventilator_patient_p1234", "sensor_kind": "flow", "unit": "L/min", "baseline": 8.0, "normal_range": [6, 12], "alert_range": [0, 2], "fault_value": 0.0, "fault_description": "Ventilator disconnect for ICU Patient P-1234 (Room 412). Flow drops to 0 L/min \u2014 circuit disconnect or patient extubation. SpO2 will drop within 60 seconds if not corrected.", "evidence_chain": [{"node": "flow_ventilator_patient_p1234", "kind": "sensor", "evidence": "Ventilator flow 0 L/min at 03:17:42 UTC \u2014 circuit disconnect or extubation", "ts": "03:17:42"}, {"node": "spo2_patient_p1234", "kind": "sensor", "evidence": "SpO2 97% (still normal but will drop within 60s \u2014 countdown started)", "ts": "03:17:43"}, {"node": "patient_p1234.record", "kind": "asset", "evidence": "Patient P-1234: 67yo, COVID-19 ARDS, intubated 2026-09-02, ventilator mode PC-AC, FiO2 60%", "ts": "03:17:43"}, {"node": "nurse_station_4w", "kind": "asset", "evidence": "Nurse station 4 West: 2 nurses on duty (1:3 ratio \u2014 at minimum)", "ts": "03:17:43"}, {"node": "causal_test.disconnect_cause", "kind": "causal_test", "evidence": "Flow pattern: instant zero, no taper \u2014 circuit disconnect (not patient airway issue). Confidence 0.96.", "ts": "03:17:44"}], "graph_rag_answer": "VENTILATOR DISCONNECT for Patient P-1234 (Room 412). Flow zeroed instantaneously \u2014 circuit disconnect, not airway issue. SpO2 still 97% but countdown to desaturation started (60s). Nurse station 4 West paged. ACTION REQUIRED NOW: reconnect ventilator circuit, verify tidal volume, call RT if circuit compromised. Patient is 67yo with COVID-19 ARDS \u2014 desaturation will be rapid.", "confidence": 0.96, "severity": "emergency", "alert_routing": ["Nurse Station 4 West (Bed 412 \u2014 audible alarm)", "Respiratory Therapist On Call (Page)", "Attending Physician (Page)"]}];
+
+let currentScenario = SCENARIOS[0];
+let isRunning = false;
+
+function selectScenario(id) {
+  if (isRunning) return;
+  currentScenario = SCENARIOS.find(s => s.id === id);
+  document.querySelectorAll('.fi-scenario-card').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.fi-scenario-card[data-scenario="${id}"]`).classList.add('active');
+
+  // Update scenario detail
+  document.getElementById('scenario-detail-text').textContent = currentScenario.fault_description;
+
+  // Update sensor display
+  document.getElementById('sensor-id-display').textContent = currentScenario.sensor_id;
+  document.getElementById('sensor-unit-display').textContent = currentScenario.unit;
+  document.getElementById('sensor-value-display').textContent = currentScenario.baseline.toFixed(2);
+  document.getElementById('range-low').textContent = currentScenario.normal_range[0];
+  document.getElementById('range-mid').textContent = currentScenario.alert_range[0] + ' (alert threshold)';
+  document.getElementById('range-high').textContent = currentScenario.alert_range[1];
+
+  // Update gauge indicator position
+  updateGaugeIndicator(currentScenario.baseline);
+
+  // Update gauge styling
+  const gauge = document.getElementById('sensor-gauge');
+  gauge.classList.remove('critical', 'warning');
+
+  // Reset TS-FM
+  document.getElementById('tsfm-value').textContent = '0.12';
+  document.getElementById('tsfm-bar').style.width = '12%';
+
+  // Reset pipeline
+  resetPipeline();
+}
+
+function updateGaugeIndicator(value) {
+  const scenario = currentScenario;
+  const range = [scenario.normal_range[0], scenario.alert_range[1]];
+  const pct = Math.max(0, Math.min(100, ((value - range[0]) / (range[1] - range[0])) * 100));
+  document.getElementById('gauge-indicator').style.left = pct + '%';
+}
+
+function resetPipeline() {
+  for (let i = 1; i <= 6; i++) {
+    const stage = document.getElementById(`stage-${i}`);
+    stage.classList.remove('active', 'complete');
+    document.getElementById(`stage-${i}-status`).textContent = 'idle';
+  }
+  document.getElementById('evidence-section').style.display = 'none';
+  document.getElementById('evidence-chain').innerHTML = '';
+  document.getElementById('final-answer').style.display = 'none';
+  document.getElementById('final-answer').classList.remove('shown');
+  document.getElementById('alert-routing').style.display = 'none';
+  document.getElementById('alert-routing').classList.remove('shown');
+  document.getElementById('inject-btn').disabled = false;
+}
+
+function resetSimulation() {
+  if (isRunning) return;
+  selectScenario(currentScenario.id);
+}
+
+async function injectFault() {
+  if (isRunning) return;
+  isRunning = true;
+  document.getElementById('inject-btn').disabled = true;
+
+  const scenario = currentScenario;
+
+  // Animate sensor value from baseline to fault value over 2 seconds
+  await animateSensorValue(scenario.baseline, scenario.fault_value, 2000);
+
+  // Update gauge styling
+  const gauge = document.getElementById('sensor-gauge');
+  gauge.classList.add('critical');
+
+  // Stage 1: edge detection
+  await activateStage(1, 800);
+
+  // Animate TS-FM confidence from 0.12 to scenario.confidence
+  await animateTSFM(0.12, scenario.confidence, 1500);
+
+  // Stage 2: TS-FM complete
+  await activateStage(2, 600);
+
+  // Stage 3: anomaly token emitted
+  await activateStage(3, 800);
+
+  // Stage 4: Graph RAG traversal — show evidence chain
+  await activateStage(4, 400);
+  await showEvidenceChain(scenario.evidence_chain);
+  await activateStageComplete(4, 400);
+
+  // Stage 5: LLM composes answer
+  await activateStage(5, 600);
+  await showAnswer(scenario);
+  await activateStageComplete(5, 400);
+
+  // Stage 6: alert routing
+  await activateStage(6, 400);
+  await showRouting(scenario.alert_routing);
+  await activateStageComplete(6, 400);
+
+  isRunning = false;
+  document.getElementById('inject-btn').disabled = false;
+  document.getElementById('inject-btn').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Re-inject fault';
+}
+
+function animateSensorValue(from, to, duration) {
+  return new Promise(resolve => {
+    const start = Date.now();
+    const valueEl = document.getElementById('sensor-value-display');
+    const indicator = document.getElementById('gauge-indicator');
+    const range = [currentScenario.normal_range[0], currentScenario.alert_range[1]];
+
+    function tick() {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(1, elapsed / duration);
+      const value = from + (to - from) * progress;
+      valueEl.textContent = value.toFixed(2);
+      const pct = Math.max(0, Math.min(100, ((value - range[0]) / (range[1] - range[0])) * 100));
+      indicator.style.left = pct + '%';
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function animateTSFM(from, to, duration) {
+  return new Promise(resolve => {
+    const start = Date.now();
+    const valueEl = document.getElementById('tsfm-value');
+    const barEl = document.getElementById('tsfm-bar');
+
+    function tick() {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(1, elapsed / duration);
+      // Ease-in-out
+      const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      const value = from + (to - from) * eased;
+      valueEl.textContent = value.toFixed(2);
+      barEl.style.width = (value * 100) + '%';
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function activateStage(num, duration) {
+  return new Promise(resolve => {
+    const stage = document.getElementById(`stage-${num}`);
+    stage.classList.add('active');
+    document.getElementById(`stage-${num}-status`).textContent = 'processing...';
+    setTimeout(resolve, duration);
+  });
+}
+
+function activateStageComplete(num, duration) {
+  return new Promise(resolve => {
+    const stage = document.getElementById(`stage-${num}`);
+    stage.classList.remove('active');
+    stage.classList.add('complete');
+    document.getElementById(`stage-${num}-status`).textContent = '✓ complete';
+    setTimeout(resolve, duration);
+  });
+}
+
+function showEvidenceChain(chain) {
+  return new Promise(async resolve => {
+    document.getElementById('evidence-section').style.display = 'block';
+    const container = document.getElementById('evidence-chain');
+    container.innerHTML = '';
+
+    for (let i = 0; i < chain.length; i++) {
+      const item = chain[i];
+      const div = document.createElement('div');
+      div.className = 'fi-evidence-item';
+      div.innerHTML = `
+        <div class="fi-evidence-node">${item.node} · ${item.kind}</div>
+        <div class="fi-evidence-text">${item.evidence}</div>
+        <div class="fi-evidence-time">timestamp: ${item.ts} UTC</div>
+      `;
+      container.appendChild(div);
+      await new Promise(r => setTimeout(r, 50));
+      div.classList.add('shown');
+      await new Promise(r => setTimeout(r, 600));
+    }
+    resolve();
+  });
+}
+
+function showAnswer(scenario) {
+  return new Promise(resolve => {
+    const answer = document.getElementById('final-answer');
+    answer.style.display = 'block';
+    document.getElementById('answer-text').textContent = scenario.graph_rag_answer;
+    document.getElementById('answer-confidence').textContent = `conf: ${scenario.confidence.toFixed(2)} · severity: ${scenario.severity}`;
+    setTimeout(() => {
+      answer.classList.add('shown');
+      resolve();
+    }, 100);
+  });
+}
+
+function showRouting(routing) {
+  return new Promise(resolve => {
+    const routingEl = document.getElementById('alert-routing');
+    routingEl.style.display = 'block';
+    const list = document.getElementById('routing-list');
+    list.innerHTML = '';
+    routing.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'fi-routing-item';
+      div.textContent = r;
+      list.appendChild(div);
+    });
+    setTimeout(() => {
+      routingEl.classList.add('shown');
+      resolve();
+    }, 100);
+  });
+}
+
+// Init
+selectScenario(SCENARIOS[0].id);
+</script>
+
+</body>
+</html>
