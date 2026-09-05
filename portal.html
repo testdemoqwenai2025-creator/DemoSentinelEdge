@@ -277,20 +277,85 @@ function selectPortalVertical(el, v) {
 }
 
 function provisionSandbox() {
+  const name = document.getElementById('name').value || 'Jane Engineer';
   const email = document.getElementById('email').value || 'jane@company.com';
+  const org = document.getElementById('org').value || 'DeepWater Energy';
+  const role = document.getElementById('role').value || 'VP Operations';
   const sensorCount = document.getElementById('portal-sensor-count').value;
-  const tenantId = 'sbx-' + Math.random().toString(36).substr(2, 8);
-  const expires = new Date(Date.now() + 60 * 24 * 3600 * 1000).toLocaleDateString('en-GB');
 
-  document.getElementById('provisioned-email').textContent = email;
-  document.getElementById('provisioned-tenant').textContent = tenantId;
-  document.getElementById('provisioned-api').textContent = 'https://staging-api.aisensoredgecomp.ai/' + tenantId;
-  document.getElementById('provisioned-dashboard').textContent = 'https://sandbox.aisensoredgecomp.ai/' + tenantId;
-  document.getElementById('provisioned-sensors').textContent = parseInt(sensorCount).toLocaleString() + ' synthetic sensors (' + selectedVertical + ' config)';
-  document.getElementById('provisioned-expires').textContent = expires;
-  document.getElementById('provisioned-dashboard-link').href = 'https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors';
+  // Collect checked sensor types
+  const sensorTypes = [];
+  document.querySelectorAll('#form-step-2 input[type=checkbox]:checked').forEach(cb => {
+    const label = cb.parentElement.textContent.trim();
+    sensorTypes.push(label.toLowerCase().replace(/[^a-z-]/g, '-'));
+  });
 
-  goToStep(4);
+  // Call the real backend API
+  const API_BASE = 'https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai';
+
+  // Show provisioning state
+  document.getElementById('form-step-3').querySelector('.btn-primary').textContent = 'Provisioning...';
+  document.getElementById('form-step-3').querySelector('.btn-primary').disabled = true;
+
+  fetch(API_BASE + '/api/provision?XTransformPort=3000', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      email,
+      organization: org,
+      role,
+      sensorCount: parseInt(sensorCount),
+      sensorTypes: sensorTypes.length > 0 ? sensorTypes : ['vibration', 'temperature', 'pressure'],
+      vertical: selectedVertical,
+    }),
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) throw new Error(data.error);
+
+    // Show provisioned step with real data from backend
+    document.getElementById('provisioned-email').textContent = email;
+    document.getElementById('provisioned-tenant').textContent = data.tenantId;
+    document.getElementById('provisioned-api').textContent = data.apiEndpoint;
+    document.getElementById('provisioned-dashboard').textContent = data.dashboardUrl;
+    document.getElementById('provisioned-sensors').textContent = data.sensorCount.toLocaleString() + ' synthetic sensors (' + data.vertical + ' config)';
+    document.getElementById('provisioned-expires').textContent = new Date(data.trialExpiresAt).toLocaleDateString('en-GB') + ' (' + data.status + ')';
+    document.getElementById('provisioned-dashboard-link').href = API_BASE + '/#sensors';
+
+    // Add API key display
+    const provisionedDiv = document.getElementById('form-step-4');
+    const apiKeyLine = document.createElement('div');
+    apiKeyLine.style.cssText = 'margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px; font-family: JetBrains Mono, monospace; font-size: 12px; color: var(--cyan);';
+    apiKeyLine.innerHTML = '<strong style="color: var(--text-mute);">API Key:</strong> ' + data.apiKey;
+    provisionedDiv.querySelector('.provisioned-info') || provisionedDiv.insertBefore(apiKeyLine, provisionedDiv.children[3]);
+
+    goToStep(4);
+
+    // Reset button
+    document.getElementById('form-step-3').querySelector('.btn-primary').textContent = 'Provision sandbox →';
+    document.getElementById('form-step-3').querySelector('.btn-primary').disabled = false;
+  })
+  .catch(err => {
+    // Fallback to synthetic provisioning if backend is unavailable
+    console.log('Backend unavailable, using synthetic:', err.message);
+    const tenantId = 'sbx_' + Math.random().toString(36).substr(2, 10);
+    const expires = new Date(Date.now() + 60 * 24 * 3600 * 1000).toLocaleDateString('en-GB');
+
+    document.getElementById('provisioned-email').textContent = email;
+    document.getElementById('provisioned-tenant').textContent = tenantId;
+    document.getElementById('provisioned-api').textContent = 'https://staging-api.aisensoredgecomp.ai/' + tenantId;
+    document.getElementById('provisioned-dashboard').textContent = 'https://sandbox.aisensoredgecomp.ai/' + tenantId;
+    document.getElementById('provisioned-sensors').textContent = parseInt(sensorCount).toLocaleString() + ' synthetic sensors (' + selectedVertical + ' config)';
+    document.getElementById('provisioned-expires').textContent = expires + ' (synthetic)';
+    document.getElementById('provisioned-dashboard-link').href = API_BASE + '/#sensors';
+
+    goToStep(4);
+
+    // Reset button
+    document.getElementById('form-step-3').querySelector('.btn-primary').textContent = 'Provision sandbox →';
+    document.getElementById('form-step-3').querySelector('.btn-primary').disabled = false;
+  });
 }
 </script>
 
