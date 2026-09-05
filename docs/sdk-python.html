@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python SDK — AISensorEdgeComp Docs</title>
+<meta name="description" content="Install, authenticate, query sensors, submit inference requests using the Python SDK." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body id="docs-sdk-python">
+<nav>
+  <a href="../index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="../index.html">← Back</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<div style="min-height: 100vh; padding-top: 100px;">
+  <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
+    <div class="breadcrumb"><a href="index.html">Docs</a><span class="sep">/</span><span>Python SDK</span></div>
+    <h1 style="font-size: 36px; margin-bottom: 24px;">Python SDK</h1>
+    <section class="doc-section" style="border: none; padding: 0;">
+      
+     <h2>Installation</h2>
+     <div class="code-block"><pre><span class="key">pip</span> install aisensoredgecomp</pre></div>
+     <h2>Quick start</h2>
+     <div class="code-block"><pre><span class="key">from</span> aisensoredgecomp <span class="key">import</span> Client
+
+client = Client(
+    api_url=<span class="str">"https://api.aisensoredgecomp.ai"</span>,
+    email=<span class="str">"you@company.com"</span>,
+    password=<span class="str">"your-password"</span>,
+)
+
+<span class="comment"># List sensors</span>
+sensors = client.sensors.list(sensor_kind=<span class="str">"vibration"</span>)
+<span class="key">print</span>(<span class="val">f"{len(sensors)} vibration sensors"</span>)
+
+<span class="comment"># Get readings for a sensor</span>
+readings = client.sensors.get_readings(
+    sensor_id=<span class="str">"vib_a3_l3_compressor_a_bearing1"</span>,
+    limit=100,
+)
+
+<span class="comment"># Run TS-FM anomaly detection</span>
+result = client.ml.infer_anomaly(
+    sensor_id=<span class="str">"vib_a3_l3_compressor_a_bearing1"</span>,
+    window=[4.0, 4.1, 4.2, 8.5, 4.0, 4.1],
+    sensor_kind=<span class="str">"vibration"</span>,
+)
+<span class="key">print</span>(<span class="val">f"Anomaly score: {result.anomaly_score}"</span>)
+<span class="key">print</span>(<span class="val">f"Confidence: {result.confidence}"</span>)
+
+<span class="comment"># Ask a natural-language question</span>
+answer = client.search.query(<span class="str">"What is the status of compressor A?"</span>)
+<span class="key">print</span>(answer.answer)
+<span class="key">print</span>(answer.citations)</pre></div>
+     <h2>Async support</h2>
+     <div class="code-block"><pre><span class="key">import</span> asyncio
+<span class="key">from</span> aisensoredgecomp <span class="key">import</span> AsyncClient
+
+<span class="key">async def</span> main():
+    client = AsyncClient(api_url=<span class="str">"https://api.aisensoredgecomp.ai"</span>, ...)
+    sensors = <span class="key">await</span> client.sensors.list()
+    <span class="key">print</span>(len(sensors))
+
+asyncio.run(main())</pre></div>
+     
+    </section>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to docs</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="../blog.html">Blog</a>
+    <a href="../contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="../assets/app.js"></script>
+</body>
+</html>

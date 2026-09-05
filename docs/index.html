@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Documentation</title>
+<meta name="description" content="Documentation portal for AISensorEdgeComp. API reference, SDK guides, deployment, onboarding." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body id="docs-index">
+<nav>
+  <a href="../index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="../index.html">← Back</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<div style="min-height: 100vh; padding-top: 100px;">
+  <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
+    <div class="breadcrumb"><a href="../index.html">Home</a><span class="sep">/</span><span>Documentation</span></div>
+    <div class="page-hero-badge" style="margin-bottom: 24px;"><span class="dot"></span>docs.aisensoredgecomp.ai</div>
+    <h1 style="font-size: 42px; margin-bottom: 16px;">Documentation</h1>
+    <p style="font-size: 18px; color: var(--text-dim); margin-bottom: 40px;">Everything engineers need to evaluate, integrate, and deploy AISensorEdgeComp. API reference, SDK guides, integration tutorials, design partner onboarding.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+
+      <a href="quickstart.html" style="text-decoration: none; color: inherit;">
+        <div class="card" style="border-color: var(--border-strong); background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card));">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">🚀 Quickstart</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Get the platform running locally in 5 minutes with docker compose.</p>
+        </div>
+      </a>
+
+      <a href="api.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">📖 API Reference</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Full REST API documentation. 15 endpoints, OpenAPI 3.1 spec, Swagger UI.</p>
+        </div>
+      </a>
+
+      <a href="sdk-python.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">🐍 Python SDK</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Install, authenticate, query sensors, submit inference requests.</p>
+        </div>
+      </a>
+
+      <a href="sdk-javascript.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">🟨 JavaScript SDK</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Browser and Node.js. Same API, different runtime.</p>
+        </div>
+      </a>
+
+      <a href="schemas.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">📐 Data Schemas</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Avro + Protobuf schemas for telemetry, alerts, assets, maintenance.</p>
+        </div>
+      </a>
+
+      <a href="deployment.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">⚙️ Deployment</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Local dev, staging, production. Docker Compose, Kubernetes, Helm.</p>
+        </div>
+      </a>
+
+      <a href="onboarding.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">🤝 Design Partner Onboarding</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">60-day pilot walkthrough. What to expect, timelines, support.</p>
+        </div>
+      </a>
+
+      <a href="troubleshooting.html" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">🔧 Troubleshooting</h3>
+          <p style="font-size: 14px; color: var(--text-dim);">Common issues, FAQs, debugging tips, how to reach support.</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="../blog.html">Blog</a>
+    <a href="../contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="../assets/app.js"></script>
+</body>
+</html>

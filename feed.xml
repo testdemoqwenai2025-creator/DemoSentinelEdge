@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AISensorEdgeComp — Engineering Blog</title>
+    <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog.html</link>
+    <description>Technical deep dives on TS-FM, federated learning, edge-cloud workload placement, and causal inference. Written by the founding team.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 Sep 2026 08:10:32 GMT</lastBuildDate>
+    <atom:link href="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/feed.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>The TS-FM Architecture: How a 350M-Parameter Transformer Beats Chronos-B1 by 0.07 AUC-ROC</title>
+      <link>https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/ts-fm-architecture.html</link>
+      <guid isPermaLink="true">https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/blog/ts-fm-architecture.html</guid>
+      <description>A deep dive into the time-series foundation model that powers AISensorEdgeComp's zero-shot anomaly detection. Architecture, pretraining corpus, three deltas vs Chronos-B1, and benchmarks.</description>
+      <author>Dr. Jian Liu (platform@aisensoredgecomp.ai)</author>
+      <pubDate>Thu, 05 Sep 2026 09:00:00 GMT</pubDate>
+      <category>time-series foundation model</category>
+      <category>anomaly detection</category>
+      <category>industrial IoT</category>
+      <category>transformer</category>
+    </item>
+
+  </channel>
+</rss>

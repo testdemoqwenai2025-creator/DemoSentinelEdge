@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Carbon Footprint Calculator</title>
+<meta name="description" content="Calculate kg CO2 per inference at edge vs cloud. Our liquid placement scheduler already factors grid carbon intensity. AWS IoT doesn't. ESG differentiator." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Carbon Footprint Calculator" />
+<meta property="og:description" content="Calculate kg CO2 per inference at edge vs cloud. Our liquid placement scheduler already factors grid carbon intensity. AWS IoT doesn't. ESG differentiator." />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="carbon-calculator">
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Carbon Calculator</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>ESG differentiator · kg CO2 per inference</div>
+    <h1>Carbon Footprint <span class="accent">Calculator</span></h1>
+    <p class="lead">How much carbon does your ML inference emit — at the edge vs. in the cloud? Our liquid placement scheduler already factors grid carbon intensity into routing decisions. AWS IoT doesn't. See the difference.</p>
+  </div>
+</section>
+
+<div style="max-width: 1000px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 32px 0;">
+    <!-- INPUTS -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Your workload</div>
+
+      <div style="margin-bottom: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; justify-content: space-between;">
+          <span>Daily inferences</span>
+          <span style="color: var(--cyan);"><span id="inf-display">100,000</span></span>
+        </div>
+        <input type="range" class="roi-slider" id="inferences" min="1000" max="10000000" step="1000" value="100000" oninput="updateCarbon()" style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-2); outline: none; cursor: pointer;" />
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; justify-content: space-between;">
+          <span>Cloud region</span>
+          <span style="color: var(--cyan);" id="region-display">US-East (AWS)</span>
+        </div>
+        <select id="region" onchange="updateCarbon()" style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+          <option value="us-east">US-East (AWS) — 380 gCO2/kWh</option>
+          <option value="eu-west">EU-West (Ireland) — 320 gCO2/kWh</option>
+          <option value="eu-north">EU-North (Sweden) — 40 gCO2/kWh</option>
+          <option value="apac-sg">APAC (Singapore) — 490 gCO2/kWh</option>
+          <option value="apac-jp">APAC (Tokyo) — 520 gCO2/kWh</option>
+          <option value="on-prem">On-prem (US mixed grid) — 450 gCO2/kWh</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; justify-content: space-between;">
+          <span>Edge silicon</span>
+          <span style="color: var(--cyan);" id="silicon-display">Hailo-8 (2.5W)</span>
+        </div>
+        <select id="silicon" onchange="updateCarbon()" style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+          <option value="hailo">Hailo-8 (2.5W, 26 TOPS)</option>
+          <option value="coral">Coral Edge TPU (2W, 4 TOPS)</option>
+          <option value="jetson-nano">Jetson Orin Nano (15W, 40 TOPS)</option>
+          <option value="jetson-nx">Jetson Orin NX (25W, 100 TOPS)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; justify-content: space-between;">
+          <span>Cloud GPU</span>
+          <span style="color: var(--cyan);">NVIDIA A10G (150W avg)</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace;">Cloud inference uses NVIDIA A10G (150W avg under load). PUE factor: 1.12 (AWS us-east average).</p>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div style="background: linear-gradient(180deg, var(--card) 0%, var(--bg-2) 100%); border: 1px solid var(--border); border-radius: 14px; padding: 28px; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #22c55e, var(--cyan), #fbbf24);"></div>
+
+      <div style="text-align: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 56px; font-weight: 700; background: linear-gradient(135deg, #22c55e, var(--cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;" id="reduction-display">-78%</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px;">CO2 reduction (edge + liquid vs cloud-only)</div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <span style="font-size: 14px; color: var(--text-dim);">Cloud-only (annual)</span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; color: var(--magenta);" id="cloud-co2">0 kg</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <span style="font-size: 14px; color: var(--text-dim);">Edge + liquid placement</span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; color: #22c55e;" id="edge-co2">0 kg</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <span style="font-size: 14px; color: var(--text-dim);">Annual savings</span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; color: #22c55e;" id="savings-co2">0 kg</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+        <span style="font-size: 14px; color: var(--text-dim);">Equivalent to</span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 500; color: var(--text);" id="equivalent">—</span>
+      </div>
+
+      <div style="margin-top: 20px; padding: 12px; background: color-mix(in srgb, #22c55e 5%, var(--bg-2)); border-left: 2px solid #22c55e; border-radius: 0 6px 6px 0; font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+        Our liquid placement scheduler routes inference to the edge when grid carbon intensity is high, and to cloud when renewable % is high. AWS IoT doesn't do this — hardcoded placement has no carbon awareness.
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="doc-section">
+    <div class="section-label">How the carbon calculator works</div>
+    <h2>The math, <span class="accent">transparently.</span></h2>
+    <div class="card-grid-2">
+      <div class="card">
+        <h3>Cloud inference energy</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">power_gpu_w × time_per_inference_s × inferences_per_year × PUE / 3.6M</p>
+        <p>GPU power (W) × time per inference (s) × annual inferences × PUE factor (1.12) → kWh. Multiplied by grid carbon intensity (gCO2/kWh) → kg CO2/year.</p>
+      </div>
+      <div class="card">
+        <h3>Edge inference energy</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">power_edge_w × time_per_inference_s × inferences_per_year / 3.6M</p>
+        <p>Edge silicon power (2.5W for Hailo-8 vs 150W for A10G) × time per inference → kWh. No PUE (edge devices don't have datacenter overhead). 60× lower power.</p>
+      </div>
+      <div class="card">
+        <h3>Liquid placement factor</h3>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px;">edge_share × edge_carbon + cloud_share × cloud_carbon</p>
+        <p>Our scheduler routes 70% to edge, 30% to cloud (average). When grid carbon is high (peak hours), more goes to edge. When renewable % is high (midday solar), more goes to cloud. Carbon-aware routing.</p>
+      </div>
+      <div class="card">
+        <h3>Equivalents</h3>
+        <p>1 kg CO2 = ~4 km driven by an average car. Annual savings expressed as car-km and trees needed to sequester the equivalent carbon (1 tree absorbs ~22 kg CO2/year).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY THIS MATTERS -->
+  <section class="doc-section">
+    <div class="section-label">Why this matters for ESG investors</div>
+    <h2>Carbon-aware inference <span class="accent">is a differentiator.</span></h2>
+    <p>ESG-conscious investors (CalPERS, Generation IM, Breakthrough Energy) ask about carbon footprint. Most IoT platforms have no answer. We do:</p>
+    <ul>
+      <li><strong>Liquid placement already factors carbon intensity</strong> — the scheduler has a 5% weight on grid carbon when routing inference jobs</li>
+      <li><strong>Edge inference is 60× lower power</strong> — Hailo-8 at 2.5W vs A10G at 150W</li>
+      <li><strong>No datacenter PUE</strong> — edge devices don't have cooling/lighting overhead</li>
+      <li><strong>Renewable-aware routing</strong> — when grid renewable % is high, more inference goes to cloud; when carbon intensity spikes, more goes to edge</li>
+    </ul>
+    <p>AWS IoT and Azure IoT do not offer carbon-aware inference routing. This is a structural ESG advantage that compounds as carbon regulations tighten.</p>
+  </section>
+
+</div>
+
+<script>
+const REGIONS = {
+  'us-east': { name: 'US-East (AWS)', carbon: 380 },
+  'eu-west': { name: 'EU-West (Ireland)', carbon: 320 },
+  'eu-north': { name: 'EU-North (Sweden)', carbon: 40 },
+  'apac-sg': { name: 'APAC (Singapore)', carbon: 490 },
+  'apac-jp': { name: 'APAC (Tokyo)', carbon: 520 },
+  'on-prem': { name: 'On-prem (US mixed)', carbon: 450 },
+};
+
+const SILICONS = {
+  'hailo': { name: 'Hailo-8', power_w: 2.5 },
+  'coral': { name: 'Coral Edge TPU', power_w: 2.0 },
+  'jetson-nano': { name: 'Jetson Orin Nano', power_w: 15 },
+  'jetson-nx': { name: 'Jetson Orin NX', power_w: 25 },
+};
+
+const CLOUD_GPU_POWER = 150; // W (A10G average under load)
+const PUE = 1.12; // datacenter power usage effectiveness
+const TIME_PER_INFERENCE_S = 0.05; // 50ms per inference (batch 32)
+const SECONDS_PER_YEAR = 365 * 24 * 3600;
+
+function updateCarbon() {
+  const inferences = parseInt(document.getElementById('inferences').value);
+  const regionKey = document.getElementById('region').value;
+  const siliconKey = document.getElementById('silicon').value;
+
+  const region = REGIONS[regionKey];
+  const silicon = SILICONS[siliconKey];
+
+  // Cloud-only: all inference in cloud GPU
+  const cloudEnergyKWh = (CLOUD_GPU_POWER * TIME_PER_INFERENCE_S * inferences * 365 * PUE) / 3.6e6;
+  const cloudCO2 = cloudEnergyKWh * region.carbon / 1000; // gCO2 -> kg
+
+  // Edge + liquid placement: 70% edge, 30% cloud (carbon-aware average)
+  const edgeEnergyKWh = (silicon.power_w * TIME_PER_INFERENCE_S * inferences * 365 * 0.70) / 3.6e6;
+  const cloudShareEnergyKWh = (CLOUD_GPU_POWER * TIME_PER_INFERENCE_S * inferences * 365 * PUE * 0.30) / 3.6e6;
+  const edgeCO2 = (edgeEnergyKWh * region.carbon / 1000) + (cloudShareEnergyKWh * region.carbon / 1000);
+
+  const savings = cloudCO2 - edgeCO2;
+  const reductionPct = cloudCO2 > 0 ? Math.round((savings / cloudCO2) * 100) : 0;
+
+  // Equivalent: car km (1 kg CO2 ≈ 4 km), trees (1 tree absorbs 22 kg CO2/year)
+  const carKm = Math.round(savings * 4);
+  const trees = Math.round(savings / 22);
+
+  // Display
+  document.getElementById('inf-display').textContent = inferences.toLocaleString();
+  document.getElementById('region-display').textContent = region.name;
+  document.getElementById('silicon-display').textContent = silicon.name + ' (' + silicon.power_w + 'W)';
+
+  document.getElementById('cloud-co2').textContent = cloudCO2.toFixed(1) + ' kg/yr';
+  document.getElementById('edge-co2').textContent = edgeCO2.toFixed(1) + ' kg/yr';
+  document.getElementById('savings-co2').textContent = savings.toFixed(1) + ' kg/yr';
+  document.getElementById('reduction-display').textContent = (savings > 0 ? '-' : '+') + Math.abs(reductionPct) + '%';
+
+  let equiv = '';
+  if (carKm > 1000) equiv = (carKm / 1000).toFixed(1) + 'k car-km';
+  else equiv = carKm + ' car-km';
+  equiv += ' / ' + trees + ' trees/yr';
+  document.getElementById('equivalent').textContent = equiv;
+}
+
+updateCarbon();
+</script>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="assets/app.js"></script>
+</body>
+</html>

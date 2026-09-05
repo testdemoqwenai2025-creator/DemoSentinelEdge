@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Design Partner Portal</title>
+<meta name="description" content="Self-service sign-up for design partner pilot. 10 minutes to sandbox. 60-day evaluation, free, with engineering support. No NDA required." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="AISensorEdgeComp — Design Partner Portal" />
+<meta property="og:description" content="Self-service sign-up for design partner pilot. 10 minutes to sandbox. 60-day evaluation, free, with engineering support. No NDA required." />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="portal">
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Design Partner Portal</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Self-serve · 10 minutes to sandbox · No NDA</div>
+    <h1>Design Partner <span class="accent">Portal</span></h1>
+    <p class="lead">Sign up, describe your sensor estate, get a sandbox tenant with your synthetic data streaming in 10 minutes. 60-day evaluation, free, with engineering support. No NDA required.</p>
+  </div>
+</section>
+
+<div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Step indicator -->
+  <div style="display: flex; justify-content: space-between; margin: 32px 0; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;">
+    <div style="text-align: center; flex: 1;" id="step-1">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--cyan); font-weight: 700;">1</div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Your info</div>
+    </div>
+    <div style="color: var(--text-mute); font-size: 20px; padding-top: 8px;">→</div>
+    <div style="text-align: center; flex: 1; opacity: 0.4;" id="step-2">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--text-mute); font-weight: 700;">2</div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Sensor estate</div>
+    </div>
+    <div style="color: var(--text-mute); font-size: 20px; padding-top: 8px;">→</div>
+    <div style="text-align: center; flex: 1; opacity: 0.4;" id="step-3">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--text-mute); font-weight: 700;">3</div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Vertical</div>
+    </div>
+    <div style="color: var(--text-mute); font-size: 20px; padding-top: 8px;">→</div>
+    <div style="text-align: center; flex: 1; opacity: 0.4;" id="step-4">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--text-mute); font-weight: 700;">4</div>
+      <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Provisioned</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Your info -->
+  <div id="form-step-1" style="background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px;">
+    <h3 style="font-size: 20px; margin-bottom: 16px;">Step 1 — Your information</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="form-field">
+        <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Full name</label>
+        <input type="text" id="name" placeholder="Jane Engineer" style="width: 100%; padding: 12px 14px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; margin-top: 6px;" />
+      </div>
+      <div class="form-field">
+        <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Work email</label>
+        <input type="email" id="email" placeholder="jane@company.com" style="width: 100%; padding: 12px 14px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; margin-top: 6px;" />
+      </div>
+      <div class="form-field">
+        <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Organization</label>
+        <input type="text" id="org" placeholder="DeepWater Energy Partners" style="width: 100%; padding: 12px 14px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; margin-top: 6px;" />
+      </div>
+      <div class="form-field">
+        <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Role</label>
+        <select id="role" style="width: 100%; padding: 12px 14px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; margin-top: 6px;">
+          <option>VP Operations</option>
+          <option>Plant Manager</option>
+          <option>Reliability Engineer</option>
+          <option>Process Safety Engineer</option>
+          <option>Chief Digitization Officer</option>
+          <option>VP HSE</option>
+          <option>Director of Asset Management</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top: 24px;" onclick="goToStep(2)">Continue →</button>
+  </div>
+
+  <!-- Step 2: Sensor estate -->
+  <div id="form-step-2" style="background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px; display: none;">
+    <h3 style="font-size: 20px; margin-bottom: 16px;">Step 2 — Your sensor estate</h3>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Tell us about your current sensor deployment. We'll pre-populate your sandbox with realistic synthetic data matching your estate.</p>
+
+    <div style="margin-bottom: 20px;">
+      <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between;">
+        <span>Number of sensors</span>
+        <span style="color: var(--cyan);"><span id="sensor-count-display">5,000</span></span>
+      </label>
+      <input type="range" id="portal-sensor-count" min="100" max="50000" step="100" value="5000" oninput="document.getElementById('sensor-count-display').textContent = parseInt(this.value).toLocaleString()" style="width: 100%; appearance: none; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-2); outline: none; cursor: pointer; margin-top: 8px;" />
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Sensor types (select all that apply)</label>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;">
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" checked style="accent-color: var(--cyan);" /> Vibration</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" checked style="accent-color: var(--cyan);" /> Temperature</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" checked style="accent-color: var(--cyan);" /> Pressure</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Flow</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Gas detection</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Level</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Acoustic</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Corrosion</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Valve position</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Power/electrical</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Environmental</label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px;"><input type="checkbox" style="accent-color: var(--cyan);" /> Flame/IR/UV</label>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Vertical -->
+  <div id="form-step-3" style="background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px; display: none;">
+    <h3 style="font-size: 20px; margin-bottom: 16px;">Step 3 — Your vertical</h3>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Which vertical are you evaluating us for? This determines which pre-built dashboards and benchmark data your sandbox gets.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 24px;">
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--cyan); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'oil-gas')">
+        <div style="font-size: 28px;">🛢️</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Oil & Gas</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'manufacturing')">
+        <div style="font-size: 28px;">🏭</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Manufacturing</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'environment')">
+        <div style="font-size: 28px;">🌊</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Environment</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'energy')">
+        <div style="font-size: 28px;">⚡</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Energy</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'mining')">
+        <div style="font-size: 28px;">⛏️</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Mining</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'water')">
+        <div style="font-size: 28px;">💧</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Water Treatment</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'smart-city')">
+        <div style="font-size: 28px;">🏙️</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Smart City</div>
+      </div>
+      <div style="padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;" onclick="selectPortalVertical(this, 'hospital')">
+        <div style="font-size: 28px;">🏥</div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 4px;">Hospital ICU</div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="provisionSandbox()">Provision sandbox →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Provisioned -->
+  <div id="form-step-4" style="background: linear-gradient(180deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid var(--cyan); border-radius: 14px; padding: 40px; display: none; text-align: center;">
+    <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
+    <h3 style="font-size: 24px; margin-bottom: 12px;">Sandbox provisioned!</h3>
+    <p style="color: var(--text-dim); font-size: 15px; margin-bottom: 24px;">Your sandbox tenant is ready. We've sent credentials and a getting-started guide to <strong id="provisioned-email">your email</strong>.</p>
+
+    <div style="background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 20px 0; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim);">
+      <div style="margin-bottom: 8px;"><strong style="color: var(--cyan);">Tenant ID:</strong> <span id="provisioned-tenant">—</span></div>
+      <div style="margin-bottom: 8px;"><strong style="color: var(--cyan);">API endpoint:</strong> <span id="provisioned-api">—</span></div>
+      <div style="margin-bottom: 8px;"><strong style="color: var(--cyan);">Dashboard:</strong> <span id="provisioned-dashboard">—</span></div>
+      <div style="margin-bottom: 8px;"><strong style="color: var(--cyan);">Sensors seeded:</strong> <span id="provisioned-sensors">—</span></div>
+      <div><strong style="color: var(--cyan);">Trial expires:</strong> <span id="provisioned-expires">— (60 days)</span></div>
+    </div>
+
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="#" class="btn btn-primary" id="provisioned-dashboard-link" target="_blank">Open sandbox dashboard →</a>
+      <a href="api-reference.html" class="btn btn-ghost">Read API docs</a>
+      <a href="roi-calculator.html" class="btn btn-ghost">Calculate ROI</a>
+    </div>
+
+    <p style="color: var(--text-mute); font-size: 12px; margin-top: 24px; font-family: 'JetBrains Mono', monospace;">
+      Demo mode — no real sandbox is provisioned. This is a UI prototype for the design partner portal flow. Email design@aisensoredgecomp.ai for actual access.
+    </p>
+  </div>
+
+  <!-- What's included -->
+  <section class="doc-section" style="margin-top: 40px;">
+    <div class="section-label">What you get</div>
+    <h2>60-day design partner pilot — <span class="accent">free.</span></h2>
+    <div class="card-grid-2">
+      <div class="card">
+        <h3>Full platform access</h3>
+        <p>TS-FM anomaly detection, Graph RAG, LLM-native query, edge-cloud liquid placement, all 12 sensor types. No feature gating — you get the same platform as paid customers.</p>
+      </div>
+      <div class="card">
+        <h3>Synthetic data seeded</h3>
+        <p>We pre-populate your sandbox with 10M rows of synthetic telemetry matching your sensor estate. Realistic distributions, anomaly injection, calibration drift — all simulated.</p>
+      </div>
+      <div class="card">
+        <h3>Engineering support</h3>
+        <p>Weekly check-in with the founding team. We commit to onboarding your real sensor estate (up to 50k tags) within 2 weeks of the pilot start.</p>
+      </div>
+      <div class="card">
+        <h3>Custom dashboard</h3>
+        <p>Your sandbox comes with a pre-built Grafana dashboard configured for your vertical. Oil & gas, manufacturing, environment, energy, mining, water — each has its own KPIs and alert routing.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+let selectedVertical = 'oil-gas';
+let step = 1;
+
+function goToStep(n) {
+  // Hide all steps
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('form-step-' + i).style.display = 'none';
+  }
+  document.getElementById('form-step-' + n).style.display = 'block';
+
+  // Update step indicator
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step-' + i);
+    if (i < n) {
+      el.style.opacity = '1';
+      el.querySelector('div:first-child').style.color = 'var(--green)';
+    } else if (i === n) {
+      el.style.opacity = '1';
+      el.querySelector('div:first-child').style.color = 'var(--cyan)';
+    } else {
+      el.style.opacity = '0.4';
+      el.querySelector('div:first-child').style.color = 'var(--text-mute)';
+    }
+  }
+  step = n;
+}
+
+function selectPortalVertical(el, v) {
+  selectedVertical = v;
+  document.querySelectorAll('#form-step-3 div[onclick]').forEach(d => {
+    d.style.borderColor = 'var(--border)';
+  });
+  el.style.borderColor = 'var(--cyan)';
+}
+
+function provisionSandbox() {
+  const email = document.getElementById('email').value || 'jane@company.com';
+  const sensorCount = document.getElementById('portal-sensor-count').value;
+  const tenantId = 'sbx-' + Math.random().toString(36).substr(2, 8);
+  const expires = new Date(Date.now() + 60 * 24 * 3600 * 1000).toLocaleDateString('en-GB');
+
+  document.getElementById('provisioned-email').textContent = email;
+  document.getElementById('provisioned-tenant').textContent = tenantId;
+  document.getElementById('provisioned-api').textContent = 'https://staging-api.aisensoredgecomp.ai/' + tenantId;
+  document.getElementById('provisioned-dashboard').textContent = 'https://sandbox.aisensoredgecomp.ai/' + tenantId;
+  document.getElementById('provisioned-sensors').textContent = parseInt(sensorCount).toLocaleString() + ' synthetic sensors (' + selectedVertical + ' config)';
+  document.getElementById('provisioned-expires').textContent = expires;
+  document.getElementById('provisioned-dashboard-link').href = 'https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors';
+
+  goToStep(4);
+}
+</script>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Troubleshooting — AISensorEdgeComp Docs</title>
+<meta name="description" content="Common issues, FAQs, debugging tips." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body id="docs-troubleshooting">
+<nav>
+  <a href="../index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="../index.html">← Back</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<div style="min-height: 100vh; padding-top: 100px;">
+  <div style="max-width: 800px; margin: 0 auto; padding: 0 40px 60px;">
+    <div class="breadcrumb"><a href="index.html">Docs</a><span class="sep">/</span><span>Troubleshooting</span></div>
+    <h1 style="font-size: 36px; margin-bottom: 24px;">Troubleshooting</h1>
+    <section class="doc-section" style="border: none; padding: 0;">
+      
+     <h2>Common issues</h2>
+     <h3>Docker Compose won't start</h3>
+     <div class="code-block"><pre><span class="comment"># Check port conflicts</span>
+docker compose ps
+<span class="comment"># Check logs</span>
+docker compose logs ingest
+<span class="comment"># Reset everything</span>
+make clean && make up</pre></div>
+     <h3>Kafka connection refused</h3>
+     <p>Kafka takes 10-15 seconds to start. Wait and retry:</p>
+     <div class="code-block"><pre>sleep 15 && curl http://localhost:8081/subjects</pre></div>
+     <h3>API returns 401</h3>
+     <p>Your JWT may have expired. Re-authenticate:</p>
+     <div class="code-block"><pre>curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"email":"you@company.com","password":"your-password"}'</span></pre></div>
+     <h3>ML inference returns 0.0 confidence</h3>
+     <p>The ONNX model may not be loaded. Check:</p>
+     <div class="code-block"><pre>curl http://localhost:8002/health</pre></div>
+     <p>If the ML service is healthy but confidence is 0, your input window may be empty or all-zeros. Provide at least 8 samples.</p>
+     <h2>FAQ</h2>
+     <h3>Can I deploy on-prem?</h3>
+     <p>Yes — the full stack runs on a single k8s cluster. See the <a href="deployment.html" style="color: var(--cyan);">deployment guide</a> for air-gapped instructions.</p>
+     <h3>Do you support my sensor protocol?</h3>
+     <p>We support OPC-UA, Modbus, MQTT, CoAP, Profinet, EtherCAT, LoRaWAN, NB-IoT. See the <a href="../sensor-types.html" style="color: var(--cyan);">sensor types page</a> for the full list.</p>
+     <h3>How do I get support?</h3>
+     <p>Email <a href="mailto:platform@aisensoredgecomp.ai" style="color: var(--cyan);">platform@aisensoredgecomp.ai</a>. Response within 24 hours. Design partners get a Slack channel with the founding team.</p>
+     
+    </section>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to docs</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="../engineering.html">Engineering</a>
+    <a href="../blog.html">Blog</a>
+    <a href="../contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; <a href="#top">Back to top</a>
+</footer>
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal"><div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;"><div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div><div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div><button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button><p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="portal.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p></form></div></div>
+</div>
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;"><div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+  <div class="modal-body"><div class="search-box"><input type="text" id="searchInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'){{handleSearch();}}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div><div id="searchResults"></div></div></div>
+</div>
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+<script src="../assets/app.js"></script>
+</body>
+</html>
