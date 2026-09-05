@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Sensor Types & Architecture</title>
+<meta name="description" content="12 sensor types (pressure, temperature, flow, level, vibration, acoustic, gas, flame, corrosion, valve, power, environmental) with live synthetic data. Full 6-layer architecture: field instruments → edge gateways → ingestion → Kafka + Flink + Spark Streaming → plant cloud." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Sensor Types & Higher-Level Architecture" />
+<meta property="og:description" content="12 sensor types, 6-layer architecture, live synthetic telemetry streaming." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/sensor-types.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  /* Architecture diagram */
+  .arch-diagram {
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--card) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .arch-layer {
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .arch-layer:last-child { margin-bottom: 0; }
+  .arch-layer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .arch-layer-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .arch-layer-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .arch-layer-components {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-left: 48px;
+  }
+  .arch-component {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .arch-arrow {
+    text-align: center;
+    color: var(--cyan);
+    font-size: 20px;
+    margin: 4px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Sensor type cards */
+  .sensor-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 18px;
+    margin: 16px 0;
+  }
+  .sensor-card {
+    padding: 24px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sensor-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+  }
+  .sensor-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--sensor-color, var(--cyan));
+  }
+  .sensor-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .sensor-icon-box {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--sensor-color, var(--cyan)) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sensor-color, var(--cyan)) 30%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--sensor-color, var(--cyan));
+    flex-shrink: 0;
+  }
+  .sensor-name {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .sensor-units {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 2px;
+  }
+  .sensor-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .sensor-example {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--bg-2);
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sensor-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 12px;
+  }
+  .sensor-spec {
+    display: flex;
+    flex-direction: column;
+  }
+  .sensor-spec .key {
+    color: var(--text-mute);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .sensor-spec .val {
+    color: var(--text);
+    margin-top: 1px;
+  }
+
+  /* Live readings grid */
+  .live-readings {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .live-readings-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .live-pulse {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s ease-in-out infinite;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .live-channels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .live-channel {
+    display: flex;
+    flex-direction: column;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 6px;
+    background: var(--card);
+    border-radius: 4px;
+    border-left: 2px solid var(--text-mute);
+  }
+  .live-channel.nominal { border-left-color: var(--green); }
+  .live-channel.warning { border-left-color: var(--gold); }
+  .live-channel.critical { border-left-color: var(--magenta); }
+  .live-channel .ch-name {
+    font-size: 10px;
+    color: var(--text-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .live-channel .ch-value {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .live-channel.nominal .ch-value { color: var(--green); }
+  .live-channel.warning .ch-value { color: var(--gold); }
+  .live-channel.critical .ch-value { color: var(--magenta); }
+
+  /* Architecture layer detail sections */
+  .layer-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .layer-detail h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .layer-detail-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .layer-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .layer-component-card {
+    padding: 12px 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .layer-component-card:hover {
+    border-color: var(--cyan);
+    color: var(--text);
+  }
+
+  /* Filter bar */
+  .sensor-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .sensor-filter-chip {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sensor-filter-chip:hover, .sensor-filter-chip.active {
+    background: color-mix(in srgb, var(--cyan) 10%, transparent);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+</style>
+</head>
+<body id="sensor-types-page">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sensors.html">Sensor Catalog</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sensor-types.html" class="active">Sensor Types & Arch</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore Scenario</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="sensors.html">Sensors</a><span class="sep">/</span>
+      <span>Types & Architecture</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>12 Sensor Types · 6-Layer Architecture · Live Synthetic Data</div>
+    <h1>Sensor Types & <span class="accent">Higher-Level Architecture</span></h1>
+    <p class="lead">
+      The complete sensor taxonomy and end-to-end architecture for AISensorEdgeComp.
+      12 sensor types covering every industrial measurement modality — from pressure
+      transmitters to corrosion probes — streaming through a 6-layer pipeline:
+      field instruments → edge gateways → ingestion → Kafka + Flink + Spark Streaming
+      → plant cloud / on-premise big data platform → consumer applications.
+      All readings are synthetic placeholders, streaming live for demonstration.
+    </p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="#architecture" class="btn btn-ghost">Jump to Architecture</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Sensor Types</h4>
+    <a href="#sensor-pressure" style="border-left-color: #00d4ff;">Pressure</a><a href="#sensor-temperature" style="border-left-color: #f59e0b;">Temperature</a><a href="#sensor-flow" style="border-left-color: #22d3ee;">Flow</a><a href="#sensor-level" style="border-left-color: #a855f7;">Level</a><a href="#sensor-vibration" style="border-left-color: #ec4899;">Vibration</a><a href="#sensor-acoustic" style="border-left-color: #10b981;">Acoustic</a><a href="#sensor-gas-detection" style="border-left-color: #ef4444;">Gas Detection</a><a href="#sensor-flame-ir-uv" style="border-left-color: #f97316;">Flame / IR / UV</a><a href="#sensor-corrosion" style="border-left-color: #84cc16;">Corrosion</a><a href="#sensor-valve-position" style="border-left-color: #06b6d4;">Valve Position</a><a href="#sensor-power-electrical" style="border-left-color: #fbbf24;">Power / Electrical</a><a href="#sensor-environmental" style="border-left-color: #14b8a6;">Environmental</a>
+    <h4>Architecture</h4>
+    <a href="#architecture">Overview Diagram</a>
+    <a href="#layer-0">Layer 0: Field Instruments</a>
+    <a href="#layer-1">Layer 1: Edge Gateways</a>
+    <a href="#layer-2">Layer 2: Ingestion</a>
+    <a href="#layer-3">Layer 3: Stream Processing</a>
+    <a href="#layer-4">Layer 4: Plant Cloud</a>
+    <a href="#layer-5">Layer 5: Consumer Apps</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- LIVE STATS -->
+    <section class="doc-section">
+      <div class="section-label">Live Data Summary</div>
+      <h2>12 sensor types · 96 channels · <span class="accent">streaming now</span></h2>
+      <p>Each sensor type has 8 live channels streaming synthetic telemetry. Values update every 3 seconds with realistic sine+noise models. Status flags (nominal / warning / critical) are computed from the TS-FM anomaly detector running at the edge.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="live-pulse"></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span>
+        </div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Channels: <span id="total-channels" style="color: var(--cyan);">96</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Nominal: <span id="nominal-count" style="color: var(--green);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Warning: <span id="warning-count" style="color: var(--gold);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Critical: <span id="critical-count" style="color: var(--magenta);">--</span></span>
+      </div>
+    </section>
+
+    <!-- SENSOR FILTER BAR -->
+    <section class="doc-section">
+      <div class="section-label">Filter</div>
+      <h2>Filter by sensor type</h2>
+      <div class="sensor-filter-bar">
+        <button class="sensor-filter-chip active" onclick="filterSensorTypes('all', event)">All Types (12)</button>
+        <button class="sensor-filter-chip" onclick="filterSensorTypes('pressure', event)" style="border-left: 3px solid #00d4ff;">Pressure</button><button class="sensor-filter-chip" onclick="filterSensorTypes('temperature', event)" style="border-left: 3px solid #f59e0b;">Temperature</button><button class="sensor-filter-chip" onclick="filterSensorTypes('flow', event)" style="border-left: 3px solid #22d3ee;">Flow</button><button class="sensor-filter-chip" onclick="filterSensorTypes('level', event)" style="border-left: 3px solid #a855f7;">Level</button><button class="sensor-filter-chip" onclick="filterSensorTypes('vibration', event)" style="border-left: 3px solid #ec4899;">Vibration</button><button class="sensor-filter-chip" onclick="filterSensorTypes('acoustic', event)" style="border-left: 3px solid #10b981;">Acoustic</button><button class="sensor-filter-chip" onclick="filterSensorTypes('gas-detection', event)" style="border-left: 3px solid #ef4444;">Gas Detection</button><button class="sensor-filter-chip" onclick="filterSensorTypes('flame-ir-uv', event)" style="border-left: 3px solid #f97316;">Flame / IR / UV</button><button class="sensor-filter-chip" onclick="filterSensorTypes('corrosion', event)" style="border-left: 3px solid #84cc16;">Corrosion</button><button class="sensor-filter-chip" onclick="filterSensorTypes('valve-position', event)" style="border-left: 3px solid #06b6d4;">Valve Position</button><button class="sensor-filter-chip" onclick="filterSensorTypes('power-electrical', event)" style="border-left: 3px solid #fbbf24;">Power / Electrical</button><button class="sensor-filter-chip" onclick="filterSensorTypes('environmental', event)" style="border-left: 3px solid #14b8a6;">Environmental</button>
+      </div>
+    </section>
+
+    <!-- SENSOR TYPE CARDS -->
+    
+    <section class="doc-section" id="sensor-pressure" data-sensor-type="pressure" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #00d4ff;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box"> PSI</div>
+          <div>
+            <div class="sensor-name">Pressure</div>
+            <div class="sensor-units">Units: psi / kPa / bar</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">wellhead pressure</span><span class="sensor-example">pipeline pressure</span><span class="sensor-example">vessel pressure</span><span class="sensor-example">separator pressure</span><span class="sensor-example">annulus pressure</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (process)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-10,000 psi (typical), 0-20,000 psi (HP/HT)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.1% FS (quartz), ±0.25% FS (strain gauge)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">180 days</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Hailo-8 (process) / Jetson Orin (fast transient)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">OPC-UA (process), MQTT (IoT), Modbus (legacy)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Wellhead pressure monitoring</li><li>Pipeline leak detection</li><li>Vessel overpressure protection</li><li>Separator level control</li><li>Annulus pressure integrity</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">API 6A (wellhead), API 510 (vessel), ASME B31.3 (piping)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Piezoresistive / Capacitive / Quartz</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-pressure">
+            
+            <div class="live-channel nominal" id="ch-pressure-0">
+              <span class="ch-name">wellhead pressure · PRESSURE-CH01</span>
+              <span class="ch-value">4632.9 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-1">
+              <span class="ch-name">pipeline pressure · PRESSURE-CH02</span>
+              <span class="ch-value">4649.79 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-2">
+              <span class="ch-name">vessel pressure · PRESSURE-CH03</span>
+              <span class="ch-value">4805.01 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-3">
+              <span class="ch-name">separator pressure · PRESSURE-CH04</span>
+              <span class="ch-value">4659.73 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-4">
+              <span class="ch-name">annulus pressure · PRESSURE-CH05</span>
+              <span class="ch-value">5044.58 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-5">
+              <span class="ch-name">wellhead pressure · PRESSURE-CH06</span>
+              <span class="ch-value">4626.0 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-6">
+              <span class="ch-name">pipeline pressure · PRESSURE-CH07</span>
+              <span class="ch-value">4867.56 psi</span>
+            </div>
+            <div class="live-channel nominal" id="ch-pressure-7">
+              <span class="ch-name">vessel pressure · PRESSURE-CH08</span>
+              <span class="ch-value">4768.62 psi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-temperature" data-sensor-type="temperature" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #f59e0b;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">°C</div>
+          <div>
+            <div class="sensor-name">Temperature</div>
+            <div class="sensor-units">Units: °C / °F / K</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">bearing temperature</span><span class="sensor-example">process temperature</span><span class="sensor-example">motor winding temperature</span><span class="sensor-example">exhaust gas temperature</span><span class="sensor-example">ambient temperature</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (process)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">-200°C to +850°C (RTD), -40°C to +1200°C (thermocouple)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.1°C (RTD PT100), ±1.5°C (thermocouple K)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Coral Edge TPU (simple) / Hailo-8 (multi-point)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">OPC-UA, Modbus RTU, 4-20mA HART</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Bearing overheat detection</li><li>Process temperature control</li><li>Motor protection</li><li>Exhaust monitoring</li><li>Cold spot detection</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">IEC 60751 (RTD), IEC 60584 (thermocouple), API 670 (machinery protection)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">RTD PT100 / Thermocouple K/J/T / IR pyrometer</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-temperature">
+            
+            <div class="live-channel nominal" id="ch-temperature-0">
+              <span class="ch-name">bearing temperature · TEMPERATURE-CH01</span>
+              <span class="ch-value">74.95 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-1">
+              <span class="ch-name">process temperature · TEMPERATURE-CH02</span>
+              <span class="ch-value">69.94 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-2">
+              <span class="ch-name">motor winding temperature · TEMPERATURE-CH03</span>
+              <span class="ch-value">71.22 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-3">
+              <span class="ch-name">exhaust gas temperature · TEMPERATURE-CH04</span>
+              <span class="ch-value">71.2 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-4">
+              <span class="ch-name">ambient temperature · TEMPERATURE-CH05</span>
+              <span class="ch-value">70.55 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-5">
+              <span class="ch-name">bearing temperature · TEMPERATURE-CH06</span>
+              <span class="ch-value">68.79 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-6">
+              <span class="ch-name">process temperature · TEMPERATURE-CH07</span>
+              <span class="ch-value">71.94 °C</span>
+            </div>
+            <div class="live-channel nominal" id="ch-temperature-7">
+              <span class="ch-name">motor winding temperature · TEMPERATURE-CH08</span>
+              <span class="ch-value">69.41 °C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-flow" data-sensor-type="flow" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #22d3ee;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">m³/h</div>
+          <div>
+            <div class="sensor-name">Flow</div>
+            <div class="sensor-units">Units: m³/h / bbl/day / MMSCFD / kg·mol/h</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">gas flow</span><span class="sensor-example">oil flow</span><span class="sensor-example">water injection flow</span><span class="sensor-example">flare flow</span><span class="sensor-example">chemical injection flow</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (process)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-500 m³/h (liquid), 0-50 MMSCFD (gas)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.5% (coriolis), ±1% (ultrasonic), ±2% (orifice)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (custody: 90 days)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Hailo-8 (process) / Jetson Orin (multi-phase)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">OPC-UA, Modbus, HART, Foundation Fieldbus</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Production allocation</li><li>Custody transfer</li><li>Flare monitoring (EPA)</li><li>Chemical dosing</li><li>Water injection</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">API MPMS (custody transfer), EPA 40 CFR 60 (flare), OIML R117</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Coriolis / Ultrasonic / Magnetic / Vortex / Orifice</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-flow">
+            
+            <div class="live-channel nominal" id="ch-flow-0">
+              <span class="ch-name">gas flow · FLOW-CH01</span>
+              <span class="ch-value">454.59 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-1">
+              <span class="ch-name">oil flow · FLOW-CH02</span>
+              <span class="ch-value">430.84 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-2">
+              <span class="ch-name">water injection flow · FLOW-CH03</span>
+              <span class="ch-value">441.89 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-3">
+              <span class="ch-name">flare flow · FLOW-CH04</span>
+              <span class="ch-value">447.87 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-4">
+              <span class="ch-name">chemical injection flow · FLOW-CH05</span>
+              <span class="ch-value">468.45 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-5">
+              <span class="ch-name">gas flow · FLOW-CH06</span>
+              <span class="ch-value">431.87 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-6">
+              <span class="ch-name">oil flow · FLOW-CH07</span>
+              <span class="ch-value">434.09 m³/h</span>
+            </div>
+            <div class="live-channel nominal" id="ch-flow-7">
+              <span class="ch-name">water injection flow · FLOW-CH08</span>
+              <span class="ch-value">463.26 m³/h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-level" data-sensor-type="level" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #a855f7;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">%</div>
+          <div>
+            <div class="sensor-name">Level</div>
+            <div class="sensor-units">Units: % / mm / m / liters</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">tank level</span><span class="sensor-example">separator level</span><span class="sensor-example">produced water level</span><span class="sensor-example">drain sump level</span><span class="sensor-example">ballast level</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (process)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-100% (or 0-20m continuous)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±2mm (radar), ±5mm (ultrasonic), ±1cm (float)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Coral Edge TPU / RPi 5</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">OPC-UA, Modbus, HART, IO-Link</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Tank inventory</li><li>Separator level control</li><li>Overflow protection</li><li>Sump pump control</li><li>Ballast management</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">API 2350 (tank overfill), IEC 61446 (nuclear — N/A here)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Radar (FMCW) / Ultrasonic / Guided wave / Capacitance / Hydrostatic</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-level">
+            
+            <div class="live-channel nominal" id="ch-level-0">
+              <span class="ch-name">tank level · LEVEL-CH01</span>
+              <span class="ch-value">62.65 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-1">
+              <span class="ch-name">separator level · LEVEL-CH02</span>
+              <span class="ch-value">68.51 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-2">
+              <span class="ch-name">produced water level · LEVEL-CH03</span>
+              <span class="ch-value">66.28 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-3">
+              <span class="ch-name">drain sump level · LEVEL-CH04</span>
+              <span class="ch-value">64.26 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-4">
+              <span class="ch-name">ballast level · LEVEL-CH05</span>
+              <span class="ch-value">68.02 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-5">
+              <span class="ch-name">tank level · LEVEL-CH06</span>
+              <span class="ch-value">67.57 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-6">
+              <span class="ch-name">separator level · LEVEL-CH07</span>
+              <span class="ch-value">64.77 %</span>
+            </div>
+            <div class="live-channel nominal" id="ch-level-7">
+              <span class="ch-name">produced water level · LEVEL-CH08</span>
+              <span class="ch-value">67.78 %</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-vibration" data-sensor-type="vibration" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #ec4899;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">mm/s</div>
+          <div>
+            <div class="sensor-name">Vibration</div>
+            <div class="sensor-units">Units: mm/s RMS / g / µm (peak-to-peak)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">compressor vibration</span><span class="sensor-example">pump vibration</span><span class="sensor-example">turbine vibration</span><span class="sensor-example">generator vibration</span><span class="sensor-example">motor vibration</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">10 kHz (raw waveform), 1 Hz (features)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-50 mm/s RMS, 0-500g (acceleration)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±2% (IEPE accelerometer)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">180 days</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Hailo-8 (features) / Jetson Orin NX (raw waveform ML)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">MQTT (features), gRPC (raw waveform), OPC-UA (industrial)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Bearing fault detection</li><li>Gear fault detection</li><li>Imbalance detection</li><li>Misalignment</li><li>Structural integrity</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">API 670 (machinery protection), ISO 10816 (vibration severity), ISO 20816</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">IEPE accelerometer (MEMS or piezoelectric)</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-vibration">
+            
+            <div class="live-channel nominal" id="ch-vibration-0">
+              <span class="ch-name">compressor vibration · VIBRATION-CH01</span>
+              <span class="ch-value">4.25 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-1">
+              <span class="ch-name">pump vibration · VIBRATION-CH02</span>
+              <span class="ch-value">4.43 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-2">
+              <span class="ch-name">turbine vibration · VIBRATION-CH03</span>
+              <span class="ch-value">4.39 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-3">
+              <span class="ch-name">generator vibration · VIBRATION-CH04</span>
+              <span class="ch-value">4.52 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-4">
+              <span class="ch-name">motor vibration · VIBRATION-CH05</span>
+              <span class="ch-value">4.3 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-5">
+              <span class="ch-name">compressor vibration · VIBRATION-CH06</span>
+              <span class="ch-value">4.34 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-6">
+              <span class="ch-name">pump vibration · VIBRATION-CH07</span>
+              <span class="ch-value">4.5 mm/s RMS</span>
+            </div>
+            <div class="live-channel nominal" id="ch-vibration-7">
+              <span class="ch-name">turbine vibration · VIBRATION-CH08</span>
+              <span class="ch-value">4.39 mm/s RMS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-acoustic" data-sensor-type="acoustic" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #10b981;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">dB</div>
+          <div>
+            <div class="sensor-name">Acoustic</div>
+            <div class="sensor-units">Units: dB / mV / Hz (frequency domain)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">leak acoustic signatures</span><span class="sensor-example">valve leak acoustic</span><span class="sensor-example">pipe stress acoustic</span><span class="sensor-example">gas leak ultrasonic</span><span class="sensor-example">machinery acoustic</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">100 kHz (ultrasonic), 44.1 kHz (audible)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-120 dB (audible), 20-100 kHz (ultrasonic)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±1 dB (Class 1 microphone), ±2 dB (MEMS)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (microphone), 180 days (ultrasonic)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Jetson Orin NX (FFT + ML), Hailo-8 (classification)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">gRPC (raw audio), MQTT (features/FFT)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Leak detection (gas/steam)</li><li>Valve passing detection</li><li>Cavitation detection</li><li>Bearing early warning</li><li>Partial discharge (electrical)</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">IEC 61672 (sound level meters), API 530 (leak detection)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">MEMS microphone / Piezoelectric ultrasonic / Acoustic emission (AE)</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-acoustic">
+            
+            <div class="live-channel nominal" id="ch-acoustic-0">
+              <span class="ch-name">leak acoustic signatures · ACOUSTIC-CH01</span>
+              <span class="ch-value">46.04 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-1">
+              <span class="ch-name">valve leak acoustic · ACOUSTIC-CH02</span>
+              <span class="ch-value">45.83 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-2">
+              <span class="ch-name">pipe stress acoustic · ACOUSTIC-CH03</span>
+              <span class="ch-value">45.95 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-3">
+              <span class="ch-name">gas leak ultrasonic · ACOUSTIC-CH04</span>
+              <span class="ch-value">46.96 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-4">
+              <span class="ch-name">machinery acoustic · ACOUSTIC-CH05</span>
+              <span class="ch-value">45.14 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-5">
+              <span class="ch-name">leak acoustic signatures · ACOUSTIC-CH06</span>
+              <span class="ch-value">45.96 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-6">
+              <span class="ch-name">valve leak acoustic · ACOUSTIC-CH07</span>
+              <span class="ch-value">44.63 dB</span>
+            </div>
+            <div class="live-channel nominal" id="ch-acoustic-7">
+              <span class="ch-name">pipe stress acoustic · ACOUSTIC-CH08</span>
+              <span class="ch-value">43.08 dB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-gas-detection" data-sensor-type="gas-detection" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #ef4444;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">ppm</div>
+          <div>
+            <div class="sensor-name">Gas Detection</div>
+            <div class="sensor-units">Units: ppm / % LEL / % v/v</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">methane (CH4)</span><span class="sensor-example">H2S</span><span class="sensor-example">carbon monoxide (CO)</span><span class="sensor-example">oxygen deficiency (O2)</span><span class="sensor-example">VOC / LEL</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (continuous)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-500 ppm (H2S), 0-50,000 ppm (CH4), 0-100% LEL</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±2 ppm (electrochemical), ±5% (infrared, NDIR)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">90 days (H2S/CO), 180 days (CH4 IR)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Coral Edge TPU / RPi 5 (low-power)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">MQTT, Modbus, 4-20mA (legacy)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>HSE compliance</li><li>Confined space entry</li><li>Gas leak early warning</li><li>Permit-to-work verification</li><li>Emergency shutdown trigger</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">ISA-12.13.01 (performance), IEC 60079-29-1 (explosive atmospheres), OSHA 1910.146</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Electrochemical (H2S/CO/O2) / Infrared NDIR (CH4/CO2) / PID (VOC) / Catalytic bead (LEL)</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-gas-detection">
+            
+            <div class="live-channel nominal" id="ch-gas-detection-0">
+              <span class="ch-name">methane (CH4) · GAS-DETECTION-CH01</span>
+              <span class="ch-value">3.28 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-1">
+              <span class="ch-name">H2S · GAS-DETECTION-CH02</span>
+              <span class="ch-value">3.1 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-2">
+              <span class="ch-name">carbon monoxide (CO) · GAS-DETECTION-CH03</span>
+              <span class="ch-value">3.3 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-3">
+              <span class="ch-name">oxygen deficiency (O2) · GAS-DETECTION-CH04</span>
+              <span class="ch-value">3.33 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-4">
+              <span class="ch-name">VOC / LEL · GAS-DETECTION-CH05</span>
+              <span class="ch-value">3.25 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-5">
+              <span class="ch-name">methane (CH4) · GAS-DETECTION-CH06</span>
+              <span class="ch-value">3.09 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-6">
+              <span class="ch-name">H2S · GAS-DETECTION-CH07</span>
+              <span class="ch-value">3.15 ppm</span>
+            </div>
+            <div class="live-channel nominal" id="ch-gas-detection-7">
+              <span class="ch-name">carbon monoxide (CO) · GAS-DETECTION-CH08</span>
+              <span class="ch-value">3.17 ppm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-flame-ir-uv" data-sensor-type="flame-ir-uv" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #f97316;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">🔥</div>
+          <div>
+            <div class="sensor-name">Flame / IR / UV</div>
+            <div class="sensor-units">Units: bool (detected/clear) / kW/m² (radiation) / counts (UV)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">fire detection (flame)</span><span class="sensor-example">hot spot detection (IR)</span><span class="sensor-example">UV flame sensing</span><span class="sensor-example">multi-spectrum fire</span><span class="sensor-example">explosion detection</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">20 Hz (flame), 1 Hz (hot spot)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-10 kW/m² (radiation), 0-100% (UV intensity)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">False alarm rate < 10⁻⁶/h (multi-IR)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (self-test daily)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Hailo-8 (multi-spectrum fusion) / Jetson (vision)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">MQTT, Modbus, dry contact (fire alarm)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Fire suppression activation</li><li>Hot spot early warning</li><li>ESD trigger</li><li>Flame failure (flare)</li><li>Personnel protection</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">NFPA 72 (fire alarm), API 2210 (flame arresters), IEC 61511 (SIS integration)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Multi-IR (3-5 µm) / UV / UV-IR combo / Imaging (CCTV+IR)</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-flame-ir-uv">
+            
+            <div class="live-channel critical" id="ch-flame-ir-uv-0">
+              <span class="ch-name">fire detection (flame) · FLAME-IR-UV-CH01</span>
+              <span class="ch-value">-0.43 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-1">
+              <span class="ch-name">hot spot detection (IR) · FLAME-IR-UV-CH02</span>
+              <span class="ch-value">-0.04 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-2">
+              <span class="ch-name">UV flame sensing · FLAME-IR-UV-CH03</span>
+              <span class="ch-value">0.07 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-3">
+              <span class="ch-name">multi-spectrum fire · FLAME-IR-UV-CH04</span>
+              <span class="ch-value">-0.16 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-4">
+              <span class="ch-name">explosion detection · FLAME-IR-UV-CH05</span>
+              <span class="ch-value">-0.31 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-5">
+              <span class="ch-name">fire detection (flame) · FLAME-IR-UV-CH06</span>
+              <span class="ch-value">-0.41 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-6">
+              <span class="ch-name">hot spot detection (IR) · FLAME-IR-UV-CH07</span>
+              <span class="ch-value">0.13 detected</span>
+            </div>
+            <div class="live-channel critical" id="ch-flame-ir-uv-7">
+              <span class="ch-name">UV flame sensing · FLAME-IR-UV-CH08</span>
+              <span class="ch-value">-0.49 detected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-corrosion" data-sensor-type="corrosion" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #84cc16;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">µm/yr</div>
+          <div>
+            <div class="sensor-name">Corrosion</div>
+            <div class="sensor-units">Units: µm/year / mm (thickness) / mpv (penetration velocity)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">corrosion probes (ER/ECN)</span><span class="sensor-example">wall thickness (UT)</span><span class="sensor-example">corrosion coupons</span><span class="sensor-example">guided wave (long range UT)</span><span class="sensor-example">pitting detection</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">0.01 Hz (continuous ER), 0.001 Hz (UT periodic)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-1000 µm/yr (corrosion rate), 0-25mm (thickness)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±5 µm/yr (ER), ±0.1mm (UT)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (ER probe), 90 days (UT calibration block)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">RPi 5 + Coral (ER), Jetson Orin (UT imaging)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">MQTT (continuous), Modbus (UT gauge), HTTP (periodic upload)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Pipeline integrity (API 1160)</li><li>Vessel thinning (API 510)</li><li>CUI (corrosion under insulation)</li><li>RBI (risk-based inspection)</li><li>CP (cathodic protection) monitoring</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">API 1160 (pipeline), API 510 (vessel), API 653 (tank), NACE SP0169 (CP)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Electrical Resistance (ER) / Electrochemical Noise (ECN) / Ultrasonic Thickness (UT) / Guided Wave (LRUT) / Coupons</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-corrosion">
+            
+            <div class="live-channel nominal" id="ch-corrosion-0">
+              <span class="ch-name">corrosion probes (ER/ECN) · CORROSION-CH01</span>
+              <span class="ch-value">0.08 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-1">
+              <span class="ch-name">wall thickness (UT) · CORROSION-CH02</span>
+              <span class="ch-value">0.08 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-2">
+              <span class="ch-name">corrosion coupons · CORROSION-CH03</span>
+              <span class="ch-value">0.08 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-3">
+              <span class="ch-name">guided wave (long range UT) · CORROSION-CH04</span>
+              <span class="ch-value">0.08 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-4">
+              <span class="ch-name">pitting detection · CORROSION-CH05</span>
+              <span class="ch-value">0.09 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-5">
+              <span class="ch-name">corrosion probes (ER/ECN) · CORROSION-CH06</span>
+              <span class="ch-value">0.08 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-6">
+              <span class="ch-name">wall thickness (UT) · CORROSION-CH07</span>
+              <span class="ch-value">0.09 mm/year</span>
+            </div>
+            <div class="live-channel nominal" id="ch-corrosion-7">
+              <span class="ch-name">corrosion coupons · CORROSION-CH08</span>
+              <span class="ch-value">0.09 mm/year</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-valve-position" data-sensor-type="valve-position" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #06b6d4;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">%</div>
+          <div>
+            <div class="sensor-name">Valve Position</div>
+            <div class="sensor-units">Units: % open / bool (open/closed) / seconds (stroke time)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">open/close state</span><span class="sensor-example">travel deviation</span><span class="sensor-example">valve stroke time</span><span class="sensor-example">ESD valve test</span><span class="sensor-example">modulating valve position</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">10 Hz (modulating), 1 Hz (ESD monitoring)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-100% (modulating), 0/1 (binary), 0-30s (stroke)</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.5% (smart positioner), ±2% (legacy)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (positioner), 30 days (ESD test)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Coral Edge TPU (positioner), Hailo-8 (ESD logic)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">HART (smart positioner), OPC-UA (DCS), Profibus, Modbus</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>ESD valve proof testing</li><li>Modulating control</li><li>Partial stroke testing</li><li>Valve passing detection</li><li>Fail-safe verification</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">IEC 61511 (SIS), IEC 61508 (functional safety), API 6FA (ESD valve testing)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Resolver / LVDT / Hall effect / Limit switch</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-valve-position">
+            
+            <div class="live-channel nominal" id="ch-valve-position-0">
+              <span class="ch-name">open/close state · VALVE-POSITION-CH01</span>
+              <span class="ch-value">76.18 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-1">
+              <span class="ch-name">travel deviation · VALVE-POSITION-CH02</span>
+              <span class="ch-value">73.19 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-2">
+              <span class="ch-name">valve stroke time · VALVE-POSITION-CH03</span>
+              <span class="ch-value">75.08 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-3">
+              <span class="ch-name">ESD valve test · VALVE-POSITION-CH04</span>
+              <span class="ch-value">72.78 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-4">
+              <span class="ch-name">modulating valve position · VALVE-POSITION-CH05</span>
+              <span class="ch-value">78.9 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-5">
+              <span class="ch-name">open/close state · VALVE-POSITION-CH06</span>
+              <span class="ch-value">74.78 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-6">
+              <span class="ch-name">travel deviation · VALVE-POSITION-CH07</span>
+              <span class="ch-value">77.09 % open</span>
+            </div>
+            <div class="live-channel nominal" id="ch-valve-position-7">
+              <span class="ch-name">valve stroke time · VALVE-POSITION-CH08</span>
+              <span class="ch-value">71.77 % open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-power-electrical" data-sensor-type="power-electrical" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #fbbf24;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">V/A</div>
+          <div>
+            <div class="sensor-name">Power / Electrical</div>
+            <div class="sensor-units">Units: A / V / Hz / kW / % THD / pC (partial discharge)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">current (CT)</span><span class="sensor-example">voltage (PT)</span><span class="sensor-example">frequency</span><span class="sensor-example">power factor</span><span class="sensor-example">harmonics (THD)</span><span class="sensor-example">partial discharge</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">60 Hz (RMS), 5 kHz (waveform), 100 kHz (PD)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-5000 A, 0-15 kV, 58-62 Hz, 0-100% THD</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.5% (revenue class CT/PT), ±2% (protection)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (metering), 90 days (protection)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">Jetson Orin NX (waveform + PD), Hailo-8 (RMS features)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">IEC 61850 (substation), Modbus (metering), gRPC (waveform)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Power quality monitoring</li><li>Protection relay testing</li><li>Revenue metering</li><li>Partial discharge (transformer health)</li><li>Load balancing</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">IEEE C37.118 (PMU), IEC 61850 (substation), IEEE 519 (harmonics)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">CT (Rogowski/split-core) / PT (capacitive/inductive) / Hall effect / CT/VT combined</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-power-electrical">
+            
+            <div class="live-channel nominal" id="ch-power-electrical-0">
+              <span class="ch-name">current (CT) · POWER-ELECTRICAL-CH01</span>
+              <span class="ch-value">274.98 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-1">
+              <span class="ch-name">voltage (PT) · POWER-ELECTRICAL-CH02</span>
+              <span class="ch-value">276.64 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-2">
+              <span class="ch-name">frequency · POWER-ELECTRICAL-CH03</span>
+              <span class="ch-value">278.45 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-3">
+              <span class="ch-name">power factor · POWER-ELECTRICAL-CH04</span>
+              <span class="ch-value">281.18 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-4">
+              <span class="ch-name">harmonics (THD) · POWER-ELECTRICAL-CH05</span>
+              <span class="ch-value">278.89 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-5">
+              <span class="ch-name">partial discharge · POWER-ELECTRICAL-CH06</span>
+              <span class="ch-value">283.52 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-6">
+              <span class="ch-name">current (CT) · POWER-ELECTRICAL-CH07</span>
+              <span class="ch-value">283.13 A</span>
+            </div>
+            <div class="live-channel nominal" id="ch-power-electrical-7">
+              <span class="ch-name">voltage (PT) · POWER-ELECTRICAL-CH08</span>
+              <span class="ch-value">274.23 A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="sensor-environmental" data-sensor-type="environmental" style="scroll-margin-top: 90px;">
+      <div class="sensor-card" style="--sensor-color: #14b8a6;">
+        <div class="sensor-card-header">
+          <div class="sensor-icon-box">🌬️</div>
+          <div>
+            <div class="sensor-name">Environmental</div>
+            <div class="sensor-units">Units: m/s / ° (direction) / % RH / m (wave height) / hPa / km (visibility) / mm (rain)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Examples</div>
+          <div class="sensor-examples">
+            <span class="sensor-example">wind speed</span><span class="sensor-example">wind direction</span><span class="sensor-example">humidity</span><span class="sensor-example">wave motion (heave)</span><span class="sensor-example">ambient temperature</span><span class="sensor-example">barometric pressure</span><span class="sensor-example">visibility</span><span class="sensor-example">rainfall</span>
+          </div>
+        </div>
+
+        <div class="sensor-specs">
+          <div class="sensor-spec"><span class="key">Sample rate</span><span class="val">1 Hz (wind), 0.1 Hz (wave), 0.01 Hz (barometric)</span></div>
+          <div class="sensor-spec"><span class="key">Range</span><span class="val">0-60 m/s (wind), 0-100% RH, 0-15m wave, 950-1050 hPa</span></div>
+          <div class="sensor-spec"><span class="key">Accuracy</span><span class="val">±0.3 m/s (anemometer), ±3% RH, ±0.2 hPa (barometric)</span></div>
+          <div class="sensor-spec"><span class="key">Calibration</span><span class="val">365 days (anemometer), 180 days (humidity)</span></div>
+          <div class="sensor-spec"><span class="key">Edge device</span><span class="val">RPi 5 + Coral (low-power environmental station)</span></div>
+          <div class="sensor-spec"><span class="key">Protocol</span><span class="val">MQTT, Modbus, NMEA 0183 (marine), HTTP (weather API)</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Use cases</div>
+          <ul style="font-size: 13px; color: var(--text-dim); padding-left: 18px; margin: 0;">
+            <li>Helideck operability</li><li>Vessel approach</li><li>Crane operations</li><li>Flare dispersion modeling</li><li>HVAC load forecasting</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Compliance</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">ICAO Annex 14 (helideck), WMO (weather standards), DNV-OS-H101 (wave)</div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Sensor technology</div>
+          <div style="font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Cup anemometer / Ultrasonic / Sonic wind vane / Capacitive RH / Piezoresistive barometric / Radar wave buoy</div>
+        </div>
+
+        <div class="live-readings">
+          <div class="live-readings-title">
+            <span><span class="live-pulse"></span>Live readings (8 channels)</span>
+            <span style="font-size: 9px;">updates every 3s</span>
+          </div>
+          <div class="live-channels" id="live-environmental">
+            
+            <div class="live-channel nominal" id="ch-environmental-0">
+              <span class="ch-name">wind speed · ENVIRONMENTAL-CH01</span>
+              <span class="ch-value">8.13 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-1">
+              <span class="ch-name">wind direction · ENVIRONMENTAL-CH02</span>
+              <span class="ch-value">8.38 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-2">
+              <span class="ch-name">humidity · ENVIRONMENTAL-CH03</span>
+              <span class="ch-value">8.15 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-3">
+              <span class="ch-name">wave motion (heave) · ENVIRONMENTAL-CH04</span>
+              <span class="ch-value">8.44 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-4">
+              <span class="ch-name">ambient temperature · ENVIRONMENTAL-CH05</span>
+              <span class="ch-value">8.08 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-5">
+              <span class="ch-name">barometric pressure · ENVIRONMENTAL-CH06</span>
+              <span class="ch-value">8.53 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-6">
+              <span class="ch-name">visibility · ENVIRONMENTAL-CH07</span>
+              <span class="ch-value">8.14 m/s</span>
+            </div>
+            <div class="live-channel nominal" id="ch-environmental-7">
+              <span class="ch-name">rainfall · ENVIRONMENTAL-CH08</span>
+              <span class="ch-value">8.67 m/s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+    <!-- ARCHITECTURE OVERVIEW -->
+    <section class="doc-section" id="architecture">
+      <div class="section-label">Higher-Level Architecture</div>
+      <h2>6-layer pipeline. <span class="accent">End to end.</span></h2>
+      <p>The complete data flow from physical sensor in the field to consumer application in the boardroom. Each layer has a distinct responsibility and clear contracts with the layers above and below.</p>
+
+      <div class="arch-diagram">
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">📡</div>
+            <div class="arch-layer-name">Layer 0 — Field Instruments</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">Pressure transmitters (Rosemount 3051S, Yokogawa EJX)</span><span class="arch-component">Temperature RTDs & thermocouples (with HART transmitters)</span><span class="arch-component">Flow meters (Coriolis, ultrasonic, magnetic)</span><span class="arch-component">Level transmitters (radar, guided wave, ultrasonic)</span><span class="arch-component">Vibration accelerometers (IEPE, tri-axial MEMS)</span><span class="arch-component">Acoustic sensors (MEMS mic, ultrasonic, AE)</span><span class="arch-component">Gas detectors (H2S, CH4, O2, LEL — electrochemical & IR)</span><span class="arch-component">Flame detectors (multi-IR, UV/IR, imaging)</span><span class="arch-component">Corrosion probes (ER, UT, guided wave)</span><span class="arch-component">Valve positioners (smart, HART, Profibus)</span><span class="arch-component">Power meters (CT/PT, PMU, power quality)</span><span class="arch-component">Environmental sensors (anemometer, RH, barometric, wave buoy)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">🖥️</div>
+            <div class="arch-layer-name">Layer 1 — Edge Gateways</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">Hailo-8 edge accelerators (26 TOPS, 2.5W) — vibration, vision</span><span class="arch-component">Jetson Orin NX (100 TOPS, 25W) — multi-modal fusion, raw waveforms</span><span class="arch-component">Coral Edge TPU (4 TOPS, 2W) — TinyML, simple inference</span><span class="arch-component">RPi 5 + Coral — environmental, low-power nodes</span><span class="arch-component">Industrial gateways (Moxa, Sierra Wireless, Cisco IR)</span><span class="arch-component">Protocol bridges (OPC-UA, Modbus, MQTT, DNP3, IEC 61850)</span><span class="arch-component">Local buffer: 72-hour autonomy on WAN loss</span><span class="arch-component">Edge AI: TinyML on $1 MCUs (STM32H7)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">📨</div>
+            <div class="arch-layer-name">Layer 2 — Ingestion Layer</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">MQTT broker (Mosquitto / EMQX) — IoT sensor streams</span><span class="arch-component">OPC-UA aggregation server — industrial protocols</span><span class="arch-component">Modbus gateway — legacy PLC integration</span><span class="arch-component">CoAP gateway — constrained device REST</span><span class="arch-component">Schema Registry (Confluent) — Avro schema validation</span><span class="arch-component">Protocol bridge — OPC-UA → canonical, Modbus → canonical</span><span class="arch-component">LLM-assisted semantic normalization — tag → physical quantity</span><span class="arch-component">Throughput: 1M msgs/sec sustained, 10M burst</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">⚡</div>
+            <div class="arch-layer-name">Layer 3 — Stream Processing</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">Apache Kafka (5 brokers, KRaft mode) — event backbone</span><span class="arch-component">Apache Flink (8 task managers) — real-time windowed ML</span><span class="arch-component">Apache Spark Streaming (Structured Streaming) — micro-batch ETL</span><span class="arch-component">Kafka Connect — source/sink connectors (S3, JDBC, CDC)</span><span class="arch-component">Kafka Streams — lightweight per-service stream processing</span><span class="arch-component">TS-FM inference — ONNX Runtime at edge, GPU in cloud</span><span class="arch-component">Anomaly token emission — 99.7% bandwidth reduction</span><span class="arch-component">Exactly-once semantics across the pipeline</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">☁️</div>
+            <div class="arch-layer-name">Layer 4 — Plant Cloud / On-Prem Big Data</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">TimescaleDB (HA cluster) — hot storage, 30-day retention</span><span class="arch-component">Apache Iceberg (S3/MinIO) — cold storage, Parquet, time travel</span><span class="arch-component">ClickHouse (3 shards) — OLAP, sub-second queries on billions of rows</span><span class="arch-component">Apache Superset / Grafana — dashboards & BI</span><span class="arch-component">MLflow — model registry & experiment tracking</span><span class="arch-component">Apache Airflow — batch ETL orchestration</span><span class="arch-component">PostgreSQL — metadata, asset registry, user management</span><span class="arch-component">Redis — real-time feature store, low-latency cache</span><span class="arch-component">Kubernetes (EKS/GKE/on-prem) — container orchestration</span><span class="arch-component">Istio — service mesh, mTLS, traffic management</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        
+        <div class="arch-layer">
+          <div class="arch-layer-header">
+            <div class="arch-layer-icon">📱</div>
+            <div class="arch-layer-name">Layer 5 — Consumer Apps</div>
+          </div>
+          <div class="arch-layer-components">
+            <span class="arch-component">REST + GraphQL API — third-party + custom apps</span><span class="arch-component">LLM-native query layer — natural language → cited answers</span><span class="arch-component">Real-time alerting — PagerDuty, Slack, SMS, email</span><span class="arch-component">Mobile apps — field operator alerts, permit-to-work</span><span class="arch-component">DCS / SCADA integration — write-back to control systems</span><span class="arch-component">ERP integration — SAP PM, Maximo maintenance records</span><span class="arch-component">Regulatory reporting — EPA, BSEE, OSHA automated filings</span><span class="arch-component">Citizen data scientist — no-code query builder</span>
+          </div>
+        </div>
+        
+        
+      </div>
+    </section>
+
+    <!-- LAYER DETAILS -->
+    
+    <section class="doc-section" id="layer-0">
+      <div class="section-label">Layer 0</div>
+      <h2>Field Instruments</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">📡</div>Layer 0 — Field Instruments</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">Pressure transmitters (Rosemount 3051S, Yokogawa EJX)</div><div class="layer-component-card">Temperature RTDs & thermocouples (with HART transmitters)</div><div class="layer-component-card">Flow meters (Coriolis, ultrasonic, magnetic)</div><div class="layer-component-card">Level transmitters (radar, guided wave, ultrasonic)</div><div class="layer-component-card">Vibration accelerometers (IEPE, tri-axial MEMS)</div><div class="layer-component-card">Acoustic sensors (MEMS mic, ultrasonic, AE)</div><div class="layer-component-card">Gas detectors (H2S, CH4, O2, LEL — electrochemical & IR)</div><div class="layer-component-card">Flame detectors (multi-IR, UV/IR, imaging)</div><div class="layer-component-card">Corrosion probes (ER, UT, guided wave)</div><div class="layer-component-card">Valve positioners (smart, HART, Profibus)</div><div class="layer-component-card">Power meters (CT/PT, PMU, power quality)</div><div class="layer-component-card">Environmental sensors (anemometer, RH, barometric, wave buoy)</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="layer-1">
+      <div class="section-label">Layer 1</div>
+      <h2>Edge Gateways</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">🖥️</div>Layer 1 — Edge Gateways</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">Hailo-8 edge accelerators (26 TOPS, 2.5W) — vibration, vision</div><div class="layer-component-card">Jetson Orin NX (100 TOPS, 25W) — multi-modal fusion, raw waveforms</div><div class="layer-component-card">Coral Edge TPU (4 TOPS, 2W) — TinyML, simple inference</div><div class="layer-component-card">RPi 5 + Coral — environmental, low-power nodes</div><div class="layer-component-card">Industrial gateways (Moxa, Sierra Wireless, Cisco IR)</div><div class="layer-component-card">Protocol bridges (OPC-UA, Modbus, MQTT, DNP3, IEC 61850)</div><div class="layer-component-card">Local buffer: 72-hour autonomy on WAN loss</div><div class="layer-component-card">Edge AI: TinyML on $1 MCUs (STM32H7)</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="layer-2">
+      <div class="section-label">Layer 2</div>
+      <h2>Ingestion Layer</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">📨</div>Layer 2 — Ingestion Layer</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">MQTT broker (Mosquitto / EMQX) — IoT sensor streams</div><div class="layer-component-card">OPC-UA aggregation server — industrial protocols</div><div class="layer-component-card">Modbus gateway — legacy PLC integration</div><div class="layer-component-card">CoAP gateway — constrained device REST</div><div class="layer-component-card">Schema Registry (Confluent) — Avro schema validation</div><div class="layer-component-card">Protocol bridge — OPC-UA → canonical, Modbus → canonical</div><div class="layer-component-card">LLM-assisted semantic normalization — tag → physical quantity</div><div class="layer-component-card">Throughput: 1M msgs/sec sustained, 10M burst</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="layer-3">
+      <div class="section-label">Layer 3</div>
+      <h2>Stream Processing</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">⚡</div>Layer 3 — Stream Processing</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">Apache Kafka (5 brokers, KRaft mode) — event backbone</div><div class="layer-component-card">Apache Flink (8 task managers) — real-time windowed ML</div><div class="layer-component-card">Apache Spark Streaming (Structured Streaming) — micro-batch ETL</div><div class="layer-component-card">Kafka Connect — source/sink connectors (S3, JDBC, CDC)</div><div class="layer-component-card">Kafka Streams — lightweight per-service stream processing</div><div class="layer-component-card">TS-FM inference — ONNX Runtime at edge, GPU in cloud</div><div class="layer-component-card">Anomaly token emission — 99.7% bandwidth reduction</div><div class="layer-component-card">Exactly-once semantics across the pipeline</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="layer-4">
+      <div class="section-label">Layer 4</div>
+      <h2>Plant Cloud / On-Prem Big Data</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">☁️</div>Layer 4 — Plant Cloud / On-Prem Big Data</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">TimescaleDB (HA cluster) — hot storage, 30-day retention</div><div class="layer-component-card">Apache Iceberg (S3/MinIO) — cold storage, Parquet, time travel</div><div class="layer-component-card">ClickHouse (3 shards) — OLAP, sub-second queries on billions of rows</div><div class="layer-component-card">Apache Superset / Grafana — dashboards & BI</div><div class="layer-component-card">MLflow — model registry & experiment tracking</div><div class="layer-component-card">Apache Airflow — batch ETL orchestration</div><div class="layer-component-card">PostgreSQL — metadata, asset registry, user management</div><div class="layer-component-card">Redis — real-time feature store, low-latency cache</div><div class="layer-component-card">Kubernetes (EKS/GKE/on-prem) — container orchestration</div><div class="layer-component-card">Istio — service mesh, mTLS, traffic management</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="doc-section" id="layer-5">
+      <div class="section-label">Layer 5</div>
+      <h2>Consumer Apps</h2>
+      <div class="layer-detail">
+        <h3><div class="layer-detail-icon">📱</div>Layer 5 — Consumer Apps</h3>
+        <div class="layer-detail-grid">
+          <div class="layer-component-card">REST + GraphQL API — third-party + custom apps</div><div class="layer-component-card">LLM-native query layer — natural language → cited answers</div><div class="layer-component-card">Real-time alerting — PagerDuty, Slack, SMS, email</div><div class="layer-component-card">Mobile apps — field operator alerts, permit-to-work</div><div class="layer-component-card">DCS / SCADA integration — write-back to control systems</div><div class="layer-component-card">ERP integration — SAP PM, Maximo maintenance records</div><div class="layer-component-card">Regulatory reporting — EPA, BSEE, OSHA automated filings</div><div class="layer-component-card">Citizen data scientist — no-code query builder</div>
+        </div>
+      </div>
+    </section>
+    
+
+    <!-- DATA FLOW EXAMPLE -->
+    <section class="doc-section">
+      <div class="section-label">Worked Example</div>
+      <h2>One vibration event, <span class="accent">end to end.</span></h2>
+      <p>Follow a single anomalous vibration reading from a compressor bearing — through every layer of the architecture — to a CEO's daily brief.</p>
+      <div class="diagram">
+        <div class="diagram-title">Vibration Event → Executive Brief (Full Pipeline)</div>
+        <div class="flow-diagram" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <div class="flow-node">L0: IEPE accelerometer detects 11.2 mm/s RMS on compressor bearing (10 kHz raw)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L1: Hailo-8 edge gateway computes features, detects anomaly (RMS > threshold)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L2: Edge publishes via MQTT to ingest service (QoS 1, retained)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node accent">L3: Kafka topic telemetry.raw → Flink 30s window → TS-FM inference (confidence 0.91)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L3: Anomaly token emitted to alerts.processed (99.7% bandwidth reduction)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L4: TimescaleDB stores event; Iceberg archives to S3; ClickHouse rolls up hourly</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node accent">L4: Graph RAG traverses asset graph (compressor → line → maintenance log → ERP)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L5: LLM composes brief with citations; alert routed to plant manager + ops VP</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node">L5: Daily brief auto-generated at 06:00, pushed to CEO dashboard</div>
+        </div>
+      </div>
+      <p>Total end-to-end latency: <strong>&lt; 5 seconds</strong> from sensor reading to alert. Daily brief generated at 06:00 local time with full evidence chain.</p>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Watch the pipeline running live <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same 6-layer pipeline described above. Sensor ingest, Flink windowing, TS-FM inference, anomaly alerts — all live, all real code.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sensors.html">Sensor Catalog</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="scenario-offshore-oil-gas.html">Offshore Scenario</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Sensor Types & Architecture &middot; <a href="#top">Back to top</a>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;">
+      <div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div>
+      <div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+      <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p>
+    </form></div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body">
+      <div class="search-box"><input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What sensor types do you support?'; handleSearch();">What sensor types do you support?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does Flink process sensor streams?'; handleSearch();">How does Flink process sensor streams?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the architecture for ingestion?'; handleSearch();">What is the architecture for ingestion?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+
+<script src="assets/app.js"></script>
+<script>
+// =====================================================================
+// Sensor types data (embedded)
+// =====================================================================
+const SENSOR_TYPES = [{"id": "pressure", "name": "Pressure", "channels": [{"channel": "wellhead pressure", "value": 4632.9, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH01"}, {"channel": "pipeline pressure", "value": 4649.79, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH02"}, {"channel": "vessel pressure", "value": 4805.01, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH03"}, {"channel": "separator pressure", "value": 4659.73, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH04"}, {"channel": "annulus pressure", "value": 5044.58, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH05"}, {"channel": "wellhead pressure", "value": 4626.0, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH06"}, {"channel": "pipeline pressure", "value": 4867.56, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH07"}, {"channel": "vessel pressure", "value": 4768.62, "unit": "psi", "status": "nominal", "asset_id": "PRESSURE-CH08"}], "live_reading": {"value": 4850, "unit": "psi", "status": "nominal", "range": [4000, 5500], "alert": [3500, 7000]}}, {"id": "temperature", "name": "Temperature", "channels": [{"channel": "bearing temperature", "value": 74.95, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH01"}, {"channel": "process temperature", "value": 69.94, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH02"}, {"channel": "motor winding temperature", "value": 71.22, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH03"}, {"channel": "exhaust gas temperature", "value": 71.2, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH04"}, {"channel": "ambient temperature", "value": 70.55, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH05"}, {"channel": "bearing temperature", "value": 68.79, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH06"}, {"channel": "process temperature", "value": 71.94, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH07"}, {"channel": "motor winding temperature", "value": 69.41, "unit": "\u00b0C", "status": "nominal", "asset_id": "TEMPERATURE-CH08"}], "live_reading": {"value": 72.4, "unit": "\u00b0C", "status": "nominal", "range": [65, 85], "alert": [55, 95]}}, {"id": "flow", "name": "Flow", "channels": [{"channel": "gas flow", "value": 454.59, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH01"}, {"channel": "oil flow", "value": 430.84, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH02"}, {"channel": "water injection flow", "value": 441.89, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH03"}, {"channel": "flare flow", "value": 447.87, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH04"}, {"channel": "chemical injection flow", "value": 468.45, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH05"}, {"channel": "gas flow", "value": 431.87, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH06"}, {"channel": "oil flow", "value": 434.09, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH07"}, {"channel": "water injection flow", "value": 463.26, "unit": "m\u00b3/h", "status": "nominal", "asset_id": "FLOW-CH08"}], "live_reading": {"value": 450.2, "unit": "m\u00b3/h", "status": "nominal", "range": [400, 520], "alert": [200, 600]}}, {"id": "level", "name": "Level", "channels": [{"channel": "tank level", "value": 62.65, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH01"}, {"channel": "separator level", "value": 68.51, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH02"}, {"channel": "produced water level", "value": 66.28, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH03"}, {"channel": "drain sump level", "value": 64.26, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH04"}, {"channel": "ballast level", "value": 68.02, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH05"}, {"channel": "tank level", "value": 67.57, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH06"}, {"channel": "separator level", "value": 64.77, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH07"}, {"channel": "produced water level", "value": 67.78, "unit": "%", "status": "nominal", "asset_id": "LEVEL-CH08"}], "live_reading": {"value": 65.8, "unit": "%", "status": "nominal", "range": [40, 80], "alert": [20, 95]}}, {"id": "vibration", "name": "Vibration", "channels": [{"channel": "compressor vibration", "value": 4.25, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH01"}, {"channel": "pump vibration", "value": 4.43, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH02"}, {"channel": "turbine vibration", "value": 4.39, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH03"}, {"channel": "generator vibration", "value": 4.52, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH04"}, {"channel": "motor vibration", "value": 4.3, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH05"}, {"channel": "compressor vibration", "value": 4.34, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH06"}, {"channel": "pump vibration", "value": 4.5, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH07"}, {"channel": "turbine vibration", "value": 4.39, "unit": "mm/s RMS", "status": "nominal", "asset_id": "VIBRATION-CH08"}], "live_reading": {"value": 4.38, "unit": "mm/s RMS", "status": "nominal", "range": [3.5, 6.0], "alert": [6.0, 12.0]}}, {"id": "acoustic", "name": "Acoustic", "channels": [{"channel": "leak acoustic signatures", "value": 46.04, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH01"}, {"channel": "valve leak acoustic", "value": 45.83, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH02"}, {"channel": "pipe stress acoustic", "value": 45.95, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH03"}, {"channel": "gas leak ultrasonic", "value": 46.96, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH04"}, {"channel": "machinery acoustic", "value": 45.14, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH05"}, {"channel": "leak acoustic signatures", "value": 45.96, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH06"}, {"channel": "valve leak acoustic", "value": 44.63, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH07"}, {"channel": "pipe stress acoustic", "value": 43.08, "unit": "dB", "status": "nominal", "asset_id": "ACOUSTIC-CH08"}], "live_reading": {"value": 45.2, "unit": "dB", "status": "nominal", "range": [35, 55], "alert": [60, 90]}}, {"id": "gas-detection", "name": "Gas Detection", "channels": [{"channel": "methane (CH4)", "value": 3.28, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH01"}, {"channel": "H2S", "value": 3.1, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH02"}, {"channel": "carbon monoxide (CO)", "value": 3.3, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH03"}, {"channel": "oxygen deficiency (O2)", "value": 3.33, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH04"}, {"channel": "VOC / LEL", "value": 3.25, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH05"}, {"channel": "methane (CH4)", "value": 3.09, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH06"}, {"channel": "H2S", "value": 3.15, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH07"}, {"channel": "carbon monoxide (CO)", "value": 3.17, "unit": "ppm", "status": "nominal", "asset_id": "GAS-DETECTION-CH08"}], "live_reading": {"value": 3.2, "unit": "ppm", "status": "nominal", "range": [0, 10], "alert": [10, 100]}}, {"id": "flame-ir-uv", "name": "Flame / IR / UV", "channels": [{"channel": "fire detection (flame)", "value": -0.43, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH01"}, {"channel": "hot spot detection (IR)", "value": -0.04, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH02"}, {"channel": "UV flame sensing", "value": 0.07, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH03"}, {"channel": "multi-spectrum fire", "value": -0.16, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH04"}, {"channel": "explosion detection", "value": -0.31, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH05"}, {"channel": "fire detection (flame)", "value": -0.41, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH06"}, {"channel": "hot spot detection (IR)", "value": 0.13, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH07"}, {"channel": "UV flame sensing", "value": -0.49, "unit": "detected", "status": "critical", "asset_id": "FLAME-IR-UV-CH08"}], "live_reading": {"value": 0, "unit": "detected", "status": "nominal", "range": [0, 0], "alert": [1, 1]}}, {"id": "corrosion", "name": "Corrosion", "channels": [{"channel": "corrosion probes (ER/ECN)", "value": 0.08, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH01"}, {"channel": "wall thickness (UT)", "value": 0.08, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH02"}, {"channel": "corrosion coupons", "value": 0.08, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH03"}, {"channel": "guided wave (long range UT)", "value": 0.08, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH04"}, {"channel": "pitting detection", "value": 0.09, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH05"}, {"channel": "corrosion probes (ER/ECN)", "value": 0.08, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH06"}, {"channel": "wall thickness (UT)", "value": 0.09, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH07"}, {"channel": "corrosion coupons", "value": 0.09, "unit": "mm/year", "status": "nominal", "asset_id": "CORROSION-CH08"}], "live_reading": {"value": 0.082, "unit": "mm/year", "status": "nominal", "range": [0, 0.15], "alert": [0.15, 0.5]}}, {"id": "valve-position", "name": "Valve Position", "channels": [{"channel": "open/close state", "value": 76.18, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH01"}, {"channel": "travel deviation", "value": 73.19, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH02"}, {"channel": "valve stroke time", "value": 75.08, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH03"}, {"channel": "ESD valve test", "value": 72.78, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH04"}, {"channel": "modulating valve position", "value": 78.9, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH05"}, {"channel": "open/close state", "value": 74.78, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH06"}, {"channel": "travel deviation", "value": 77.09, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH07"}, {"channel": "valve stroke time", "value": 71.77, "unit": "% open", "status": "nominal", "asset_id": "VALVE-POSITION-CH08"}], "live_reading": {"value": 75.2, "unit": "% open", "status": "nominal", "range": [50, 100], "alert": [0, 50]}}, {"id": "power-electrical", "name": "Power / Electrical", "channels": [{"channel": "current (CT)", "value": 274.98, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH01"}, {"channel": "voltage (PT)", "value": 276.64, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH02"}, {"channel": "frequency", "value": 278.45, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH03"}, {"channel": "power factor", "value": 281.18, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH04"}, {"channel": "harmonics (THD)", "value": 278.89, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH05"}, {"channel": "partial discharge", "value": 283.52, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH06"}, {"channel": "current (CT)", "value": 283.13, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH07"}, {"channel": "voltage (PT)", "value": 274.23, "unit": "A", "status": "nominal", "asset_id": "POWER-ELECTRICAL-CH08"}], "live_reading": {"value": 285.4, "unit": "A", "status": "nominal", "range": [200, 320], "alert": [350, 500]}}, {"id": "environmental", "name": "Environmental", "channels": [{"channel": "wind speed", "value": 8.13, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH01"}, {"channel": "wind direction", "value": 8.38, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH02"}, {"channel": "humidity", "value": 8.15, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH03"}, {"channel": "wave motion (heave)", "value": 8.44, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH04"}, {"channel": "ambient temperature", "value": 8.08, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH05"}, {"channel": "barometric pressure", "value": 8.53, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH06"}, {"channel": "visibility", "value": 8.14, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH07"}, {"channel": "rainfall", "value": 8.67, "unit": "m/s", "status": "nominal", "asset_id": "ENVIRONMENTAL-CH08"}], "live_reading": {"value": 8.5, "unit": "m/s", "status": "nominal", "range": [3, 15], "alert": [25, 60]}}];
+
+// =====================================================================
+// Live update loop — every 3 seconds
+// =====================================================================
+function updateAllSensors() {
+  let nominal = 0, warning = 0, critical = 0;
+
+  SENSOR_TYPES.forEach(st => {
+    st.channels.forEach((ch, i) => {
+      const base = st.live_reading.value;
+      const variance = Math.abs(base * 0.05) || 0.5;
+      // Sine wave + noise model
+      const phase = (Date.now() / 1000 + i * 0.5) * 0.3;
+      const sine = Math.sin(phase) * variance * 0.8;
+      const noise = (Math.random() - 0.5) * variance * 0.5;
+      let value = base + sine + noise;
+
+      // Occasionally inject anomaly (0.5% chance)
+      if (Math.random() < 0.005) {
+        value = base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      }
+
+      value = Math.round(value * 100) / 100;
+
+      // Determine status
+      const nominalRange = st.live_reading.range;
+      const alertRange = st.live_reading.alert;
+      let status = 'nominal';
+      if (value < nominalRange[0] || value > nominalRange[1]) {
+        if (value < alertRange[0] || value > alertRange[1]) {
+          status = 'critical';
+        } else {
+          status = 'warning';
+        }
+      }
+
+      // Update DOM
+      const el = document.getElementById(`ch-${st.id}-${i}`);
+      if (el) {
+        el.className = `live-channel ${status}`;
+        const valEl = el.querySelector('.ch-value');
+        if (valEl) valEl.textContent = `${value} ${ch.unit}`;
+      }
+
+      // Count
+      if (status === 'nominal') nominal++;
+      else if (status === 'warning') warning++;
+      else critical++;
+    });
+  });
+
+  // Update stats
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('en-GB', { hour12: false });
+  document.getElementById('nominal-count').textContent = nominal;
+  document.getElementById('warning-count').textContent = warning;
+  document.getElementById('critical-count').textContent = critical;
+}
+
+// =====================================================================
+// Filter sensor types
+// =====================================================================
+function filterSensorTypes(type, event) {
+  document.querySelectorAll('.sensor-filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('[data-sensor-type]').forEach(s => {
+    if (type === 'all' || s.dataset.sensorType === type) {
+      s.style.display = 'block';
+    } else {
+      s.style.display = 'none';
+    }
+  });
+}
+
+// =====================================================================
+// Init
+// =====================================================================
+updateAllSensors();
+setInterval(updateAllSensors, 3000);
+
+// Scroll-spy for sidebar
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
