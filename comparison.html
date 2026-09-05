@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Competitive Comparison</title>
+<meta name="description" content="Honest, structured comparison of AISensorEdgeComp vs AWS IoT, Azure IoT, Cognite, Augury, Uptake, Seeq, ThingsBoard across 25+ dimensions." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Competitive Comparison Matrix" />
+<meta property="og:description" content="How AISensorEdgeComp compares to AWS IoT, Azure IoT, Cognite, Augury, and 3 others — across 25+ dimensions." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .cmp-table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 1200px;
+  }
+  .cmp-table th, .cmp-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .cmp-table th {
+    background: var(--bg-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mute);
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .cmp-table th.us, .cmp-table td.us {
+    background: color-mix(in srgb, var(--cyan) 5%, transparent);
+    border-left: 2px solid var(--cyan);
+  }
+  .cmp-table th.us { color: var(--cyan); font-weight: 700; }
+  .cmp-table .cmp-category {
+    background: var(--card);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+  }
+  .cmp-table td:first-child {
+    font-weight: 500;
+    color: var(--text);
+    min-width: 200px;
+  }
+  .cmp-table .yes { color: var(--green); font-weight: 500; }
+  .cmp-table .no { color: var(--magenta); }
+  .cmp-table .partial { color: var(--gold); }
+  .cmp-table .text-val { color: var(--text-dim); font-size: 12px; }
+  .cmp-competitor-header {
+    text-align: center;
+    min-width: 140px;
+  }
+  .cmp-competitor-header .cmp-icon {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .cmp-competitor-header .cmp-name {
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cmp-competitor-header .cmp-tag {
+    font-size: 9px;
+    color: var(--text-mute);
+    margin-top: 2px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .cmp-filter-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .cmp-filter-chip {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cmp-filter-chip:hover, .cmp-filter-chip.active {
+    background: color-mix(in srgb, var(--cyan) 10%, transparent);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .cmp-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .cmp-summary-card {
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+  .cmp-summary-card.us {
+    border-color: var(--cyan);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card));
+  }
+  .cmp-summary-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .cmp-summary-card .cmp-sc-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cmp-summary-card .cmp-sc-icon { font-size: 28px; }
+  .cmp-summary-card .cmp-sc-name {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .cmp-summary-card .cmp-sc-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 1px;
+  }
+  .cmp-summary-card .cmp-sc-how {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body id="comparison">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="comparison.html" class="active">Comparison</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Competitive Comparison</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Honest · 25+ dimensions · 7 competitors</div>
+    <h1>Competitive <span class="accent">Comparison</span></h1>
+    <p class="lead">The #1 artifact investors ask for in due diligence. How does AISensorEdgeComp compare to AWS IoT, Azure IoT, Cognite, Augury, Uptake, Seeq, and ThingsBoard? Across 25+ dimensions — honestly, including where we're weaker.</p>
+  </div>
+</section>
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Filter bar -->
+  <div class="cmp-filter-bar">
+    <button class="cmp-filter-chip active" onclick="filterComparison('all', event)">All dimensions (25)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Platform', event)">Platform (4)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Sensors', event)">Sensors (3)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Edge', event)">Edge (3)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('ML / AI', event)">ML / AI (6)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Data', event)">Data (4)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Security', event)">Security (4)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('Pricing', event)">Pricing (2)</button>
+    <button class="cmp-filter-chip" onclick="filterComparison('ESG', event)">ESG (1)</button>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="cmp-table-wrapper">
+    <table class="cmp-table" id="cmp-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th class="cmp-competitor-header us" style="--color: #00d4ff;">
+            <span class="cmp-icon">🚀</span>
+            <span class="cmp-name">AISensorEdgeComp</span>
+            <span class="cmp-tag">Planetary sensor fabric, intelligenced</span>
+          </th><th class="cmp-competitor-header " style="--color: #ff9900;">
+            <span class="cmp-icon">☁️</span>
+            <span class="cmp-name">AWS IoT Core</span>
+            <span class="cmp-tag">Cloud IoT infrastructure</span>
+          </th><th class="cmp-competitor-header " style="--color: #0078d4;">
+            <span class="cmp-icon">☁️</span>
+            <span class="cmp-name">Azure IoT Hub</span>
+            <span class="cmp-tag">Microsoft's IoT cloud</span>
+          </th><th class="cmp-competitor-header " style="--color: #1a73e8;">
+            <span class="cmp-icon">🏭</span>
+            <span class="cmp-name">Cognite</span>
+            <span class="cmp-tag">Industrial data ops</span>
+          </th><th class="cmp-competitor-header " style="--color: #7c3aed;">
+            <span class="cmp-icon">🌀</span>
+            <span class="cmp-name">Augury</span>
+            <span class="cmp-tag">Vibration anomaly detection</span>
+          </th><th class="cmp-competitor-header " style="--color: #ec4899;">
+            <span class="cmp-icon">📊</span>
+            <span class="cmp-name">Uptake</span>
+            <span class="cmp-tag">Predictive analytics</span>
+          </th><th class="cmp-competitor-header " style="--color: #22c55e;">
+            <span class="cmp-icon">🔍</span>
+            <span class="cmp-name">Seeq</span>
+            <span class="cmp-tag">Process manufacturing analytics</span>
+          </th><th class="cmp-competitor-header " style="--color: #6b7280;">
+            <span class="cmp-icon">🔧</span>
+            <span class="cmp-name">ThingsBoard</span>
+            <span class="cmp-tag">Open-source IoT platform</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="cmp-tbody">
+        <tr><td colspan="9" class="cmp-category">Platform</td></tr><tr><td>Architecture</td><td class="us"><span class="text-val">4-layer substrate (sensing → connectivity → edge → intelligence)</span></td><td class=""><span class="text-val">Cloud-only ingest + rules</span></td><td class=""><span class="text-val">Cloud-only ingest + rules</span></td><td class=""><span class="text-val">Industrial dataops (cloud-native)</span></td><td class=""><span class="text-val">Vertical SaaS (vibration)</span></td><td class=""><span class="text-val">Vertical SaaS (predictive analytics)</span></td><td class=""><span class="text-val">Time-series analytics (desktop + server)</span></td><td class=""><span class="text-val">Open-source IoT platform (self-hosted)</span></td></tr><tr><td>Open-source code</td><td class="us"><span class="text-val">Apache 2.0 (platform repo, 95 files)</span></td><td class=""><span class="no">✗ (proprietary cloud service)</span></td><td class=""><span class="no">✗ (proprietary cloud service)</span></td><td class=""><span class="no">✗ (proprietary SaaS)</span></td><td class=""><span class="no">✗ (proprietary SaaS)</span></td><td class=""><span class="no">✗ (proprietary SaaS)</span></td><td class=""><span class="no">✗ (proprietary SaaS)</span></td><td class=""><span class="yes">✓ (Apache 2.0, community edition)</span></td></tr><tr><td>On-prem / air-gapped deploy</td><td class="us"><span class="yes">✓ (single k8s cluster, no external calls)</span></td><td class=""><span class="no">✗ (AWS cloud only; Greengrass edge but not air-gapped)</span></td><td class=""><span class="no">✗ (Azure cloud only; Stack Edge but not air-gapped)</span></td><td class=""><span class="no">✗ (SaaS only)</span></td><td class=""><span class="no">✗ (SaaS only)</span></td><td class=""><span class="no">✗ (SaaS only)</span></td><td class=""><span class="partial">◐ (on-prem server, but not air-gapped by design)</span></td><td class=""><span class="yes">✓ (self-hosted, can be air-gapped)</span></td></tr><tr><td>Multi-cloud / vendor-neutral</td><td class="us"><span class="yes">✓ (any k8s — AWS, Azure, GCP, on-prem)</span></td><td class=""><span class="no">✗ (AWS only)</span></td><td class=""><span class="no">✗ (Azure only)</span></td><td class=""><span class="partial">◐ (AWS + Azure, but not GCP or on-prem)</span></td><td class=""><span class="no">✗ (their cloud only)</span></td><td class=""><span class="no">✗ (their cloud only)</span></td><td class=""><span class="yes">✓ (runs anywhere)</span></td><td class=""><span class="yes">✓ (runs anywhere)</span></td></tr><tr><td colspan="9" class="cmp-category">Sensors</td></tr><tr><td>Protocol support (OPC-UA, Modbus, MQTT, CoAP, LoRaWAN, 5G, TSN)</td><td class="us"><span class="yes">✓ 12 protocols (incl. Profinet, EtherCAT, TSN, satellite)</span></td><td class=""><span class="partial">◐ MQTT, HTTPS only (no industrial protocols)</span></td><td class=""><span class="partial">◐ MQTT, AMQP, HTTPS (no industrial protocols)</span></td><td class=""><span class="partial">◐ OPC-UA, MQTT via extractors (no LoRaWAN/5G/TSN)</span></td><td class=""><span class="no">✗ (their sensors only — vibration)</span></td><td class=""><span class="no">✗ (their data pipeline only)</span></td><td class=""><span class="partial">◐ OPC-UA, historian connectors (no IoT protocols)</span></td><td class=""><span class="partial">◐ MQTT, CoAP, LwM2M (no OPC-UA/Modbus natively)</span></td></tr><tr><td>Sensor ontology / semantic normalization</td><td class="us"><span class="yes">✓ LLM-assisted, canonical schema, auto-mapping</span></td><td class=""><span class="no">✗ (raw bytes, customer manages semantics)</span></td><td class=""><span class="no">✗ (raw bytes, customer manages semantics)</span></td><td class=""><span class="partial">◐ (manual mapping, but well-structured data model)</span></td><td class=""><span class="no">✗ (single sensor type, no ontology needed)</span></td><td class=""><span class="no">✗ (ingest-only, customer maps)</span></td><td class=""><span class="partial">◐ (formula-based, manual)</span></td><td class=""><span class="no">✗ (raw telemetry, customer maps)</span></td></tr><tr><td>Self-calibration mesh</td><td class="us"><span class="yes">✓ (physics redundancy + GNN, −85% cost)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (sensor-specific calibration only)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td></tr><tr><td colspan="9" class="cmp-category">Edge</td></tr><tr><td>Edge AI inference</td><td class="us"><span class="yes">✓ Hailo-8, Jetson Orin, Coral, TinyML on $1 MCUs</span></td><td class=""><span class="partial">◐ Greengrass (Lambda at edge, limited ML)</span></td><td class=""><span class="partial">◐ Stack Edge (limited ML, Azure ML models only)</span></td><td class=""><span class="no">✗ (cloud-only processing)</span></td><td class=""><span class="partial">◐ (their edge device, vibration only)</span></td><td class=""><span class="no">✗ (cloud-only)</span></td><td class=""><span class="no">✗ (server-side only)</span></td><td class=""><span class="no">✗ (server-side rules only)</span></td></tr><tr><td>Liquid workload placement (edge ↔ cloud)</td><td class="us"><span class="yes">✓ 5-axis scheduler (latency, bandwidth, drift, battery, carbon)</span></td><td class=""><span class="no">✗ (hardcoded: rules at edge, ML in cloud)</span></td><td class=""><span class="no">✗ (hardcoded: rules at edge, ML in cloud)</span></td><td class=""><span class="no">✗ (cloud-only)</span></td><td class=""><span class="no">✗ (edge-only for vibration)</span></td><td class=""><span class="no">✗ (cloud-only)</span></td><td class=""><span class="no">✗ (server-only)</span></td><td class=""><span class="no">✗ (server-only)</span></td></tr><tr><td>Edge autonomy (WAN loss)</td><td class="us"><span class="yes">✓ 72 hours with no WAN, no degradation</span></td><td class=""><span class="no">✗ (Greengrass: limited local cache, no ML autonomy)</span></td><td class=""><span class="no">✗ (Stack Edge: limited, no ML autonomy)</span></td><td class=""><span class="no">✗ (cloud-only, fails on WAN loss)</span></td><td class=""><span class="partial">◐ (edge device runs locally, but no cloud resync)</span></td><td class=""><span class="no">✗ (cloud-only)</span></td><td class=""><span class="partial">◐ (server runs locally, but no streaming ingest)</span></td><td class=""><span class="partial">◐ (server runs locally, but no cloud resync)</span></td></tr><tr><td colspan="9" class="cmp-category">ML / AI</td></tr><tr><td>Time-series foundation model (zero-shot)</td><td class="us"><span class="yes">✓ 350M params, 0.89 AUC-ROC zero-shot, industrial-only</span></td><td class=""><span class="no">✗ (no ML models included; bring your own via SageMaker)</span></td><td class=""><span class="no">✗ (no ML models included; bring your own via Azure ML)</span></td><td class=""><span class="no">✗ (no ML models included; bring your own)</span></td><td class=""><span class="partial">◐ (bespoke vibration model, not a foundation model)</span></td><td class=""><span class="partial">◐ (bespoke predictive models, not a foundation model)</span></td><td class=""><span class="no">✗ (analytics only, no ML models)</span></td><td class=""><span class="no">✗ (no ML, rules engine only)</span></td></tr><tr><td>Federated learning</td><td class="us"><span class="yes">✓ DP noise + SGX secure aggregation, opt-in per customer</span></td><td class=""><span class="no">✗ (not offered — customers don't trust AWS with their data)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td><td class=""><span class="no">✗ (not offered)</span></td></tr><tr><td>Causal inference (correlation → cause)</td><td class="us"><span class="yes">✓ PC algorithm + do-calculus, backtested</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗ (correlation only)</span></td><td class=""><span class="no">✗ (correlation only)</span></td><td class=""><span class="no">✗ (no causal models)</span></td><td class=""><span class="no">✗</span></td></tr><tr><td>LLM-native query (natural language → cited answer)</td><td class="us"><span class="yes">✓ Graph RAG + LLM, citation chains, provenance</span></td><td class=""><span class="no">✗ (no query layer; use QuickSight separately)</span></td><td class=""><span class="no">✗ (no query layer; use PowerBI separately)</span></td><td class=""><span class="partial">◐ (search + data explorer, but no LLM/citations)</span></td><td class=""><span class="no">✗ (dashboard only)</span></td><td class=""><span class="no">✗ (dashboard only)</span></td><td class=""><span class="partial">◐ (formula search, but no LLM)</span></td><td class=""><span class="no">✗ (dashboard only)</span></td></tr><tr><td>RUL prediction (remaining useful life)</td><td class="us"><span class="yes">✓ per-asset-class, fine-tuned from TS-FM backbone</span></td><td class=""><span class="no">✗ (bring your own via SageMaker)</span></td><td class=""><span class="no">✗ (bring your own via Azure ML)</span></td><td class=""><span class="no">✗ (bring your own)</span></td><td class=""><span class="partial">◐ (vibration-only RUL)</span></td><td class=""><span class="partial">◐ (asset-specific RUL models)</span></td><td class=""><span class="no">✗ (no RUL models)</span></td><td class=""><span class="no">✗</span></td></tr><tr><td>Model monitoring / drift detection</td><td class="us"><span class="yes">✓ PSI + KS-test + ground-truth feedback loop</span></td><td class=""><span class="no">✗ (SageMaker Model Monitor is separate product)</span></td><td class=""><span class="no">✗ (Azure ML monitoring is separate)</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="partial">◐ (accuracy tracking, but no drift detection)</span></td><td class=""><span class="partial">◐ (accuracy tracking, but no drift)</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td></tr><tr><td colspan="9" class="cmp-category">Data</td></tr><tr><td>Streaming (Kafka + Flink)</td><td class="us"><span class="yes">✓ Kafka 5 brokers + Flink 8 TM, exactly-once</span></td><td class=""><span class="partial">◐ (Kinesis, but not Flink — use managed Kafka separately)</span></td><td class=""><span class="partial">◐ (Event Hubs, but not Flink)</span></td><td class=""><span class="partial">◐ (data pipeline, but not Kafka-native)</span></td><td class=""><span class="no">✗ (their pipeline, not exposed)</span></td><td class=""><span class="no">✗ (their pipeline, not exposed)</span></td><td class=""><span class="no">✗ (batch only)</span></td><td class=""><span class="partial">◐ (internal queue, not Kafka)</span></td></tr><tr><td>Cold storage (Iceberg + ClickHouse)</td><td class="us"><span class="yes">✓ Iceberg (Parquet/S3) + ClickHouse OLAP</span></td><td class=""><span class="partial">◐ (S3 + Athena, but not Iceberg-native)</span></td><td class=""><span class="partial">◐ (Data Lake + Synapse, but not Iceberg-native)</span></td><td class=""><span class="partial">◐ (their data warehouse, not Iceberg)</span></td><td class=""><span class="no">✗ (their storage, not exposed)</span></td><td class=""><span class="no">✗ (their storage, not exposed)</span></td><td class=""><span class="no">✗ (their historian)</span></td><td class=""><span class="partial">◐ (Cassandra/PostgreSQL, no Iceberg)</span></td></tr><tr><td>Open data schemas (Avro + Protobuf)</td><td class="us"><span class="yes">✓ Published, Apache 2.0, versioned with Schema Registry</span></td><td class=""><span class="no">✗ (proprietary format)</span></td><td class=""><span class="no">✗ (proprietary format)</span></td><td class=""><span class="partial">◐ (API-defined, but not Avro/Protobuf)</span></td><td class=""><span class="no">✗ (proprietary)</span></td><td class=""><span class="no">✗ (proprietary)</span></td><td class=""><span class="no">✗ (proprietary)</span></td><td class=""><span class="partial">◐ (JSON, but not Avro/Protobuf)</span></td></tr><tr><td>Synthetic dataset published</td><td class="us"><span class="yes">✓ 1M rows, Apache 2.0, Kaggle-style README</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td></tr><tr><td colspan="9" class="cmp-category">Security</td></tr><tr><td>Per-customer encryption keys</td><td class="us"><span class="yes">✓ KMS-derived, rotated quarterly, per-namespace</span></td><td class=""><span class="partial">◐ (KMS, but shared infrastructure)</span></td><td class=""><span class="partial">◐ (Key Vault, but shared infrastructure)</span></td><td class=""><span class="partial">◐ (tenant isolation, but shared keys)</span></td><td class=""><span class="no">✗ (shared SaaS)</span></td><td class=""><span class="no">✗ (shared SaaS)</span></td><td class=""><span class="no">✗ (shared server)</span></td><td class=""><span class="partial">◐ (depends on deployment)</span></td></tr><tr><td>Federated learning (data never leaves customer)</td><td class="us"><span class="yes">✓ gradients only, DP noise, SGX</span></td><td class=""><span class="no">✗ (raw data goes to AWS)</span></td><td class=""><span class="no">✗ (raw data goes to Azure)</span></td><td class=""><span class="no">✗ (raw data goes to Cognite)</span></td><td class=""><span class="no">✗ (raw data goes to Augury)</span></td><td class=""><span class="no">✗ (raw data goes to Uptake)</span></td><td class=""><span class="no">✗ (raw data on their server)</span></td><td class=""><span class="yes">✓ (data stays on your server — but no federated learning)</span></td></tr><tr><td>SOC 2 Type II</td><td class="us"><span class="text-val">In flight (Q1 2027)</span></td><td class=""><span class="yes">✓</span></td><td class=""><span class="yes">✓</span></td><td class=""><span class="yes">✓</span></td><td class=""><span class="yes">✓</span></td><td class=""><span class="yes">✓</span></td><td class=""><span class="partial">◐</span></td><td class=""><span class="no">✗ (open source, no compliance)</span></td></tr><tr><td>IEC 62443 (industrial cybersecurity)</td><td class="us"><span class="text-val">Scoping (Q3 2027)</span></td><td class=""><span class="no">✗ (not certified for IEC 62443)</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td></tr><tr><td colspan="9" class="cmp-category">Pricing</td></tr><tr><td>Pricing model</td><td class="us"><span class="text-val">$1.50-$6/sensor/month + base platform fee</span></td><td class=""><span class="text-val">Per-message ($0.80/M messages) + compute</span></td><td class=""><span class="text-val">Per-message + compute</span></td><td class=""><span class="text-val">Enterprise license (custom, $50k-$500k/yr)</span></td><td class=""><span class="text-val">Per-machine subscription ($5k-$20k/machine/yr)</span></td><td class=""><span class="text-val">Enterprise license (custom)</span></td><td class=""><span class="text-val">Per-seat license ($2k-$5k/user/yr)</span></td><td class=""><span class="text-val">Free (CE) or $3k-$15k/mo (PE)</span></td></tr><tr><td>Free design partner pilot</td><td class="us"><span class="yes">✓ 60 days, free, full platform, engineering support</span></td><td class=""><span class="no">✗ (free tier: 250k msgs/mo, limited)</span></td><td class=""><span class="no">✗ (free tier: 8k msgs/day, limited)</span></td><td class=""><span class="partial">◐ (PoC, but not self-serve)</span></td><td class=""><span class="no">✗ (paid pilot)</span></td><td class=""><span class="no">✗ (paid pilot)</span></td><td class=""><span class="partial">◐ (free trial, limited)</span></td><td class=""><span class="yes">✓ (open source, free forever)</span></td></tr><tr><td colspan="9" class="cmp-category">ESG</td></tr><tr><td>Carbon-aware inference routing</td><td class="us"><span class="yes">✓ 5% weight on grid carbon in placement scheduler</span></td><td class=""><span class="no">✗ (no carbon-aware routing)</span></td><td class=""><span class="no">✗ (no carbon-aware routing)</span></td><td class=""><span class="no">✗ (cloud-only, no routing)</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td><td class=""><span class="no">✗</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary cards -->
+  <section class="doc-section">
+    <div class="section-label">How we differ</div>
+    <h2>Per-competitor summary</h2>
+    <div class="cmp-summary">
+      <div class="cmp-summary-card us">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">🚀</span><div><div class="cmp-sc-name">AISensorEdgeComp</div><div class="cmp-sc-tag">Planetary sensor fabric, intelligenced</div></div></div>
+        <div class="cmp-sc-how"><strong>We are the only platform</strong> with a TS-FM foundation model + federated learning + causal inference + liquid edge placement + carbon-aware routing. The universal substrate — not plumbing, not a single vertical.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">☁️</span><div><div class="cmp-sc-name">AWS IoT Core</div><div class="cmp-sc-tag">Cloud IoT infrastructure</div></div></div>
+        <div class="cmp-sc-how"><strong>They sell plumbing.</strong> No intelligence layer, no foundation model, no edge ML autonomy, no federated learning, no carbon-aware routing. We integrate with them (customers can use S3/IoT Core as ingest) but the reasoning layer is ours.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">☁️</span><div><div class="cmp-sc-name">Azure IoT Hub</div><div class="cmp-sc-tag">Microsoft's IoT cloud</div></div></div>
+        <div class="cmp-sc-how"><strong>Same story as AWS.</strong> Cloud infrastructure, no intelligence. Azure ML is a separate product you bolt on. No foundation model, no edge autonomy, no federated learning.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">🏭</span><div><div class="cmp-sc-name">Cognite</div><div class="cmp-sc-tag">Industrial data ops</div></div></div>
+        <div class="cmp-sc-how"><strong>They go deep in industrial data modeling.</strong> Great data ops, but no ML foundation model, no edge compute, no federated learning. They're a data layer; we're an intelligence layer. We complement, not compete — our CEO came from Cognite.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">🌀</span><div><div class="cmp-sc-name">Augury</div><div class="cmp-sc-tag">Vibration anomaly detection</div></div></div>
+        <div class="cmp-sc-how"><strong>They go deep in one modality (vibration).</strong> Excellent models, but single-sensor-type only. We're the universal substrate — every modality, every vertical. Our Chief Scientist came from Augury and built their TS-FM.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">📊</span><div><div class="cmp-sc-name">Uptake</div><div class="cmp-sc-tag">Predictive analytics</div></div></div>
+        <div class="cmp-sc-how"><strong>Bespoke predictive models per customer.</strong> No foundation model, no zero-shot. Each new asset class requires months of labeled data. Our TS-FM works zero-shot on any asset class.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">🔍</span><div><div class="cmp-sc-name">Seeq</div><div class="cmp-sc-tag">Process manufacturing analytics</div></div></div>
+        <div class="cmp-sc-how"><strong>Great analytics tool for process engineers.</strong> But it's a desktop/server tool, not a platform. No ingest, no edge, no streaming, no ML, no federated learning. Seeq is what you use after AISensorEdgeComp has ingested and processed your data.</div>
+      </div>
+      <div class="cmp-summary-card">
+        <div class="cmp-sc-header"><span class="cmp-sc-icon">🔧</span><div><div class="cmp-sc-name">ThingsBoard</div><div class="cmp-sc-tag">Open-source IoT platform</div></div></div>
+        <div class="cmp-sc-how"><strong>Great open-source plumbing.</strong> Self-hosted, free, but no ML, no foundation model, no edge AI, no federated learning. DIY path — you build the intelligence layer yourself. We save you 18 months.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Honest gaps -->
+  <section class="doc-section">
+    <div class="section-label">Where we're weaker</div>
+    <h2>Honest gaps — <span class="accent">we don't hide them.</span></h2>
+    <div class="card-grid-2">
+      <div class="card" style="border-left: 3px solid var(--gold);">
+        <h3>Scale of existing deployments</h3>
+        <p>AWS IoT and Azure IoT have billions of devices connected. We have 7 design partners. That's the pre-Series A reality — and the reason we're raising. See our <a href="what-we-dont-do.html" style="color: var(--cyan);">what-we-dont-do page</a> for the full gap list.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--gold);">
+        <h3>SOC 2 / ISO 27001 / IEC 62443</h3>
+        <p>AWS, Azure, Cognite, Augury, Uptake all have SOC 2 Type II. We're in flight (Q1 2027). For now, design partners use our air-gapped deployment option for sensitive workloads.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--gold);">
+        <h3>Ecosystem breadth</h3>
+        <p>AWS IoT has 200+ integrations in their marketplace. We have 12 ingest protocols + our SDK (Python, JS). Our roadmap closes this with Go (Q4 2026), Rust (Q1 2027), and 50+ connectors by end of 2027.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--gold);">
+        <h3>Brand recognition</h3>
+        <p>Cognite is a $4B+ unicorn. Augury is a $1B+ company. We're pre-Series A. That changes with the round close in Q4 2026 — but today, an AWS IoT stamp on a slide deck opens doors we can't.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology -->
+  <section class="doc-section">
+    <div class="section-label">Methodology</div>
+    <h2>How we built this comparison</h2>
+    <p style="color: var(--text-dim); font-size: 15px;">Each cell is based on: (1) public documentation from the competitor, (2) our design-partner evaluations (customers who used competitor X before us), (3) Gartner / Forrester reports where available, (4) our own internal testing. Where we're unsure, we mark "◐" (partial). Where we're clearly weaker, we say so. This page is reviewed quarterly — last update: <strong>September 2026</strong>.</p>
+    <p style="color: var(--text-dim); font-size: 15px;">If you're from one of the companies listed and believe we've mischaracterized you, email <a href="mailto:platform@aisensoredgecomp.ai" style="color: var(--cyan);">platform@aisensoredgecomp.ai</a> — we'll correct it within 48 hours. We want this to be the most accurate comparison in the industry, not a marketing hit piece.</p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="what-we-dont-do.html">What We Don't Do</a>
+    <a href="roi-calculator.html">ROI Calculator</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Competitive Comparison &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const DIMENSIONS = [{"category": "Platform", "dimension": "Architecture", "values": {"aisensoredgecomp": "4-layer substrate (sensing \u2192 connectivity \u2192 edge \u2192 intelligence)", "aws-iot": "Cloud-only ingest + rules", "azure-iot": "Cloud-only ingest + rules", "cognite": "Industrial dataops (cloud-native)", "augury": "Vertical SaaS (vibration)", "uptake": "Vertical SaaS (predictive analytics)", "seeq": "Time-series analytics (desktop + server)", "thingsboard": "Open-source IoT platform (self-hosted)"}}, {"category": "Platform", "dimension": "Open-source code", "values": {"aisensoredgecomp": "Apache 2.0 (platform repo, 95 files)", "aws-iot": "\u2717 (proprietary cloud service)", "azure-iot": "\u2717 (proprietary cloud service)", "cognite": "\u2717 (proprietary SaaS)", "augury": "\u2717 (proprietary SaaS)", "uptake": "\u2717 (proprietary SaaS)", "seeq": "\u2717 (proprietary SaaS)", "thingsboard": "\u2713 (Apache 2.0, community edition)"}}, {"category": "Platform", "dimension": "On-prem / air-gapped deploy", "values": {"aisensoredgecomp": "\u2713 (single k8s cluster, no external calls)", "aws-iot": "\u2717 (AWS cloud only; Greengrass edge but not air-gapped)", "azure-iot": "\u2717 (Azure cloud only; Stack Edge but not air-gapped)", "cognite": "\u2717 (SaaS only)", "augury": "\u2717 (SaaS only)", "uptake": "\u2717 (SaaS only)", "seeq": "\u25d0 (on-prem server, but not air-gapped by design)", "thingsboard": "\u2713 (self-hosted, can be air-gapped)"}}, {"category": "Platform", "dimension": "Multi-cloud / vendor-neutral", "values": {"aisensoredgecomp": "\u2713 (any k8s \u2014 AWS, Azure, GCP, on-prem)", "aws-iot": "\u2717 (AWS only)", "azure-iot": "\u2717 (Azure only)", "cognite": "\u25d0 (AWS + Azure, but not GCP or on-prem)", "augury": "\u2717 (their cloud only)", "uptake": "\u2717 (their cloud only)", "seeq": "\u2713 (runs anywhere)", "thingsboard": "\u2713 (runs anywhere)"}}, {"category": "Sensors", "dimension": "Protocol support (OPC-UA, Modbus, MQTT, CoAP, LoRaWAN, 5G, TSN)", "values": {"aisensoredgecomp": "\u2713 12 protocols (incl. Profinet, EtherCAT, TSN, satellite)", "aws-iot": "\u25d0 MQTT, HTTPS only (no industrial protocols)", "azure-iot": "\u25d0 MQTT, AMQP, HTTPS (no industrial protocols)", "cognite": "\u25d0 OPC-UA, MQTT via extractors (no LoRaWAN/5G/TSN)", "augury": "\u2717 (their sensors only \u2014 vibration)", "uptake": "\u2717 (their data pipeline only)", "seeq": "\u25d0 OPC-UA, historian connectors (no IoT protocols)", "thingsboard": "\u25d0 MQTT, CoAP, LwM2M (no OPC-UA/Modbus natively)"}}, {"category": "Sensors", "dimension": "Sensor ontology / semantic normalization", "values": {"aisensoredgecomp": "\u2713 LLM-assisted, canonical schema, auto-mapping", "aws-iot": "\u2717 (raw bytes, customer manages semantics)", "azure-iot": "\u2717 (raw bytes, customer manages semantics)", "cognite": "\u25d0 (manual mapping, but well-structured data model)", "augury": "\u2717 (single sensor type, no ontology needed)", "uptake": "\u2717 (ingest-only, customer maps)", "seeq": "\u25d0 (formula-based, manual)", "thingsboard": "\u2717 (raw telemetry, customer maps)"}}, {"category": "Sensors", "dimension": "Self-calibration mesh", "values": {"aisensoredgecomp": "\u2713 (physics redundancy + GNN, \u221285% cost)", "aws-iot": "\u2717 (not offered)", "azure-iot": "\u2717 (not offered)", "cognite": "\u2717 (not offered)", "augury": "\u2717 (sensor-specific calibration only)", "uptake": "\u2717 (not offered)", "seeq": "\u2717 (not offered)", "thingsboard": "\u2717 (not offered)"}}, {"category": "Edge", "dimension": "Edge AI inference", "values": {"aisensoredgecomp": "\u2713 Hailo-8, Jetson Orin, Coral, TinyML on $1 MCUs", "aws-iot": "\u25d0 Greengrass (Lambda at edge, limited ML)", "azure-iot": "\u25d0 Stack Edge (limited ML, Azure ML models only)", "cognite": "\u2717 (cloud-only processing)", "augury": "\u25d0 (their edge device, vibration only)", "uptake": "\u2717 (cloud-only)", "seeq": "\u2717 (server-side only)", "thingsboard": "\u2717 (server-side rules only)"}}, {"category": "Edge", "dimension": "Liquid workload placement (edge \u2194 cloud)", "values": {"aisensoredgecomp": "\u2713 5-axis scheduler (latency, bandwidth, drift, battery, carbon)", "aws-iot": "\u2717 (hardcoded: rules at edge, ML in cloud)", "azure-iot": "\u2717 (hardcoded: rules at edge, ML in cloud)", "cognite": "\u2717 (cloud-only)", "augury": "\u2717 (edge-only for vibration)", "uptake": "\u2717 (cloud-only)", "seeq": "\u2717 (server-only)", "thingsboard": "\u2717 (server-only)"}}, {"category": "Edge", "dimension": "Edge autonomy (WAN loss)", "values": {"aisensoredgecomp": "\u2713 72 hours with no WAN, no degradation", "aws-iot": "\u2717 (Greengrass: limited local cache, no ML autonomy)", "azure-iot": "\u2717 (Stack Edge: limited, no ML autonomy)", "cognite": "\u2717 (cloud-only, fails on WAN loss)", "augury": "\u25d0 (edge device runs locally, but no cloud resync)", "uptake": "\u2717 (cloud-only)", "seeq": "\u25d0 (server runs locally, but no streaming ingest)", "thingsboard": "\u25d0 (server runs locally, but no cloud resync)"}}, {"category": "ML / AI", "dimension": "Time-series foundation model (zero-shot)", "values": {"aisensoredgecomp": "\u2713 350M params, 0.89 AUC-ROC zero-shot, industrial-only", "aws-iot": "\u2717 (no ML models included; bring your own via SageMaker)", "azure-iot": "\u2717 (no ML models included; bring your own via Azure ML)", "cognite": "\u2717 (no ML models included; bring your own)", "augury": "\u25d0 (bespoke vibration model, not a foundation model)", "uptake": "\u25d0 (bespoke predictive models, not a foundation model)", "seeq": "\u2717 (analytics only, no ML models)", "thingsboard": "\u2717 (no ML, rules engine only)"}}, {"category": "ML / AI", "dimension": "Federated learning", "values": {"aisensoredgecomp": "\u2713 DP noise + SGX secure aggregation, opt-in per customer", "aws-iot": "\u2717 (not offered \u2014 customers don't trust AWS with their data)", "azure-iot": "\u2717 (not offered)", "cognite": "\u2717 (not offered)", "augury": "\u2717 (not offered)", "uptake": "\u2717 (not offered)", "seeq": "\u2717 (not offered)", "thingsboard": "\u2717 (not offered)"}}, {"category": "ML / AI", "dimension": "Causal inference (correlation \u2192 cause)", "values": {"aisensoredgecomp": "\u2713 PC algorithm + do-calculus, backtested", "aws-iot": "\u2717", "azure-iot": "\u2717", "cognite": "\u2717", "augury": "\u2717 (correlation only)", "uptake": "\u2717 (correlation only)", "seeq": "\u2717 (no causal models)", "thingsboard": "\u2717"}}, {"category": "ML / AI", "dimension": "LLM-native query (natural language \u2192 cited answer)", "values": {"aisensoredgecomp": "\u2713 Graph RAG + LLM, citation chains, provenance", "aws-iot": "\u2717 (no query layer; use QuickSight separately)", "azure-iot": "\u2717 (no query layer; use PowerBI separately)", "cognite": "\u25d0 (search + data explorer, but no LLM/citations)", "augury": "\u2717 (dashboard only)", "uptake": "\u2717 (dashboard only)", "seeq": "\u25d0 (formula search, but no LLM)", "thingsboard": "\u2717 (dashboard only)"}}, {"category": "ML / AI", "dimension": "RUL prediction (remaining useful life)", "values": {"aisensoredgecomp": "\u2713 per-asset-class, fine-tuned from TS-FM backbone", "aws-iot": "\u2717 (bring your own via SageMaker)", "azure-iot": "\u2717 (bring your own via Azure ML)", "cognite": "\u2717 (bring your own)", "augury": "\u25d0 (vibration-only RUL)", "uptake": "\u25d0 (asset-specific RUL models)", "seeq": "\u2717 (no RUL models)", "thingsboard": "\u2717"}}, {"category": "ML / AI", "dimension": "Model monitoring / drift detection", "values": {"aisensoredgecomp": "\u2713 PSI + KS-test + ground-truth feedback loop", "aws-iot": "\u2717 (SageMaker Model Monitor is separate product)", "azure-iot": "\u2717 (Azure ML monitoring is separate)", "cognite": "\u2717", "augury": "\u25d0 (accuracy tracking, but no drift detection)", "uptake": "\u25d0 (accuracy tracking, but no drift)", "seeq": "\u2717", "thingsboard": "\u2717"}}, {"category": "Data", "dimension": "Streaming (Kafka + Flink)", "values": {"aisensoredgecomp": "\u2713 Kafka 5 brokers + Flink 8 TM, exactly-once", "aws-iot": "\u25d0 (Kinesis, but not Flink \u2014 use managed Kafka separately)", "azure-iot": "\u25d0 (Event Hubs, but not Flink)", "cognite": "\u25d0 (data pipeline, but not Kafka-native)", "augury": "\u2717 (their pipeline, not exposed)", "uptake": "\u2717 (their pipeline, not exposed)", "seeq": "\u2717 (batch only)", "thingsboard": "\u25d0 (internal queue, not Kafka)"}}, {"category": "Data", "dimension": "Cold storage (Iceberg + ClickHouse)", "values": {"aisensoredgecomp": "\u2713 Iceberg (Parquet/S3) + ClickHouse OLAP", "aws-iot": "\u25d0 (S3 + Athena, but not Iceberg-native)", "azure-iot": "\u25d0 (Data Lake + Synapse, but not Iceberg-native)", "cognite": "\u25d0 (their data warehouse, not Iceberg)", "augury": "\u2717 (their storage, not exposed)", "uptake": "\u2717 (their storage, not exposed)", "seeq": "\u2717 (their historian)", "thingsboard": "\u25d0 (Cassandra/PostgreSQL, no Iceberg)"}}, {"category": "Data", "dimension": "Open data schemas (Avro + Protobuf)", "values": {"aisensoredgecomp": "\u2713 Published, Apache 2.0, versioned with Schema Registry", "aws-iot": "\u2717 (proprietary format)", "azure-iot": "\u2717 (proprietary format)", "cognite": "\u25d0 (API-defined, but not Avro/Protobuf)", "augury": "\u2717 (proprietary)", "uptake": "\u2717 (proprietary)", "seeq": "\u2717 (proprietary)", "thingsboard": "\u25d0 (JSON, but not Avro/Protobuf)"}}, {"category": "Data", "dimension": "Synthetic dataset published", "values": {"aisensoredgecomp": "\u2713 1M rows, Apache 2.0, Kaggle-style README", "aws-iot": "\u2717", "azure-iot": "\u2717", "cognite": "\u2717", "augury": "\u2717", "uptake": "\u2717", "seeq": "\u2717", "thingsboard": "\u2717"}}, {"category": "Security", "dimension": "Per-customer encryption keys", "values": {"aisensoredgecomp": "\u2713 KMS-derived, rotated quarterly, per-namespace", "aws-iot": "\u25d0 (KMS, but shared infrastructure)", "azure-iot": "\u25d0 (Key Vault, but shared infrastructure)", "cognite": "\u25d0 (tenant isolation, but shared keys)", "augury": "\u2717 (shared SaaS)", "uptake": "\u2717 (shared SaaS)", "seeq": "\u2717 (shared server)", "thingsboard": "\u25d0 (depends on deployment)"}}, {"category": "Security", "dimension": "Federated learning (data never leaves customer)", "values": {"aisensoredgecomp": "\u2713 gradients only, DP noise, SGX", "aws-iot": "\u2717 (raw data goes to AWS)", "azure-iot": "\u2717 (raw data goes to Azure)", "cognite": "\u2717 (raw data goes to Cognite)", "augury": "\u2717 (raw data goes to Augury)", "uptake": "\u2717 (raw data goes to Uptake)", "seeq": "\u2717 (raw data on their server)", "thingsboard": "\u2713 (data stays on your server \u2014 but no federated learning)"}}, {"category": "Security", "dimension": "SOC 2 Type II", "values": {"aisensoredgecomp": "In flight (Q1 2027)", "aws-iot": "\u2713", "azure-iot": "\u2713", "cognite": "\u2713", "augury": "\u2713", "uptake": "\u2713", "seeq": "\u25d0", "thingsboard": "\u2717 (open source, no compliance)"}}, {"category": "Security", "dimension": "IEC 62443 (industrial cybersecurity)", "values": {"aisensoredgecomp": "Scoping (Q3 2027)", "aws-iot": "\u2717 (not certified for IEC 62443)", "azure-iot": "\u2717", "cognite": "\u2717", "augury": "\u2717", "uptake": "\u2717", "seeq": "\u2717", "thingsboard": "\u2717"}}, {"category": "Pricing", "dimension": "Pricing model", "values": {"aisensoredgecomp": "$1.50-$6/sensor/month + base platform fee", "aws-iot": "Per-message ($0.80/M messages) + compute", "azure-iot": "Per-message + compute", "cognite": "Enterprise license (custom, $50k-$500k/yr)", "augury": "Per-machine subscription ($5k-$20k/machine/yr)", "uptake": "Enterprise license (custom)", "seeq": "Per-seat license ($2k-$5k/user/yr)", "thingsboard": "Free (CE) or $3k-$15k/mo (PE)"}}, {"category": "Pricing", "dimension": "Free design partner pilot", "values": {"aisensoredgecomp": "\u2713 60 days, free, full platform, engineering support", "aws-iot": "\u2717 (free tier: 250k msgs/mo, limited)", "azure-iot": "\u2717 (free tier: 8k msgs/day, limited)", "cognite": "\u25d0 (PoC, but not self-serve)", "augury": "\u2717 (paid pilot)", "uptake": "\u2717 (paid pilot)", "seeq": "\u25d0 (free trial, limited)", "thingsboard": "\u2713 (open source, free forever)"}}, {"category": "ESG", "dimension": "Carbon-aware inference routing", "values": {"aisensoredgecomp": "\u2713 5% weight on grid carbon in placement scheduler", "aws-iot": "\u2717 (no carbon-aware routing)", "azure-iot": "\u2717 (no carbon-aware routing)", "cognite": "\u2717 (cloud-only, no routing)", "augury": "\u2717", "uptake": "\u2717", "seeq": "\u2717", "thingsboard": "\u2717"}}];
+const COMPETITORS = [{"id": "aisensoredgecomp", "name": "AISensorEdgeComp", "us": true}, {"id": "aws-iot", "name": "AWS IoT Core", "us": false}, {"id": "azure-iot", "name": "Azure IoT Hub", "us": false}, {"id": "cognite", "name": "Cognite", "us": false}, {"id": "augury", "name": "Augury", "us": false}, {"id": "uptake", "name": "Uptake", "us": false}, {"id": "seeq", "name": "Seeq", "us": false}, {"id": "thingsboard", "name": "ThingsBoard", "us": false}];
+
+function filterComparison(category, event) {
+  document.querySelectorAll('.cmp-filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const tbody = document.getElementById('cmp-tbody');
+  tbody.innerHTML = '';
+
+  let lastCategory = '';
+  DIMENSIONS.forEach(d => {
+    if (category !== 'all' && d.category !== category) return;
+
+    if (d.category !== lastCategory) {
+      const catRow = document.createElement('tr');
+      const catCell = document.createElement('td');
+      catCell.colSpan = COMPETITORS.length + 1;
+      catCell.className = 'cmp-category';
+      catCell.textContent = d.category;
+      catRow.appendChild(catCell);
+      tbody.appendChild(catRow);
+      lastCategory = d.category;
+    }
+
+    const row = document.createElement('tr');
+    const dimCell = document.createElement('td');
+    dimCell.textContent = d.dimension;
+    row.appendChild(dimCell);
+
+    COMPETITORS.forEach(c => {
+      const cell = document.createElement('td');
+      if (c.us) cell.className = 'us';
+      const val = d.values[c.id] || '—';
+      if (val.startsWith('✓')) { cell.className += (c.us ? '' : ''); cell.innerHTML = '<span class="yes">' + val + '</span>'; }
+      else if (val.startsWith('✗')) { cell.innerHTML = '<span class="no">' + val + '</span>'; }
+      else if (val.startsWith('◐')) { cell.innerHTML = '<span class="partial">' + val + '</span>'; }
+      else { cell.innerHTML = '<span class="text-val">' + val + '</span>'; }
+      row.appendChild(cell);
+    });
+    tbody.appendChild(row);
+  });
+}
+
+// Init with all
+filterComparison('all', { target: document.querySelector('.cmp-filter-chip') });
+</script>
+
+</body>
+</html>

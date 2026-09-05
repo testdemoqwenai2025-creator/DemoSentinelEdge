@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Interactive Architecture Diagram</title>
+<meta name="description" content="Interactive architecture diagram. Click any component to see details. Watch data flow animate from sensor to alert." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Interactive Architecture Diagram" />
+<meta property="og:description" content="Click components, watch data flow animate through the 6-layer pipeline." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .arch-interactive {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 40px 60px;
+  }
+
+  .arch-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    align-items: center;
+  }
+  .arch-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .arch-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .arch-btn.primary {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg);
+    border: none;
+    font-weight: 600;
+  }
+  .arch-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--cyan) 30%, transparent);
+  }
+
+  .arch-svg-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .arch-svg {
+    min-width: 1200px;
+    height: 500px;
+  }
+
+  /* Component nodes in SVG */
+  .arch-node {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .arch-node:hover {
+    filter: brightness(1.3);
+  }
+  .arch-node-bg {
+    fill: var(--bg-2);
+    stroke: var(--border);
+    stroke-width: 1;
+    rx: 10;
+    ry: 10;
+    transition: all 0.2s;
+  }
+  .arch-node:hover .arch-node-bg {
+    stroke: var(--cyan);
+    stroke-width: 2;
+  }
+  .arch-node.selected .arch-node-bg {
+    stroke: var(--cyan);
+    stroke-width: 2;
+    fill: color-mix(in srgb, var(--cyan) 5%, var(--bg-2));
+  }
+  .arch-node-icon {
+    font-size: 24px;
+    text-anchor: middle;
+  }
+  .arch-node-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    fill: var(--text);
+    text-anchor: middle;
+    font-weight: 600;
+  }
+
+  /* Flow lines */
+  .arch-flow-line {
+    stroke: var(--text-mute);
+    stroke-width: 1.5;
+    fill: none;
+    opacity: 0.4;
+    transition: opacity 0.3s, stroke 0.3s;
+  }
+  .arch-flow-line.active {
+    opacity: 1;
+    stroke: var(--cyan);
+    stroke-width: 2;
+  }
+  .arch-flow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    fill: var(--text-mute);
+    text-anchor: middle;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .arch-flow-label.active {
+    opacity: 1;
+    fill: var(--cyan);
+  }
+
+  /* Animated packet */
+  .arch-packet {
+    fill: var(--cyan);
+    r: 5;
+    opacity: 0;
+    filter: drop-shadow(0 0 8px var(--cyan));
+  }
+
+  /* Detail panel */
+  .arch-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px 0;
+    min-height: 120px;
+  }
+  .arch-detail-empty {
+    color: var(--text-mute);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    text-align: center;
+    padding: 40px;
+  }
+  .arch-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .arch-detail-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .arch-detail-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .arch-detail-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .arch-detail-spec {
+    padding: 10px 14px;
+    background: var(--bg-2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .arch-detail-spec .key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .arch-detail-spec .val {
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 4px;
+  }
+  .arch-detail-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body id="architecture-interactive">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="architecture-interactive.html" class="active">Interactive Diagram</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 30vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="architecture.html">Architecture</a><span class="sep">/</span><span>Interactive</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>Click any component · Watch data flow animate</div>
+    <h1>Interactive <span class="accent">Architecture</span></h1>
+    <p class="lead">Click any component in the diagram to see what it does, its tech stack, and throughput. Hit "Play data flow" to watch a packet animate through the full pipeline — from sensor to alert.</p>
+  </div>
+</section>
+
+<div class="arch-interactive">
+
+  <!-- Controls -->
+  <div class="arch-controls">
+    <button class="arch-btn primary" id="play-flow-btn" onclick="playDataFlow()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+      Play data flow
+    </button>
+    <button class="arch-btn" onclick="resetDiagram()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+      Reset
+    </button>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-left: auto;">
+      Click a component to see details · Hover to highlight connections
+    </span>
+  </div>
+
+  <!-- SVG diagram -->
+  <div class="arch-svg-container">
+    <svg class="arch-svg" id="arch-svg" viewBox="0 0 1200 500">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--text-mute)" />
+        </marker>
+        <marker id="arrowhead-active" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--cyan)" />
+        </marker>
+      </defs>
+
+      <!-- Layer labels -->
+      <text x="80" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L0: FIELD</text>
+      <text x="280" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L1: EDGE</text>
+      <text x="480" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L2: INGEST</text>
+      <text x="680" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L3: STREAM</text>
+      <text x="880" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L4: STORAGE</text>
+      <text x="1080" y="30" font-family="JetBrains Mono" font-size="10" fill="var(--text-mute)" text-anchor="middle">L5: APPS</text>
+
+      <!-- Flow lines (rendered by JS) -->
+      <g id="flow-lines"></g>
+
+      <!-- Components (rendered by JS) -->
+      <g id="components"></g>
+
+      <!-- Animated packet -->
+      <circle class="arch-packet" id="packet" cx="0" cy="0" r="5" />
+    </svg>
+  </div>
+
+  <!-- Detail panel -->
+  <div class="arch-detail" id="detail-panel">
+    <div class="arch-detail-empty">
+      Click any component in the diagram above to see its details — tech stack, throughput, and what it does in the pipeline.
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <section class="doc-section" style="margin-top: 40px;">
+    <div class="section-label">How to use</div>
+    <h2>Three ways to explore</h2>
+    <div class="card-grid-3">
+      <div class="card">
+        <h3>1. Click a component</h3>
+        <p>Click any box in the diagram to see its details: what it does, tech stack, throughput, protocol, and how it connects to the rest of the pipeline.</p>
+      </div>
+      <div class="card">
+        <h3>2. Play data flow</h3>
+        <p>Hit "Play data flow" to watch a packet animate through the full pipeline — from sensor reading to alert routing. Follow the cyan highlight as it moves through each stage.</p>
+      </div>
+      <div class="card">
+        <h3>3. Hover to highlight</h3>
+        <p>Hover over any component to highlight its incoming and outgoing connections. See exactly what data flows in and out.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="architecture.html">Architecture Overview</a>
+    <a href="system-design.html">System Design</a>
+    <a href="comparison.html">Competitive Comparison</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Interactive Architecture &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+const COMPONENTS = [{"id": "sensor-vib", "name": "Vibration Sensor", "icon": "\ud83d\udce1", "x": 80, "y": 80, "layer": 0, "color": "#ec4899", "detail": "IEPE tri-axial accelerometer, 10 kHz sample rate. Computes RMS on-device, sends 1 Hz feature stream via MQTT.", "tech": "SKF / Bosch MEMS", "throughput": "1 msg/sec", "protocol": "MQTT"}, {"id": "sensor-temp", "name": "Temperature Sensor", "icon": "\ud83c\udf21\ufe0f", "x": 80, "y": 150, "layer": 0, "color": "#f59e0b", "detail": "RTD PT100, \u00b10.1\u00b0C accuracy. Sampled at 1 Hz, sent via OPC-UA.", "tech": "Rosemount 3144P", "throughput": "1 msg/sec", "protocol": "OPC-UA"}, {"id": "sensor-press", "name": "Pressure Sensor", "icon": " PSI", "x": 80, "y": 220, "layer": 0, "color": "#00d4ff", "detail": "Piezoresistive transmitter, \u00b10.1% FS. Sampled at 1 Hz via Modbus.", "tech": "Rosemount 3051S", "throughput": "1 msg/sec", "protocol": "Modbus"}, {"id": "sensor-gas", "name": "Gas Detector", "icon": "\ud83d\udca8", "x": 80, "y": 290, "layer": 0, "color": "#ef4444", "detail": "Multi-pixel NDIR for CH4, electrochemical for H2S. 1 Hz via LoRaWAN.", "tech": "Sensirion SGP40", "throughput": "1 msg/sec", "protocol": "LoRaWAN"}, {"id": "edge-gateway", "name": "Edge Gateway (Hailo-8)", "icon": "\ud83d\udda5\ufe0f", "x": 280, "y": 185, "layer": 1, "color": "#a855f7", "detail": "Hailo-8 edge AI accelerator (26 TOPS, 2.5W). Normalizes to canonical schema, buffers 72h locally, runs TS-FM inference on-device.", "tech": "Hailo-8 + KubeEdge", "throughput": "50k msgs/sec", "protocol": "MQTT / OPC-UA \u2192 canonical"}, {"id": "ingest", "name": "Ingest Service (FastAPI)", "icon": "\ud83d\udce8", "x": 480, "y": 185, "layer": 2, "color": "#00d4ff", "detail": "FastAPI + MQTT subscriber + Kafka producer. Normalizes raw readings to canonical Avro schema. 12 replicas in production. 1M msgs/sec sustained.", "tech": "FastAPI + aiokafka + paho-mqtt", "throughput": "1M msgs/sec", "protocol": "MQTT \u2192 Kafka (Avro)"}, {"id": "kafka", "name": "Apache Kafka (5 brokers)", "icon": "\u26a1", "x": 680, "y": 185, "layer": 3, "color": "#f97316", "detail": "KRaft mode (no Zookeeper), 5 brokers, 12 partitions for telemetry.raw. 7-day retention. Schema Registry enforces Avro backward compatibility.", "tech": "Bitnami Kafka 3.7 (KRaft)", "throughput": "5M msgs/sec peak", "protocol": "Avro over Kafka"}, {"id": "flink", "name": "Apache Flink (8 TM)", "icon": "\ud83c\udf0a", "x": 680, "y": 290, "layer": 3, "color": "#06b6d4", "detail": "30-second tumbling windows per sensor. Runs TS-FM inference (ONNX Runtime) on each window. Emits anomaly tokens when confidence > 0.85. Exactly-once semantics.", "tech": "Flink 1.19 + ONNX Runtime", "throughput": "200k windows/sec", "protocol": "Kafka \u2192 Kafka (anomaly tokens)"}, {"id": "ml", "name": "TS-FM Inference", "icon": "\ud83e\udde0", "x": 480, "y": 290, "layer": 3, "color": "#a855f7", "detail": "350M-parameter time-series foundation model. Runs ONNX inference on Flink windows. Zero-shot AUC-ROC 0.89. Inference p99 < 100ms on Hailo-8.", "tech": "ONNX Runtime + TS-FM v1", "throughput": "32 inferences/batch", "protocol": "gRPC (Flink \u2192 ML)"}, {"id": "timescale", "name": "TimescaleDB (Hot)", "icon": "\ud83d\udcbe", "x": 880, "y": 120, "layer": 4, "color": "#22c55e", "detail": "Hypertable partitioned by day, 30-day retention. Continuous aggregates for 1-minute rollups. 3-node HA cluster (Patroni). 1B rows query < 2s.", "tech": "TimescaleDB 2.14 (pg16)", "throughput": "500k inserts/sec", "protocol": "PostgreSQL wire"}, {"id": "iceberg", "name": "Iceberg (Cold, S3)", "icon": "\ud83e\uddca", "x": 880, "y": 190, "layer": 4, "color": "#0ea5e9", "detail": "Apache Iceberg tables on S3 (Parquet). Time travel, schema evolution, partition pruning. Flink writes via Iceberg sink. 100B rows cold storage.", "tech": "Iceberg REST + MinIO/S3", "throughput": "10k rows/sec write", "protocol": "Iceberg REST API"}, {"id": "clickhouse", "name": "ClickHouse (OLAP)", "icon": "\ud83d\udcca", "x": 880, "y": 260, "layer": 4, "color": "#fbbf24", "detail": "Columnar OLAP engine. Ingests from Iceberg. Sub-second queries on billions of rows. Materialized views for hourly/daily rollups.", "tech": "ClickHouse 24-alpine", "throughput": "10B rows query < 5s", "protocol": "HTTP SQL"}, {"id": "graph-rag", "name": "Graph RAG", "icon": "\ud83d\udd17", "x": 480, "y": 380, "layer": 4, "color": "#7c3aed", "detail": "Knowledge graph: sensors \u2192 assets \u2192 maintenance \u2192 ERP. Traverses graph to assemble evidence for LLM answers. ~1M nodes per plant.", "tech": "Neo4j / custom graph + LLM", "throughput": "1 query/sec (p99 < 2s)", "protocol": "HTTP JSON"}, {"id": "api", "name": "REST + GraphQL API", "icon": "\ud83d\udd0c", "x": 1080, "y": 185, "layer": 5, "color": "#00d4ff", "detail": "FastAPI REST + GraphQL. 15 endpoints, OpenAPI 3.1 spec. JWT auth, rate limiting (1000 req/min). 8 replicas in production. p99 < 100ms.", "tech": "FastAPI + asyncpg + ClickHouse", "throughput": "10k req/sec", "protocol": "REST + GraphQL"}, {"id": "llm-query", "name": "LLM Query Layer", "icon": "\ud83d\udcac", "x": 680, "y": 380, "layer": 5, "color": "#a855f7", "detail": "Natural language in, cited answer out. Composes answers from Graph RAG evidence + TS-FM confidence. Citation chains for every claim.", "tech": "z-ai-web-dev-sdk + Graph RAG", "throughput": "1 query/sec", "protocol": "HTTP JSON"}, {"id": "alerts", "name": "Alert Routing", "icon": "\ud83d\udd14", "x": 1080, "y": 290, "layer": 5, "color": "#ef4444", "detail": "Routes alerts by severity: info \u2192 dashboard, warning \u2192 Slack, critical \u2192 PagerDuty, emergency \u2192 PA system + ERP auto-actions.", "tech": "Alertmanager + PagerDuty + Slack", "throughput": "100 alerts/sec", "protocol": "Webhook + SMTP + SMS"}];
+const FLOWS = [{"from": "sensor-vib", "to": "edge-gateway", "label": "MQTT"}, {"from": "sensor-temp", "to": "edge-gateway", "label": "OPC-UA"}, {"from": "sensor-press", "to": "edge-gateway", "label": "Modbus"}, {"from": "sensor-gas", "to": "edge-gateway", "label": "LoRaWAN"}, {"from": "edge-gateway", "to": "ingest", "label": "MQTT (canonical)"}, {"from": "ingest", "to": "kafka", "label": "Avro \u2192 Kafka"}, {"from": "kafka", "to": "flink", "label": "telemetry.raw"}, {"from": "flink", "to": "ml", "label": "30s window"}, {"from": "ml", "to": "flink", "label": "anomaly score"}, {"from": "flink", "to": "kafka", "label": "alerts.processed"}, {"from": "flink", "to": "timescale", "label": "write (hot)"}, {"from": "flink", "to": "iceberg", "label": "archive (cold)"}, {"from": "iceberg", "to": "clickhouse", "label": "OLAP ingest"}, {"from": "kafka", "to": "graph-rag", "label": "anomaly tokens"}, {"from": "graph-rag", "to": "llm-query", "label": "evidence chain"}, {"from": "timescale", "to": "api", "label": "hot reads"}, {"from": "clickhouse", "to": "api", "label": "OLAP reads"}, {"from": "api", "to": "alerts", "label": "alert dispatch"}, {"from": "llm-query", "to": "api", "label": "search results"}];
+
+// Render components
+function renderComponents() {
+  const g = document.getElementById('components');
+  g.innerHTML = COMPONENTS.map(c => `
+    <g class="arch-node" id="node-${c.id}" onclick="selectComponent('${c.id}')">
+      <rect class="arch-node-bg" x="${c.x - 55}" y="${c.y - 25}" width="110" height="50" rx="10" />
+      <text class="arch-node-icon" x="${c.x}" y="${c.y - 2}">${c.icon}</text>
+      <text class="arch-node-name" x="${c.x}" y="${c.y + 18}">${c.name.length > 18 ? c.name.substring(0, 16) + '…' : c.name}</text>
+    </g>
+  `).join('');
+}
+
+// Render flow lines
+function renderFlows() {
+  const g = document.getElementById('flow-lines');
+  g.innerHTML = FLOWS.map((f, i) => {
+    const from = COMPONENTS.find(c => c.id === f.from);
+    const to = COMPONENTS.find(c => c.id === f.to);
+    if (!from || !to) return '';
+    const x1 = from.x + (from.x < to.x ? 55 : -55);
+    const y1 = from.y;
+    const x2 = to.x + (from.x < to.x ? -55 : 55);
+    const y2 = to.y;
+    const midX = (x1 + x2) / 2;
+    const midY = (y1 + y2) / 2;
+    const path = `M ${x1} ${y1} L ${x2} ${y2}`;
+    return `
+      <path class="arch-flow-line" id="flow-${i}" d="${path}" marker-end="url(#arrowhead)" />
+      <text class="arch-flow-label" id="flow-label-${i}" x="${midX}" y="${midY - 5}">${f.label}</text>
+    `;
+  }).join('');
+}
+
+// Select component
+function selectComponent(id) {
+  // Remove previous selection
+  document.querySelectorAll('.arch-node').forEach(n => n.classList.remove('selected'));
+
+  // Highlight selected
+  const node = document.getElementById('node-' + id);
+  if (node) node.classList.add('selected');
+
+  // Highlight connected flows
+  document.querySelectorAll('.arch-flow-line').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.arch-flow-label').forEach(l => l.classList.remove('active'));
+
+  FLOWS.forEach((f, i) => {
+    if (f.from === id || f.to === id) {
+      const line = document.getElementById('flow-' + i);
+      const label = document.getElementById('flow-label-' + i);
+      if (line) { line.classList.add('active'); line.setAttribute('marker-end', 'url(#arrowhead-active)'); }
+      if (label) label.classList.add('active');
+    }
+  });
+
+  // Show detail panel
+  const c = COMPONENTS.find(c => c.id === id);
+  if (!c) return;
+  const panel = document.getElementById('detail-panel');
+  panel.innerHTML = `
+    <div class="arch-detail-header">
+      <div class="arch-detail-icon" style="background: color-mix(in srgb, ${c.color} 15%, var(--bg-2)); border: 1px solid color-mix(in srgb, ${c.color} 30%, transparent);">
+        ${c.icon}
+      </div>
+      <div>
+        <div class="arch-detail-name">${c.name}</div>
+      </div>
+    </div>
+    <div class="arch-detail-specs">
+      <div class="arch-detail-spec">
+        <div class="key">Tech Stack</div>
+        <div class="val">${c.tech || '—'}</div>
+      </div>
+      <div class="arch-detail-spec">
+        <div class="key">Throughput</div>
+        <div class="val">${c.throughput || '—'}</div>
+      </div>
+      <div class="arch-detail-spec">
+        <div class="key">Protocol</div>
+        <div class="val">${c.protocol || '—'}</div>
+      </div>
+    </div>
+    <div class="arch-detail-desc">${c.detail}</div>
+  `;
+}
+
+// Play data flow animation
+let isPlaying = false;
+let animationFrame = null;
+
+async function playDataFlow() {
+  if (isPlaying) return;
+  isPlaying = true;
+  document.getElementById('play-flow-btn').disabled = true;
+
+  // Define the full path through the pipeline
+  const path = [
+    'sensor-vib', 'edge-gateway', 'ingest', 'kafka', 'flink', 'ml', 'flink', 'kafka',
+    'flink', 'timescale', 'flink', 'iceberg', 'iceberg', 'clickhouse',
+    'kafka', 'graph-rag', 'llm-query', 'api', 'alerts'
+  ];
+
+  for (let i = 0; i < path.length - 1; i++) {
+    const fromId = path[i];
+    const toId = path[i + 1];
+    const from = COMPONENTS.find(c => c.id === fromId);
+    const to = COMPONENTS.find(c => c.id === toId);
+    if (!from || !to) continue;
+
+    // Highlight the flow
+    const flowIdx = FLOWS.findIndex(f => f.from === fromId && f.to === toId);
+    if (flowIdx >= 0) {
+      const line = document.getElementById('flow-' + flowIdx);
+      const label = document.getElementById('flow-label-' + flowIdx);
+      if (line) { line.classList.add('active'); line.setAttribute('marker-end', 'url(#arrowhead-active)'); }
+      if (label) label.classList.add('active');
+    }
+
+    // Select the source component
+    selectComponent(fromId);
+
+    // Animate packet from source to destination
+    await animatePacket(from.x, from.y, to.x, to.y, 500);
+
+    // Clear highlight after a delay
+    if (flowIdx >= 0) {
+      const line = document.getElementById('flow-' + flowIdx);
+      const label = document.getElementById('flow-label-' + flowIdx);
+      if (line) { line.classList.remove('active'); line.setAttribute('marker-end', 'url(#arrowhead)'); }
+      if (label) label.classList.remove('active');
+    }
+  }
+
+  // Select final component
+  selectComponent(path[path.length - 1]);
+
+  isPlaying = false;
+  document.getElementById('play-flow-btn').disabled = false;
+}
+
+function animatePacket(x1, y1, x2, y2, duration) {
+  return new Promise(resolve => {
+    const packet = document.getElementById('packet');
+    const start = Date.now();
+    packet.style.opacity = '1';
+
+    function tick() {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(1, elapsed / duration);
+      const x = x1 + (x2 - x1) * progress;
+      const y = y1 + (y2 - y1) * progress;
+      packet.setAttribute('cx', x);
+      packet.setAttribute('cy', y);
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(tick);
+      } else {
+        packet.style.opacity = '0';
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function resetDiagram() {
+  if (isPlaying) return;
+  document.querySelectorAll('.arch-node').forEach(n => n.classList.remove('selected'));
+  document.querySelectorAll('.arch-flow-line').forEach(l => { l.classList.remove('active'); l.setAttribute('marker-end', 'url(#arrowhead)'); });
+  document.querySelectorAll('.arch-flow-label').forEach(l => l.classList.remove('active'));
+  document.getElementById('detail-panel').innerHTML = '<div class="arch-detail-empty">Click any component in the diagram above to see its details — tech stack, throughput, and what it does in the pipeline.</div>';
+}
+
+// Init
+renderComponents();
+renderFlows();
+</script>
+
+</body>
+</html>
