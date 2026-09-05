@@ -1,0 +1,4261 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Scenario: Offshore Oil &amp; Gas Production Platform</title>
+<meta name="description" content="Live scenario: Atlantis-7 offshore production platform. 17 asset categories, 64 assets, 192 sensors, synthetic telemetry streaming in real time." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Scenario: Offshore Oil &amp; Gas Production Platform" />
+<meta property="og:description" content="Atlantis-7 platform: 17 asset categories, 64 assets, 192 sensors, live synthetic telemetry." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/scenario-offshore-oil-gas.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="Scenario: Offshore Oil &amp; Gas Production Platform" />
+<meta name="twitter:description" content="Atlantis-7 platform: 17 asset categories, 64 assets, live synthetic telemetry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  /* Scenario-specific styles */
+  .platform-map {
+    background: linear-gradient(180deg, #0a1a2f 0%, #051020 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+  }
+  .platform-map::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 100, 200, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 100, 200, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  .platform-map-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: center;
+  }
+  @media (max-width: 768px) {
+    .platform-map-content { grid-template-columns: 1fr; }
+  }
+  .platform-diagram {
+    position: relative;
+    height: 260px;
+    background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08), transparent 70%);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .platform-icon {
+    font-size: 64px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+  }
+  .platform-info {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .platform-info .latlon {
+    font-size: 11px;
+    color: var(--cyan);
+    margin-top: 4px;
+  }
+  .platform-stats-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-tile {
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat-tile .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .stat-tile .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  /* Asset filter bar */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .filter-chip {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    background: color-mix(in srgb, var(--cyan) 10%, transparent);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .filter-chip .count {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--text-mute) 15%, transparent);
+    font-size: 10px;
+  }
+
+  /* Asset grid */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .asset-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .asset-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .asset-card.warning { border-color: var(--gold); }
+  .asset-card.critical { border-color: var(--magenta); border-width: 2px; }
+  .asset-card-header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .asset-icon {
+    font-size: 28px;
+    margin-right: 12px;
+  }
+  .asset-title {
+    flex: 1;
+  }
+  .asset-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .asset-subtype {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .status-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .status-badge.nominal { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .status-badge.warning { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+  .status-badge.critical { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); border: 1px solid color-mix(in srgb, var(--magenta) 30%, transparent); }
+
+  /* Sensor readings */
+  .sensor-readings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 10px 0;
+    padding: 10px;
+    background: var(--bg-2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .sensor-reading {
+    display: flex;
+    flex-direction: column;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .sensor-reading .label {
+    color: var(--text-mute);
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+  .sensor-reading .value {
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 1px;
+  }
+  .sensor-reading .value.nominal { color: var(--green); }
+  .sensor-reading .value.warning { color: var(--gold); }
+  .sensor-reading .value.critical { color: var(--magenta); }
+
+  /* Asset meta */
+  .asset-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .asset-meta div {
+    display: flex;
+    gap: 4px;
+  }
+  .asset-meta .key {
+    color: var(--text-mute);
+  }
+  .asset-meta .val {
+    color: var(--text);
+  }
+
+  /* Tabs */
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Audit timeline */
+  .audit-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-left: 2px solid var(--cyan);
+    margin-bottom: 8px;
+    background: var(--card);
+    border-radius: 0 8px 8px 0;
+  }
+  .audit-item.action-required { border-left-color: var(--magenta); }
+  .audit-item .audit-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    min-width: 100px;
+  }
+  .audit-item .audit-body {
+    flex: 1;
+    font-size: 13px;
+  }
+  .audit-item .audit-result {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .audit-result.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .audit-result.pass-with-notes { background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); }
+  .audit-result.action-required { background: color-mix(in srgb, var(--magenta) 15%, transparent); color: var(--magenta); }
+
+  /* Alerts */
+  .alert-item {
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid;
+  }
+  .alert-item.warning { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 5%, var(--card)); }
+  .alert-item.critical { border-left-color: var(--magenta); background: color-mix(in srgb, var(--magenta) 5%, var(--card)); }
+  .alert-item .alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .alert-item .alert-title {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .alert-item .alert-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+  }
+  .alert-item .alert-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  /* RUL bar */
+  .rul-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--bg-2);
+    overflow: hidden;
+    margin: 4px 0;
+  }
+  .rul-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--gold), var(--magenta));
+    transition: width 0.3s;
+  }
+
+  /* Compliance badge */
+  .compliance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin: 4px;
+  }
+  .compliance-badge.pass { background: color-mix(in srgb, var(--green) 10%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .compliance-badge.pending { background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+</style>
+</head>
+<body id="scenario-offshore">
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark"></div>
+    <span>AISensorEdgeComp</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Overview</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="scenario-offshore-oil-gas.html" class="active">Scenario: Offshore O&amp;G</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link">
+      <span class="live-dot"></span>Live MVP
+    </a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn nav-btn-live">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span class="label">Live Dashboard</span>
+    </a>
+    <a href="contact.html" class="nav-btn nav-btn-primary">
+      <span class="label">Get Started</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="sectors.html">Sectors</a><span class="sep">/</span>
+      <a href="#">Oil &amp; Gas</a><span class="sep">/</span>
+      <span>Offshore Production Platform</span>
+    </div>
+    <div class="page-hero-badge"><span class="dot"></span>Live Scenario · Synthetic Telemetry Streaming</div>
+    <h1>Offshore Oil &amp; Gas <span class="accent">Production Platform</span></h1>
+    <p class="lead">
+      A live scenario demonstration of AISensorEdgeComp deployed on the <strong>Atlantis-7</strong> offshore
+      production platform in Mississippi Canyon Block 713, Gulf of Mexico. 64 assets across 17 categories,
+      192 sensor endpoints, real-time TS-FM anomaly detection, predictive maintenance, and full
+      audit/compliance tracking — all running on synthetic data that mirrors a real production environment.
+    </p>
+    <div class="page-hero-cta">
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Open Live MVP &rarr;
+      </a>
+      <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/oil-gas" target="_blank" rel="noopener" class="btn btn-ghost">View Sector Config →</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <h4>Scenario</h4>
+    <a href="#platform-overview">Platform Overview</a>
+    <a href="#platform-map">Asset Map</a>
+    <a href="#asset-registry">Asset Registry</a>
+    <a href="#live-readings">Live Sensor Readings</a>
+    <a href="#alerts">Active Alerts</a>
+    <a href="#maintenance">Maintenance Log</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#rul">RUL Predictions</a>
+    <a href="#compliance">Compliance</a>
+  </aside>
+
+  <div class="content">
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="doc-section" id="platform-overview">
+      <div class="section-label">Platform Profile</div>
+      <h2>Atlantis-7 — Mississippi Canyon Block 713</h2>
+      <p>A deepwater offshore production platform operated by DeepWater Energy Partners. Installed in 2018-06-15 with a 30-year design life. The platform processes oil and gas from 4 subsea wells, separates and compresses gas for export, and stores crude before pipeline transport to shore.</p>
+
+      <div class="platform-map" id="platform-map">
+        <div class="platform-map-content">
+          <div class="platform-diagram">
+            <div class="platform-icon">🛢️</div>
+            <div class="platform-info">
+              <div style="font-size: 20px; font-weight: 600; color: var(--text);">Atlantis-7</div>
+              <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Gulf of Mexico · MC-713</div>
+              <div class="latlon">28.7456°N, -88.1834°W</div>
+              <div style="font-size: 11px; color: var(--text-mute); margin-top: 6px;">Water depth: ~1,350m · Manned: 120 POB</div>
+            </div>
+          </div>
+          <div class="platform-stats-side">
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">64</div><div class="lbl">Assets</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--violet);">17</div><div class="lbl">Categories</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--cyan);">192</div><div class="lbl">Sensors</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--green);">51</div><div class="lbl">Nominal</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--gold);">11</div><div class="lbl">Warning</div></div>
+            <div class="stat-tile"><div class="num" style="color: var(--magenta);">2</div><div class="lbl">Critical</div></div>
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <tbody>
+          <tr><td style="width: 200px;"><strong>Platform Name</strong></td><td>Atlantis-7</td></tr>
+          <tr><td><strong>Operator</strong></td><td>DeepWater Energy Partners</td></tr>
+          <tr><td><strong>Location</strong></td><td>Mississippi Canyon Block 713, Gulf of Mexico</td></tr>
+          <tr><td><strong>Coordinates</strong></td><td>28.7456°N, -88.1834°W</td></tr>
+          <tr><td><strong>Water Depth</strong></td><td>~1,350 m (4,429 ft)</td></tr>
+          <tr><td><strong>Installed</strong></td><td>2018-06-15</td></tr>
+          <tr><td><strong>Design Life</strong></td><td>30 years (to 2048-06-15)</td></tr>
+          <tr><td><strong>Production Capacity</strong></td><td>~80,000 bbl/day oil, ~50 MMSCFD gas</td></tr>
+          <tr><td><strong>Personnel on Board</strong></td><td>120 (max), typically 85</td></tr>
+          <tr><td><strong>Compliance</strong></td>
+            <td>
+              <span class="compliance-badge pass">API 1160 ✓</span>
+              <span class="compliance-badge pass">BSEE SEMS ✓</span>
+              <span class="compliance-badge pass">OSHA 1910.119 ✓</span>
+              <span class="compliance-badge pass">EPA OOOO-b ✓</span>
+              <span class="compliance-badge pending">ISO 14001 (audit Q4)</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ASSET REGISTRY -->
+    <section class="doc-section" id="asset-registry">
+      <div class="section-label">Asset Registry</div>
+      <h2>64 assets across <span class="accent">17 categories</span></h2>
+      <p>Each asset has a unique ID, geolocation, install/expire dates, monthly audit schedule, sensor readings (live-updated), TS-FM confidence scores, and RUL predictions. Filter by category below.</p>
+
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" onclick="filterAssets('all')">All <span class="count">64</span></button>
+        <button class="filter-chip" onclick="filterAssets('Wells')">🛢️ Wells <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Separators')">⚙️ Separators <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Compressors')">🌀 Compressors <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Pumps')">🔧 Pumps <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Heat Exchangers')">🔥 Heat Exchangers <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Flare System')">🔥 Flare System <span class="count">2</span></button><button class="filter-chip" onclick="filterAssets('Storage Tanks')">🛢️ Storage Tanks <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Pipelines')">🔗 Pipelines <span class="count">4</span></button><button class="filter-chip" onclick="filterAssets('Valves')">🔩 Valves <span class="count">8</span></button><button class="filter-chip" onclick="filterAssets('Gas Detection Systems')">💨 Gas Detection Systems <span class="count">6</span></button><button class="filter-chip" onclick="filterAssets('Fire Detection Systems')">🚨 Fire Detection Systems <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Emergency Shutdown Valves')">⛔ Emergency Shutdown Valves <span class="count">5</span></button><button class="filter-chip" onclick="filterAssets('Power Generators')">⚡ Power Generators <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('HVAC')">🌡️ HVAC <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Diesel Generators')">🔋 Diesel Generators <span class="count">2</span></button><button class="filter-chip" onclick="filterAssets('UPS Systems')">🔌 UPS Systems <span class="count">3</span></button><button class="filter-chip" onclick="filterAssets('Control Room Systems')">🖥️ Control Room Systems <span class="count">2</span></button>
+      </div>
+
+      <div class="asset-grid" id="asset-grid">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </section>
+
+    <!-- LIVE READINGS -->
+    <section class="doc-section" id="live-readings">
+      <div class="section-label">Real-Time Sensor Stream</div>
+      <h2>Live sensor readings <span class="accent">(updates every 3s)</span></h2>
+      <p>All 192 sensor endpoints stream synthetic telemetry through the AISensorEdgeComp ingest pipeline. Values are generated using realistic sine + noise models, with the TS-FM assigning confidence scores and flagging anomalies in real time.</p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="height: 8px; width: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite;"></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Streaming</span>
+        </div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Last update: <span id="last-update" style="color: var(--cyan);">--</span></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Data rate: <span id="data-rate" style="color: var(--cyan);">--</span> KB/s</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);">|</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);">Avg TS-FM confidence: <span id="avg-confidence" style="color: var(--cyan);">--</span></span>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="doc-section" id="alerts">
+      <div class="section-label">Active Alerts</div>
+      <h2>13 active alerts from <span class="accent">TS-FM anomaly detection</span></h2>
+      <p>Alerts are produced when the TS-FM confidence exceeds 0.85 on a sensor window. Each alert includes the evidence chain (sensor readings + causal test result) and can be acknowledged or escalated.</p>
+      <div id="alerts-list">
+        
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Cooling Water Pump - CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Pumps PMP-005</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-41745 · Asset: PMP-005 · TS-FM confidence: 0.94 · Acknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Main Flare Stack - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-01</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Flare System FLR-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-35006 · Asset: FLR-001 · TS-FM confidence: 0.94 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Flare Knock-Out Drum - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Flare System FLR-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-51116 · Asset: FLR-002 · TS-FM confidence: 0.89 · Acknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Produced Water Storage - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Storage Tanks TNK-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-64127 · Asset: TNK-003 · TS-FM confidence: 0.85 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Subsea Flowline A - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-05</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Pipelines PIP-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-75774 · Asset: PIP-003 · TS-FM confidence: 0.96 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">H2S Detector - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-02</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detection Systems GDS-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-18163 · Asset: GDS-001 · TS-FM confidence: 0.84 · Acknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">CH4 Detector - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Gas Detection Systems GDS-006</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-83516 · Asset: GDS-006 · TS-FM confidence: 0.85 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item critical">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge critical">critical</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Flame Detector (UV/IR) - CRITICAL</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Fire Detection Systems FDS-001</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-78875 · Asset: FDS-001 · TS-FM confidence: 0.94 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Heat Detector - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Fire Detection Systems FDS-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-32699 · Asset: FDS-003 · TS-FM confidence: 0.86 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">Flame Detector (UV/IR) - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Fire Detection Systems FDS-005</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-81601 · Asset: FDS-005 · TS-FM confidence: 0.84 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">ESDV (Process) - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-04</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on Emergency Shutdown Valves ESD-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-89963 · Asset: ESD-002 · TS-FM confidence: 0.91 · Acknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">UPS B (ESD System) - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on UPS Systems UPS-002</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-42311 · Asset: UPS-002 · TS-FM confidence: 0.88 · Unacknowledged
+          </div>
+        </div>
+        
+        <div class="alert-item warning">
+          <div class="alert-header">
+            <div>
+              <span class="status-badge warning">warning</span>
+              <span style="margin-left: 8px; font-weight: 600; font-size: 14px;">UPS C (Telecom) - WARNING</span>
+            </div>
+            <span class="alert-time">2026-09-03</span>
+          </div>
+          <div class="alert-desc">TS-FM detected anomaly on UPS Systems UPS-003</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 6px;">
+            Alert ID: ALT-39473 · Asset: UPS-003 · TS-FM confidence: 0.97 · Unacknowledged
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- MAINTENANCE -->
+    <section class="doc-section" id="maintenance">
+      <div class="section-label">Maintenance Log</div>
+      <h2>232 maintenance events <span class="accent">YTD 2025-2026</span></h2>
+      <p>Every asset has a maintenance history — inspections, calibrations, repairs, replacements, and fault events. The platform tracks cost, duration, and technician for each event, and uses the history to train RUL predictions.</p>
+      <table class="data-table" id="maintenance-table">
+        <thead>
+          <tr><th>Date</th><th>Asset</th><th>Type</th><th>Performed By</th><th>Duration</th><th>Cost</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2026-08-31</td><td><strong>VLV-002</strong></td><td>calibration</td><td>Tech 5</td><td>8h</td><td>$1,988</td><td>Calibration on Control Valve</td></tr><tr><td>2026-08-28</td><td><strong>SEP-003</strong></td><td>inspection</td><td>Tech 2</td><td>4h</td><td>$14,927</td><td>Inspection on HP Separator</td></tr><tr><td>2026-08-27</td><td><strong>VLV-004</strong></td><td>calibration</td><td>Tech 2</td><td>10h</td><td>$13,468</td><td>Calibration on Ball Valve</td></tr><tr><td>2026-08-25</td><td><strong>GEN-003</strong></td><td>inspection</td><td>Tech 3</td><td>17h</td><td>$14,676</td><td>Inspection on Gas Turbine Generator C</td></tr><tr><td>2026-08-23</td><td><strong>TNK-003</strong></td><td>calibration</td><td>Tech 6</td><td>20h</td><td>$12,981</td><td>Calibration on Produced Water Storage</td></tr><tr><td>2026-08-21</td><td><strong>UPS-001</strong></td><td>inspection</td><td>Tech 1</td><td>16h</td><td>$9,719</td><td>Inspection on UPS A (Control Room)</td></tr><tr><td>2026-08-21</td><td><strong>CRS-002</strong></td><td>calibration</td><td>Tech 7</td><td>22h</td><td>$5,342</td><td>Calibration on ESD Logic System</td></tr><tr><td>2026-08-14</td><td><strong>WELL-002</strong></td><td>inspection</td><td>Tech 3</td><td>17h</td><td>$15,917</td><td>Inspection on Gas Producer</td></tr><tr><td>2026-08-14</td><td><strong>HVAC-003</strong></td><td>inspection</td><td>Tech 4</td><td>14h</td><td>$19,247</td><td>Inspection on Accommodation AHU</td></tr><tr><td>2026-08-13</td><td><strong>WELL-002</strong></td><td>calibration</td><td>Tech 1</td><td>9h</td><td>$22,529</td><td>Calibration on Gas Producer</td></tr><tr><td>2026-08-11</td><td><strong>PIP-003</strong></td><td>inspection</td><td>Tech 7</td><td>20h</td><td>$18,881</td><td>Inspection on Subsea Flowline A</td></tr><tr><td>2026-08-11</td><td><strong>ESD-004</strong></td><td>inspection</td><td>Tech 6</td><td>11h</td><td>$13,542</td><td>Inspection on BDV (Blowdown)</td></tr><tr><td>2026-08-09</td><td><strong>SEP-003</strong></td><td>inspection</td><td>Tech 7</td><td>11h</td><td>$1,930</td><td>Inspection on HP Separator</td></tr><tr><td>2026-08-02</td><td><strong>FLR-002</strong></td><td>inspection</td><td>Tech 4</td><td>7h</td><td>$19,714</td><td>Inspection on Flare Knock-Out Drum</td></tr><tr><td>2026-07-26</td><td><strong>UPS-003</strong></td><td>fault</td><td>Tech 3</td><td>20h</td><td>$7,022</td><td>Fault on UPS C (Telecom)</td></tr><tr><td>2026-07-22</td><td><strong>VLV-008</strong></td><td>fault</td><td>Tech 1</td><td>19h</td><td>$15,236</td><td>Fault on Control Valve</td></tr><tr><td>2026-07-22</td><td><strong>GEN-001</strong></td><td>calibration</td><td>Tech 8</td><td>5h</td><td>$18,576</td><td>Calibration on Gas Turbine Generator A</td></tr><tr><td>2026-07-19</td><td><strong>SEP-001</strong></td><td>inspection</td><td>Tech 7</td><td>8h</td><td>$3,554</td><td>Inspection on 3-Phase Production Separator</td></tr><tr><td>2026-07-19</td><td><strong>SEP-002</strong></td><td>inspection</td><td>Tech 4</td><td>17h</td><td>$20,140</td><td>Inspection on Test Separator</td></tr><tr><td>2026-07-17</td><td><strong>WELL-004</strong></td><td>inspection</td><td>Tech 5</td><td>23h</td><td>$14,856</td><td>Inspection on Gas Injection</td></tr>
+        </tbody>
+      </table>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 20 of 232 events. Full log available in the platform API.</p>
+    </section>
+
+    <!-- AUDIT TRAIL -->
+    <section class="doc-section" id="audit">
+      <div class="section-label">Audit Trail</div>
+      <h2>285 audit entries <span class="accent">(monthly cycle)</span></h2>
+      <p>Every asset is audited monthly for compliance (API 1160, BSEE SEMS, OSHA 1910.119), safety, environmental, and functional integrity. Audit results are logged with auditor, date, and notes — forming the regulatory evidence chain.</p>
+      <div id="audit-list">
+        
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-31</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">SEP-003 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Power output stable across load range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+        
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">WELL-001 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Recommend replacement of bearing within 90 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">TNK-001 — Safety Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">ESD-001 — Environmental Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Pressure relief valve tested successfully.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">GEN-002 — Environmental Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Power output stable across load range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-30</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">CRS-001 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed on seals. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 5</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-29</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PIP-004 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-28</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">GDS-002 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-28</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">ESD-003 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Gas detector sensitivity verified.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 2</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+        
+        <div class="audit-item pass-with-notes">
+          <div class="audit-date">2026-08-28</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">DGN-002 — Compliance Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed on seals. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result pass-with-notes">pass with notes</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-27</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">GDS-006 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Minor wear observed on seals. Monitor.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item action-required">
+          <div class="audit-date">2026-08-27</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">ESD-002 — Environmental Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Calibration confirmed. Next audit in 30 days.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 4</div>
+          </div>
+          <span class="audit-result action-required">action required</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-27</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">ESD-002 — Environmental Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">Pressure relief valve tested successfully.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item pass">
+          <div class="audit-date">2026-08-26</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">PIP-004 — Functional Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">All readings within nominal range.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 3</div>
+          </div>
+          <span class="audit-result pass">pass</span>
+        </div>
+        
+        <div class="audit-item action-required">
+          <div class="audit-date">2026-08-26</div>
+          <div class="audit-body">
+            <div style="font-weight: 600; font-size: 13px;">GDS-003 — Environmental Audit</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">ESD valve close time within spec.</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 4px;">Auditor: Auditor 1</div>
+          </div>
+          <span class="audit-result action-required">action required</span>
+        </div>
+        
+      </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute); margin-top: 8px;">Showing 15 of 285 audit entries. Full trail available in the platform API.</p>
+    </section>
+
+    <!-- RUL -->
+    <section class="doc-section" id="rul">
+      <div class="section-label">Remaining Useful Life</div>
+      <h2>RUL predictions <span class="accent">from TS-FM + federated learning</span></h2>
+      <p>The platform predicts remaining useful life for each rotating asset (compressors, pumps, generators) using a fine-tuned regression head on the TS-FM backbone. Predictions update daily as new sensor data arrives.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Asset</th><th>Sub-type</th><th>RUL (hours)</th><th>RUL (years)</th><th>Confidence</th><th>Health</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td><strong>CMP-001</strong></td>
+            <td>Export Gas Compressor (1st Stage)</td>
+            <td>43,943</td>
+            <td>5.0</td>
+            <td>0.88</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 87.886%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>CMP-002</strong></td>
+            <td>Export Gas Compressor (2nd Stage)</td>
+            <td>22,673</td>
+            <td>2.6</td>
+            <td>0.83</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 45.346%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>CMP-003</strong></td>
+            <td>Lift Gas Compressor</td>
+            <td>44,129</td>
+            <td>5.0</td>
+            <td>0.9</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 88.258%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>PMP-001</strong></td>
+            <td>Crude Export Pump</td>
+            <td>40,242</td>
+            <td>4.6</td>
+            <td>0.91</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 80.484%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>PMP-002</strong></td>
+            <td>Sea Water Injection Pump</td>
+            <td>9,185</td>
+            <td>1.0</td>
+            <td>0.83</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 18.37%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>PMP-003</strong></td>
+            <td>Chemical Injection Pump</td>
+            <td>18,476</td>
+            <td>2.1</td>
+            <td>0.89</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 36.952%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>PMP-004</strong></td>
+            <td>Drain Pump</td>
+            <td>24,293</td>
+            <td>2.8</td>
+            <td>0.94</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 48.586%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>PMP-005</strong></td>
+            <td>Cooling Water Pump</td>
+            <td>35,271</td>
+            <td>4.0</td>
+            <td>0.94</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 70.542%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>GEN-001</strong></td>
+            <td>Gas Turbine Generator A</td>
+            <td>13,120</td>
+            <td>1.5</td>
+            <td>0.96</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 26.24%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>GEN-002</strong></td>
+            <td>Gas Turbine Generator B</td>
+            <td>17,392</td>
+            <td>2.0</td>
+            <td>0.97</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 34.784%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>GEN-003</strong></td>
+            <td>Gas Turbine Generator C</td>
+            <td>6,772</td>
+            <td>0.8</td>
+            <td>0.9</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 13.544%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>DGN-001</strong></td>
+            <td>Backup Diesel Generator A</td>
+            <td>18,986</td>
+            <td>2.2</td>
+            <td>0.9</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 37.972%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><strong>DGN-002</strong></td>
+            <td>Backup Diesel Generator B</td>
+            <td>19,807</td>
+            <td>2.3</td>
+            <td>0.87</td>
+            <td>
+              <div class="rul-bar" style="width: 100px; display: inline-block;">
+                <div class="rul-bar-fill" style="width: 39.614%"></div>
+              </div>
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="doc-section" id="compliance">
+      <div class="section-label">Compliance Status</div>
+      <h2>Regulatory compliance <span class="accent">dashboard</span></h2>
+      <p>Real-time compliance status across all applicable regulations for offshore oil &amp; gas production in the US Gulf of Mexico.</p>
+      <div class="card-grid-2">
+        <div class="card">
+          <h3>API 1160 — Pipeline Integrity</h3>
+          <p><span class="compliance-badge pass">Compliant</span></p>
+          <p>All 4 pipelines under integrity management program. Last inspection: 2026-07-18. Next inspection: 2026-10-18.</p>
+        </div>
+        <div class="card">
+          <h3>BSEE SEMS — Safety &amp; Environmental Management</h3>
+          <p><span class="compliance-badge pass">Compliant</span></p>
+          <p>SEMS II audit completed 2026-06-30. All findings addressed. Next audit: 2027-06-30.</p>
+        </div>
+        <div class="card">
+          <h3>OSHA 1910.119 — Process Safety Management</h3>
+          <p><span class="compliance-badge pass">Compliant</span></p>
+          <p>PSM audit completed 2026-05-15. All PHA recommendations closed. Mechanical integrity program active.</p>
+        </div>
+        <div class="card">
+          <h3>EPA OOOO-b — Methane Emissions</h3>
+          <p><span class="compliance-badge pass">Compliant</span></p>
+          <p>6 gas detection monitors active. LDAR survey last completed 2026-08-01. Fugitive emissions below threshold.</p>
+        </div>
+        <div class="card">
+          <h3>ISO 14001 — Environmental Management</h3>
+          <p><span class="compliance-badge pending">Audit Pending</span></p>
+          <p>Surveillance audit scheduled for Q4 2026. All internal audits current.</p>
+        </div>
+        <div class="card">
+          <h3>ISO 45001 — Occupational Health &amp; Safety</h3>
+          <p><span class="compliance-badge pass">Compliant</span></p>
+          <p>Certification maintained since 2020. Last surveillance audit: 2026-03-12.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- LIVE MVP BANNER -->
+<div class="live-banner">
+  <div class="live-banner-card reveal">
+    <div class="live-banner-left">
+      <div class="live-banner-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="live-banner-text">
+        <h3>Same engine, this scenario <span class="live-pill"><span class="pill-dot"></span>running now</span></h3>
+        <p>The live MVP dashboard runs the same TS-FM + liquid placement + Graph RAG that powers this offshore scenario. Imagine it deployed on your production platform.</p>
+      </div>
+    </div>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
+      Open Live Dashboard
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="sectors.html">All Sectors</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="system-design.html">System Design</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/sectors/oil-gas" target="_blank" rel="noopener">Oil &amp; Gas Config</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform" target="_blank" rel="noopener">Platform Source</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Scenario: Offshore O&amp;G &middot; <a href="#top">Back to top</a>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal">
+    <div class="modal-header"><div><h3>Sign in to AISensorEdgeComp</h3><p>Access the live MVP dashboard, sensor streams, and AI query console.</p></div><button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body"><form onsubmit="event.preventDefault(); handleLogin(); return false;">
+      <div class="form-field"><label>Work Email</label><input type="email" required placeholder="you@company.com" /></div>
+      <div class="form-field"><label>Password</label><input type="password" required placeholder="••••••••" /></div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+      <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim);">No account? <a href="contact.html" onclick="closeModal('loginModal')" style="color: var(--cyan);">Request access</a> — design partners get free MVP seats.</p>
+    </form></div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-header"><div><h3>Search with AI</h3><p>Ask anything about AISensorEdgeComp — architecture, verticals, ROI, team, roadmap.</p></div><button class="modal-close" onclick="closeModal('searchModal')" aria-label="Close">&times;</button></div>
+    <div class="modal-body">
+      <div class="search-box"><input type="text" id="searchInput" placeholder="e.g. How does the edge-cloud workload placement work?" onkeydown="if(event.key==='Enter'){handleSearch();}" /><button class="btn btn-primary" onclick="handleSearch()">Ask</button></div>
+      <div class="search-suggestions">
+        <div class="label">Try asking:</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What assets are on the Atlantis-7 platform?'; handleSearch();">What assets are on the Atlantis-7 platform?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='How does the TS-FM detect anomalies on compressors?'; handleSearch();">How does the TS-FM detect anomalies on compressors?</div>
+        <div class="search-suggestion" onclick="document.getElementById('searchInput').value='What is the compliance status for oil and gas?'; handleSearch();">What is the compliance status for oil and gas?</div>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<button class="float-search" onclick="openModal('searchModal')" aria-label="Search with AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
+
+<script src="assets/app.js"></script>
+<script>
+// =====================================================================
+// Embedded synthetic asset data
+// =====================================================================
+const ASSETS = [
+  {
+    "id": "WELL-001",
+    "category": "Wells",
+    "sub_type": "Oil Producer",
+    "location": {
+      "lat": 28.746083,
+      "lon": -88.18391,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2017-08-17",
+    "expire_date": "2047-08-10",
+    "last_audit": "2026-06-04",
+    "next_audit": "2026-07-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 37741,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "flow",
+      "vibration"
+    ],
+    "extra": {
+      "depth_m": "1800-2400",
+      "completion_type": "subsea horizontal",
+      "choke_setting_pct": "45-85"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4992.86,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 75.67,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 437.27,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.26,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WELL-002",
+    "category": "Wells",
+    "sub_type": "Gas Producer",
+    "location": {
+      "lat": 28.74466,
+      "lon": -88.183963,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2019-05-15",
+    "expire_date": "2049-05-07",
+    "last_audit": "2026-06-05",
+    "next_audit": "2026-07-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 48925,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "flow",
+      "vibration"
+    ],
+    "extra": {
+      "depth_m": "1800-2400",
+      "completion_type": "subsea horizontal",
+      "choke_setting_pct": "45-85"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4982.74,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 71.55,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 443.5,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.88,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WELL-003",
+    "category": "Wells",
+    "sub_type": "Water Injection",
+    "location": {
+      "lat": 28.745498,
+      "lon": -88.183844,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2019-05-10",
+    "expire_date": "2049-05-02",
+    "last_audit": "2026-06-29",
+    "next_audit": "2026-07-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 29696,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "flow",
+      "vibration"
+    ],
+    "extra": {
+      "depth_m": "1800-2400",
+      "completion_type": "subsea horizontal",
+      "choke_setting_pct": "45-85"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4977.83,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 76.51,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 446.86,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.83,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "WELL-004",
+    "category": "Wells",
+    "sub_type": "Gas Injection",
+    "location": {
+      "lat": 28.745031,
+      "lon": -88.182873,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-07-24",
+    "expire_date": "2048-07-16",
+    "last_audit": "2026-06-20",
+    "next_audit": "2026-07-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 24541,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "flow",
+      "vibration"
+    ],
+    "extra": {
+      "depth_m": "1800-2400",
+      "completion_type": "subsea horizontal",
+      "choke_setting_pct": "45-85"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4997.03,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 74.49,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 432.08,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.95,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SEP-001",
+    "category": "Separators",
+    "sub_type": "3-Phase Production Separator",
+    "location": {
+      "lat": 28.746059,
+      "lon": -88.183328,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-06-26",
+    "expire_date": "2048-06-18",
+    "last_audit": "2026-06-06",
+    "next_audit": "2026-07-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 43198,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "level",
+      "flow"
+    ],
+    "extra": {
+      "operating_pressure_psi": "800-1500",
+      "vessel_rating_psi": "2000",
+      "dump_valve_cycle": "every 45-120 min"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4972.42,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 67.69,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 69.57,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 431.61,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SEP-002",
+    "category": "Separators",
+    "sub_type": "Test Separator",
+    "location": {
+      "lat": 28.744985,
+      "lon": -88.184261,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2019-01-11",
+    "expire_date": "2049-01-03",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 17256,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "level",
+      "flow"
+    ],
+    "extra": {
+      "operating_pressure_psi": "800-1500",
+      "vessel_rating_psi": "2000",
+      "dump_valve_cycle": "every 45-120 min"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4953.1,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.47,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 68.39,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 454.85,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "SEP-003",
+    "category": "Separators",
+    "sub_type": "HP Separator",
+    "location": {
+      "lat": 28.745507,
+      "lon": -88.182732,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2019-02-18",
+    "expire_date": "2049-02-10",
+    "last_audit": "2026-07-06",
+    "next_audit": "2026-08-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 19496,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "pressure",
+      "temperature",
+      "level",
+      "flow"
+    ],
+    "extra": {
+      "operating_pressure_psi": "800-1500",
+      "vessel_rating_psi": "2000",
+      "dump_valve_cycle": "every 45-120 min"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4973.85,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 71.74,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "level": {
+        "value": 61.14,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 467.91,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CMP-001",
+    "category": "Compressors",
+    "sub_type": "Export Gas Compressor (1st Stage)",
+    "location": {
+      "lat": 28.74587,
+      "lon": -88.183332,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2017-05-27",
+    "expire_date": "2047-05-20",
+    "last_audit": "2026-08-17",
+    "next_audit": "2026-09-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 43943,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "vibration",
+      "temperature",
+      "pressure",
+      "flow",
+      "motor_current"
+    ],
+    "extra": {
+      "rated_power_kw": "3500-6500",
+      "rpm": "12000-18000",
+      "stage": "1st/2nd/3rd"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.47,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.56,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4986.89,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 454.24,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 189.27,
+        "unit": "A",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CMP-002",
+    "category": "Compressors",
+    "sub_type": "Export Gas Compressor (2nd Stage)",
+    "location": {
+      "lat": 28.745249,
+      "lon": -88.182863,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-03-26",
+    "expire_date": "2048-03-18",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 22673,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "vibration",
+      "temperature",
+      "pressure",
+      "flow",
+      "motor_current"
+    ],
+    "extra": {
+      "rated_power_kw": "3500-6500",
+      "rpm": "12000-18000",
+      "stage": "1st/2nd/3rd"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.72,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 74.78,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4966.38,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 442.44,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 181.57,
+        "unit": "A",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CMP-003",
+    "category": "Compressors",
+    "sub_type": "Lift Gas Compressor",
+    "location": {
+      "lat": 28.745022,
+      "lon": -88.182514,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-07-03",
+    "expire_date": "2048-06-25",
+    "last_audit": "2026-06-09",
+    "next_audit": "2026-07-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 44129,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "vibration",
+      "temperature",
+      "pressure",
+      "flow",
+      "motor_current"
+    ],
+    "extra": {
+      "rated_power_kw": "3500-6500",
+      "rpm": "12000-18000",
+      "stage": "1st/2nd/3rd"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.93,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 72.76,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5040.8,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 445.01,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "motor_current": {
+        "value": 188.83,
+        "unit": "A",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-001",
+    "category": "Pumps",
+    "sub_type": "Crude Export Pump",
+    "location": {
+      "lat": 28.744879,
+      "lon": -88.18291,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-10-20",
+    "expire_date": "2047-10-13",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 40242,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "vibration",
+      "pressure",
+      "flow",
+      "temperature"
+    ],
+    "extra": {
+      "rated_flow_m3h": "50-500",
+      "head_m": "200-1500",
+      "motor_kw": "75-1500"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.2,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5009.21,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 463.22,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.43,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-002",
+    "category": "Pumps",
+    "sub_type": "Sea Water Injection Pump",
+    "location": {
+      "lat": 28.746595,
+      "lon": -88.184123,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2019-01-12",
+    "expire_date": "2049-01-04",
+    "last_audit": "2026-06-29",
+    "next_audit": "2026-07-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 9185,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "vibration",
+      "pressure",
+      "flow",
+      "temperature"
+    ],
+    "extra": {
+      "rated_flow_m3h": "50-500",
+      "head_m": "200-1500",
+      "motor_kw": "75-1500"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.7,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4980.16,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 457.37,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 75.06,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-003",
+    "category": "Pumps",
+    "sub_type": "Chemical Injection Pump",
+    "location": {
+      "lat": 28.745444,
+      "lon": -88.184273,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2017-11-24",
+    "expire_date": "2047-11-17",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 18476,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "vibration",
+      "pressure",
+      "flow",
+      "temperature"
+    ],
+    "extra": {
+      "rated_flow_m3h": "50-500",
+      "head_m": "200-1500",
+      "motor_kw": "75-1500"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.8,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5006.59,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 431.64,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 72.33,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-004",
+    "category": "Pumps",
+    "sub_type": "Drain Pump",
+    "location": {
+      "lat": 28.746041,
+      "lon": -88.183037,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-01-24",
+    "expire_date": "2047-01-17",
+    "last_audit": "2026-08-27",
+    "next_audit": "2026-09-26",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 24293,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "vibration",
+      "pressure",
+      "flow",
+      "temperature"
+    ],
+    "extra": {
+      "rated_flow_m3h": "50-500",
+      "head_m": "200-1500",
+      "motor_kw": "75-1500"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.66,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4956.9,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 455.9,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 67.13,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PMP-005",
+    "category": "Pumps",
+    "sub_type": "Cooling Water Pump",
+    "location": {
+      "lat": 28.744916,
+      "lon": -88.184394,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-08-25",
+    "expire_date": "2048-08-17",
+    "last_audit": "2026-07-26",
+    "next_audit": "2026-08-25",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 35271,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "vibration",
+      "pressure",
+      "flow",
+      "temperature"
+    ],
+    "extra": {
+      "rated_flow_m3h": "50-500",
+      "head_m": "200-1500",
+      "motor_kw": "75-1500"
+    },
+    "live_sensors": {
+      "vibration": {
+        "value": 4.42,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4999.02,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 447.34,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 70.62,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HX-001",
+    "category": "Heat Exchangers",
+    "sub_type": "Production Cooler",
+    "location": {
+      "lat": 28.745615,
+      "lon": -88.184002,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-09-04",
+    "expire_date": "2048-08-27",
+    "last_audit": "2026-08-21",
+    "next_audit": "2026-09-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 36757,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "temperature_in",
+      "temperature_out",
+      "flow",
+      "pressure"
+    ],
+    "extra": {
+      "duty_kw": "2000-8000",
+      "fouling_factor": "0.0001-0.0004 m\u00b2K/W"
+    },
+    "live_sensors": {
+      "temperature_in": {
+        "value": 87.35,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "temperature_out": {
+        "value": 34.84,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 436.12,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4967.61,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HX-002",
+    "category": "Heat Exchangers",
+    "sub_type": "Gas Cooler",
+    "location": {
+      "lat": 28.744639,
+      "lon": -88.182542,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-10-26",
+    "expire_date": "2048-10-18",
+    "last_audit": "2026-08-02",
+    "next_audit": "2026-09-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 39182,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "temperature_in",
+      "temperature_out",
+      "flow",
+      "pressure"
+    ],
+    "extra": {
+      "duty_kw": "2000-8000",
+      "fouling_factor": "0.0001-0.0004 m\u00b2K/W"
+    },
+    "live_sensors": {
+      "temperature_in": {
+        "value": 85.13,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "temperature_out": {
+        "value": 35.6,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 454.64,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5041.96,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HX-003",
+    "category": "Heat Exchangers",
+    "sub_type": "Sea Water Cooler",
+    "location": {
+      "lat": 28.746232,
+      "lon": -88.182444,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-06-25",
+    "expire_date": "2047-06-18",
+    "last_audit": "2026-08-02",
+    "next_audit": "2026-09-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 33148,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "temperature_in",
+      "temperature_out",
+      "flow",
+      "pressure"
+    ],
+    "extra": {
+      "duty_kw": "2000-8000",
+      "fouling_factor": "0.0001-0.0004 m\u00b2K/W"
+    },
+    "live_sensors": {
+      "temperature_in": {
+        "value": 86.65,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "temperature_out": {
+        "value": 34.86,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 463.03,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5009.25,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLR-001",
+    "category": "Flare System",
+    "sub_type": "Main Flare Stack",
+    "location": {
+      "lat": 28.745655,
+      "lon": -88.183187,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2017-12-05",
+    "expire_date": "2047-11-28",
+    "last_audit": "2026-07-04",
+    "next_audit": "2026-08-03",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 47211,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "gas_flow",
+      "temperature",
+      "radiation",
+      "pilot_flame"
+    ],
+    "extra": {
+      "stack_height_m": "60-80",
+      "tip_diameter_m": "0.8-1.2",
+      "design_capacity_kgmolh": "500-2000"
+    },
+    "live_sensors": {
+      "gas_flow": {
+        "value": 116.45,
+        "unit": "kg\u00b7mol/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.45,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "radiation": {
+        "value": 2.76,
+        "unit": "kW/m\u00b2",
+        "status": "nominal"
+      },
+      "pilot_flame": {
+        "value": 1.0,
+        "unit": "bool (lit)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FLR-002",
+    "category": "Flare System",
+    "sub_type": "Flare Knock-Out Drum",
+    "location": {
+      "lat": 28.74659,
+      "lon": -88.1831,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-10-01",
+    "expire_date": "2048-09-23",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 18246,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "gas_flow",
+      "temperature",
+      "radiation",
+      "pilot_flame"
+    ],
+    "extra": {
+      "stack_height_m": "60-80",
+      "tip_diameter_m": "0.8-1.2",
+      "design_capacity_kgmolh": "500-2000"
+    },
+    "live_sensors": {
+      "gas_flow": {
+        "value": 119.02,
+        "unit": "kg\u00b7mol/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 74.5,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "radiation": {
+        "value": 2.54,
+        "unit": "kW/m\u00b2",
+        "status": "nominal"
+      },
+      "pilot_flame": {
+        "value": 1.0,
+        "unit": "bool (lit)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TNK-001",
+    "category": "Storage Tanks",
+    "sub_type": "Crude Oil Storage",
+    "location": {
+      "lat": 28.744642,
+      "lon": -88.183292,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-05-12",
+    "expire_date": "2047-05-05",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.83,
+    "rul_hours": 43359,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "level",
+      "temperature",
+      "pressure"
+    ],
+    "extra": {
+      "capacity_m3": "500-5000",
+      "material": "carbon steel / stainless",
+      "coating": "epoxy"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 63.36,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 71.94,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4982.5,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TNK-002",
+    "category": "Storage Tanks",
+    "sub_type": "Diesel Storage",
+    "location": {
+      "lat": 28.746411,
+      "lon": -88.182681,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-04-14",
+    "expire_date": "2048-04-06",
+    "last_audit": "2026-06-09",
+    "next_audit": "2026-07-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 33812,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "level",
+      "temperature",
+      "pressure"
+    ],
+    "extra": {
+      "capacity_m3": "500-5000",
+      "material": "carbon steel / stainless",
+      "coating": "epoxy"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 64.88,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 70.55,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 4975.84,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "TNK-003",
+    "category": "Storage Tanks",
+    "sub_type": "Produced Water Storage",
+    "location": {
+      "lat": 28.745752,
+      "lon": -88.183914,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2017-09-28",
+    "expire_date": "2047-09-21",
+    "last_audit": "2026-08-13",
+    "next_audit": "2026-09-12",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 8352,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "level",
+      "temperature",
+      "pressure"
+    ],
+    "extra": {
+      "capacity_m3": "500-5000",
+      "material": "carbon steel / stainless",
+      "coating": "epoxy"
+    },
+    "live_sensors": {
+      "level": {
+        "value": 62.8,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 72.96,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "pressure": {
+        "value": 5038.01,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PIP-001",
+    "category": "Pipelines",
+    "sub_type": "Subsea Oil Export Line",
+    "location": {
+      "lat": 28.745447,
+      "lon": -88.183466,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2019-06-02",
+    "expire_date": "2049-05-25",
+    "last_audit": "2026-07-16",
+    "next_audit": "2026-08-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 8449,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "flow",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "length_km": "8-45",
+      "diameter_in": "8-16",
+      "rating_psi": "3000-5000"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 5005.58,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 450.67,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 68.91,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.24,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PIP-002",
+    "category": "Pipelines",
+    "sub_type": "Subsea Gas Export Line",
+    "location": {
+      "lat": 28.746201,
+      "lon": -88.184181,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2019-04-05",
+    "expire_date": "2049-03-28",
+    "last_audit": "2026-07-14",
+    "next_audit": "2026-08-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 29648,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "pressure",
+      "flow",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "length_km": "8-45",
+      "diameter_in": "8-16",
+      "rating_psi": "3000-5000"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4990.64,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 452.21,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.4,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.48,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PIP-003",
+    "category": "Pipelines",
+    "sub_type": "Subsea Flowline A",
+    "location": {
+      "lat": 28.7451,
+      "lon": -88.182553,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-07-25",
+    "expire_date": "2048-07-17",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 8416,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "flow",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "length_km": "8-45",
+      "diameter_in": "8-16",
+      "rating_psi": "3000-5000"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 5021.18,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 447.93,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 67.17,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.29,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "PIP-004",
+    "category": "Pipelines",
+    "sub_type": "Subsea Flowline B",
+    "location": {
+      "lat": 28.746453,
+      "lon": -88.182703,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2017-01-31",
+    "expire_date": "2047-01-24",
+    "last_audit": "2026-06-12",
+    "next_audit": "2026-07-12",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 28282,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "pressure",
+      "flow",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "length_km": "8-45",
+      "diameter_in": "8-16",
+      "rating_psi": "3000-5000"
+    },
+    "live_sensors": {
+      "pressure": {
+        "value": 4990.44,
+        "unit": "psi",
+        "status": "nominal"
+      },
+      "flow": {
+        "value": 439.73,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 73.64,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.37,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-001",
+    "category": "Valves",
+    "sub_type": "ESD Valve",
+    "location": {
+      "lat": 28.744604,
+      "lon": -88.183619,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2017-12-04",
+    "expire_date": "2047-11-27",
+    "last_audit": "2026-07-19",
+    "next_audit": "2026-08-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 49874,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.21,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.69,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-002",
+    "category": "Valves",
+    "sub_type": "Control Valve",
+    "location": {
+      "lat": 28.74498,
+      "lon": -88.183965,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2019-09-24",
+    "expire_date": "2049-09-16",
+    "last_audit": "2026-06-20",
+    "next_audit": "2026-07-20",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 22552,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 76.99,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 15.1,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-003",
+    "category": "Valves",
+    "sub_type": "Check Valve",
+    "location": {
+      "lat": 28.745554,
+      "lon": -88.182561,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-04-13",
+    "expire_date": "2047-04-06",
+    "last_audit": "2026-08-14",
+    "next_audit": "2026-09-13",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 7250,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 74.41,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.91,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-004",
+    "category": "Valves",
+    "sub_type": "Ball Valve",
+    "location": {
+      "lat": 28.744736,
+      "lon": -88.182676,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2017-05-21",
+    "expire_date": "2047-05-14",
+    "last_audit": "2026-08-16",
+    "next_audit": "2026-09-15",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 18135,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 74.23,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.46,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-005",
+    "category": "Valves",
+    "sub_type": "Gate Valve",
+    "location": {
+      "lat": 28.744764,
+      "lon": -88.183085,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-03-23",
+    "expire_date": "2047-03-16",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 15386,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.89,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.63,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-006",
+    "category": "Valves",
+    "sub_type": "Butterfly Valve",
+    "location": {
+      "lat": 28.745131,
+      "lon": -88.184138,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-10-06",
+    "expire_date": "2048-09-28",
+    "last_audit": "2026-07-01",
+    "next_audit": "2026-07-31",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 6754,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.97,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 15.9,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-007",
+    "category": "Valves",
+    "sub_type": "ESD Valve",
+    "location": {
+      "lat": 28.746597,
+      "lon": -88.182408,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2019-07-28",
+    "expire_date": "2049-07-20",
+    "last_audit": "2026-08-19",
+    "next_audit": "2026-09-18",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 10680,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.76,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.38,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "VLV-008",
+    "category": "Valves",
+    "sub_type": "Control Valve",
+    "location": {
+      "lat": 28.745339,
+      "lon": -88.184085,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-05-21",
+    "expire_date": "2047-05-14",
+    "last_audit": "2026-07-02",
+    "next_audit": "2026-08-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 44858,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "position",
+      "pressure_differential"
+    ],
+    "extra": {
+      "size_in": "2-24",
+      "actuator": "pneumatic/hydraulic/electric",
+      "fail_safe": "FC/FO"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.95,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "pressure_differential": {
+        "value": 14.55,
+        "unit": "psi",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-001",
+    "category": "Gas Detection Systems",
+    "sub_type": "H2S Detector",
+    "location": {
+      "lat": 28.746234,
+      "lon": -88.183801,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2017-01-17",
+    "expire_date": "2047-01-10",
+    "last_audit": "2026-08-25",
+    "next_audit": "2026-09-24",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 9564,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 5.36,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-002",
+    "category": "Gas Detection Systems",
+    "sub_type": "CH4 Detector",
+    "location": {
+      "lat": 28.745164,
+      "lon": -88.183979,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2017-11-15",
+    "expire_date": "2047-11-08",
+    "last_audit": "2026-07-05",
+    "next_audit": "2026-08-04",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.92,
+    "rul_hours": 19300,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 6.04,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-003",
+    "category": "Gas Detection Systems",
+    "sub_type": "VOC Detector",
+    "location": {
+      "lat": 28.746411,
+      "lon": -88.182708,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2019-09-28",
+    "expire_date": "2049-09-20",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.95,
+    "rul_hours": 4889,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 5.39,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-004",
+    "category": "Gas Detection Systems",
+    "sub_type": "Combustible Gas Detector",
+    "location": {
+      "lat": 28.745874,
+      "lon": -88.183876,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-11-15",
+    "expire_date": "2048-11-07",
+    "last_audit": "2026-06-17",
+    "next_audit": "2026-07-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 2633,
+    "maintenance_count_ytd": 3,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 6.92,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-005",
+    "category": "Gas Detection Systems",
+    "sub_type": "H2S Detector",
+    "location": {
+      "lat": 28.746408,
+      "lon": -88.183309,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2017-06-04",
+    "expire_date": "2047-05-28",
+    "last_audit": "2026-08-28",
+    "next_audit": "2026-09-27",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 10352,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 6.33,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GDS-006",
+    "category": "Gas Detection Systems",
+    "sub_type": "CH4 Detector",
+    "location": {
+      "lat": 28.746398,
+      "lon": -88.182808,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-09-24",
+    "expire_date": "2048-09-16",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 18353,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "gas_concentration"
+    ],
+    "extra": {
+      "detection_range_ppm": "0-500 (H2S) / 0-50000 (CH4)",
+      "alarm_threshold_ppm": "10 (H2S) / 5000 (CH4)"
+    },
+    "live_sensors": {
+      "gas_concentration": {
+        "value": 4.18,
+        "unit": "ppm",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FDS-001",
+    "category": "Fire Detection Systems",
+    "sub_type": "Flame Detector (UV/IR)",
+    "location": {
+      "lat": 28.74616,
+      "lon": -88.182632,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2017-07-30",
+    "expire_date": "2047-07-23",
+    "last_audit": "2026-07-16",
+    "next_audit": "2026-08-15",
+    "audit_frequency": "monthly",
+    "status": "critical",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 17514,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "detection_status"
+    ],
+    "extra": {
+      "coverage_radius_m": "5-15",
+      "response_time_s": "<1",
+      "self_test_interval": "daily"
+    },
+    "live_sensors": {
+      "detection_status": {
+        "value": 0.0,
+        "unit": "bool (clear)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FDS-002",
+    "category": "Fire Detection Systems",
+    "sub_type": "Smoke Detector",
+    "location": {
+      "lat": 28.74465,
+      "lon": -88.182927,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2017-12-29",
+    "expire_date": "2047-12-22",
+    "last_audit": "2026-07-23",
+    "next_audit": "2026-08-22",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.89,
+    "rul_hours": 45903,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "detection_status"
+    ],
+    "extra": {
+      "coverage_radius_m": "5-15",
+      "response_time_s": "<1",
+      "self_test_interval": "daily"
+    },
+    "live_sensors": {
+      "detection_status": {
+        "value": 0.0,
+        "unit": "bool (clear)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FDS-003",
+    "category": "Fire Detection Systems",
+    "sub_type": "Heat Detector",
+    "location": {
+      "lat": 28.746175,
+      "lon": -88.184184,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-07-01",
+    "expire_date": "2048-06-23",
+    "last_audit": "2026-06-21",
+    "next_audit": "2026-07-21",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 32166,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "detection_status"
+    ],
+    "extra": {
+      "coverage_radius_m": "5-15",
+      "response_time_s": "<1",
+      "self_test_interval": "daily"
+    },
+    "live_sensors": {
+      "detection_status": {
+        "value": 0.0,
+        "unit": "bool (clear)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FDS-004",
+    "category": "Fire Detection Systems",
+    "sub_type": "Fire Alarm Panel",
+    "location": {
+      "lat": 28.745046,
+      "lon": -88.18308,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-09-18",
+    "expire_date": "2048-09-10",
+    "last_audit": "2026-06-30",
+    "next_audit": "2026-07-30",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 20292,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "detection_status"
+    ],
+    "extra": {
+      "coverage_radius_m": "5-15",
+      "response_time_s": "<1",
+      "self_test_interval": "daily"
+    },
+    "live_sensors": {
+      "detection_status": {
+        "value": 0.0,
+        "unit": "bool (clear)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "FDS-005",
+    "category": "Fire Detection Systems",
+    "sub_type": "Flame Detector (UV/IR)",
+    "location": {
+      "lat": 28.745959,
+      "lon": -88.182713,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2019-11-10",
+    "expire_date": "2049-11-02",
+    "last_audit": "2026-07-22",
+    "next_audit": "2026-08-21",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.84,
+    "rul_hours": 19118,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "detection_status"
+    ],
+    "extra": {
+      "coverage_radius_m": "5-15",
+      "response_time_s": "<1",
+      "self_test_interval": "daily"
+    },
+    "live_sensors": {
+      "detection_status": {
+        "value": 0.0,
+        "unit": "bool (clear)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ESD-001",
+    "category": "Emergency Shutdown Valves",
+    "sub_type": "HIPPS Valve (Subsea)",
+    "location": {
+      "lat": 28.744817,
+      "lon": -88.183531,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-06-28",
+    "expire_date": "2048-06-20",
+    "last_audit": "2026-06-05",
+    "next_audit": "2026-07-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.98,
+    "rul_hours": 9578,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "position",
+      "test_status",
+      "response_time"
+    ],
+    "extra": {
+      "close_time_s": "<10 (HIPPS) / <30 (ESDV)",
+      "test_interval": "monthly",
+      "SIL_rating": "SIL-2/3"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 73.22,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "test_status": {
+        "value": 1.0,
+        "unit": "bool (passed)",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 8.89,
+        "unit": "s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ESD-002",
+    "category": "Emergency Shutdown Valves",
+    "sub_type": "ESDV (Process)",
+    "location": {
+      "lat": 28.744689,
+      "lon": -88.183528,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2018-01-25",
+    "expire_date": "2048-01-18",
+    "last_audit": "2026-07-03",
+    "next_audit": "2026-08-02",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 49148,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "position",
+      "test_status",
+      "response_time"
+    ],
+    "extra": {
+      "close_time_s": "<10 (HIPPS) / <30 (ESDV)",
+      "test_interval": "monthly",
+      "SIL_rating": "SIL-2/3"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 75.55,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "test_status": {
+        "value": 1.0,
+        "unit": "bool (passed)",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 7.21,
+        "unit": "s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ESD-003",
+    "category": "Emergency Shutdown Valves",
+    "sub_type": "ESDV (Export)",
+    "location": {
+      "lat": 28.745463,
+      "lon": -88.182502,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2018-02-08",
+    "expire_date": "2048-02-01",
+    "last_audit": "2026-07-17",
+    "next_audit": "2026-08-16",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 10167,
+    "maintenance_count_ytd": 6,
+    "sensors": [
+      "position",
+      "test_status",
+      "response_time"
+    ],
+    "extra": {
+      "close_time_s": "<10 (HIPPS) / <30 (ESDV)",
+      "test_interval": "monthly",
+      "SIL_rating": "SIL-2/3"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 73.05,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "test_status": {
+        "value": 1.0,
+        "unit": "bool (passed)",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 7.96,
+        "unit": "s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ESD-004",
+    "category": "Emergency Shutdown Valves",
+    "sub_type": "BDV (Blowdown)",
+    "location": {
+      "lat": 28.745934,
+      "lon": -88.183748,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2019-11-05",
+    "expire_date": "2049-10-28",
+    "last_audit": "2026-07-10",
+    "next_audit": "2026-08-09",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 45576,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "position",
+      "test_status",
+      "response_time"
+    ],
+    "extra": {
+      "close_time_s": "<10 (HIPPS) / <30 (ESDV)",
+      "test_interval": "monthly",
+      "SIL_rating": "SIL-2/3"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 74.36,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "test_status": {
+        "value": 1.0,
+        "unit": "bool (passed)",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 7.5,
+        "unit": "s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "ESD-005",
+    "category": "Emergency Shutdown Valves",
+    "sub_type": "HIPPS Valve (Subsea)",
+    "location": {
+      "lat": 28.745738,
+      "lon": -88.183588,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2017-12-23",
+    "expire_date": "2047-12-16",
+    "last_audit": "2026-08-18",
+    "next_audit": "2026-09-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.85,
+    "rul_hours": 40009,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "position",
+      "test_status",
+      "response_time"
+    ],
+    "extra": {
+      "close_time_s": "<10 (HIPPS) / <30 (ESDV)",
+      "test_interval": "monthly",
+      "SIL_rating": "SIL-2/3"
+    },
+    "live_sensors": {
+      "position": {
+        "value": 76.45,
+        "unit": "% open",
+        "status": "nominal"
+      },
+      "test_status": {
+        "value": 1.0,
+        "unit": "bool (passed)",
+        "status": "nominal"
+      },
+      "response_time": {
+        "value": 7.13,
+        "unit": "s",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-001",
+    "category": "Power Generators",
+    "sub_type": "Gas Turbine Generator A",
+    "location": {
+      "lat": 28.745484,
+      "lon": -88.183049,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2018-10-22",
+    "expire_date": "2048-10-14",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.96,
+    "rul_hours": 13120,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "power_output",
+      "vibration",
+      "temperature",
+      "fuel_flow"
+    ],
+    "extra": {
+      "rated_power_mw": "8-15",
+      "voltage_kv": "13.8",
+      "frequency_hz": "60"
+    },
+    "live_sensors": {
+      "power_output": {
+        "value": 9.99,
+        "unit": "MW",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.58,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 73.86,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fuel_flow": {
+        "value": 829.1,
+        "unit": "L/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-002",
+    "category": "Power Generators",
+    "sub_type": "Gas Turbine Generator B",
+    "location": {
+      "lat": 28.745631,
+      "lon": -88.183134,
+      "elevation_m": "-2m (subsea)"
+    },
+    "install_date": "2017-06-23",
+    "expire_date": "2047-06-16",
+    "last_audit": "2026-07-07",
+    "next_audit": "2026-08-06",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 17392,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "power_output",
+      "vibration",
+      "temperature",
+      "fuel_flow"
+    ],
+    "extra": {
+      "rated_power_mw": "8-15",
+      "voltage_kv": "13.8",
+      "frequency_hz": "60"
+    },
+    "live_sensors": {
+      "power_output": {
+        "value": 10.31,
+        "unit": "MW",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.95,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 67.85,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fuel_flow": {
+        "value": 834.89,
+        "unit": "L/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "GEN-003",
+    "category": "Power Generators",
+    "sub_type": "Gas Turbine Generator C",
+    "location": {
+      "lat": 28.746213,
+      "lon": -88.184105,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-09-28",
+    "expire_date": "2048-09-20",
+    "last_audit": "2026-06-29",
+    "next_audit": "2026-07-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 6772,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "power_output",
+      "vibration",
+      "temperature",
+      "fuel_flow"
+    ],
+    "extra": {
+      "rated_power_mw": "8-15",
+      "voltage_kv": "13.8",
+      "frequency_hz": "60"
+    },
+    "live_sensors": {
+      "power_output": {
+        "value": 10.06,
+        "unit": "MW",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.42,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 72.96,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "fuel_flow": {
+        "value": 857.11,
+        "unit": "L/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-001",
+    "category": "HVAC",
+    "sub_type": "MCCR Air Handling Unit",
+    "location": {
+      "lat": 28.745751,
+      "lon": -88.182963,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2019-04-29",
+    "expire_date": "2049-04-21",
+    "last_audit": "2026-08-20",
+    "next_audit": "2026-09-19",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.86,
+    "rul_hours": 44995,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "temperature",
+      "humidity",
+      "airflow"
+    ],
+    "extra": {
+      "capacity_m3h": "5000-20000",
+      "cooling_kw": "50-200"
+    },
+    "live_sensors": {
+      "temperature": {
+        "value": 74.76,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "humidity": {
+        "value": 44.28,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 12163.4,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-002",
+    "category": "HVAC",
+    "sub_type": "Control Room AHU",
+    "location": {
+      "lat": 28.745038,
+      "lon": -88.182792,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-08-07",
+    "expire_date": "2047-07-31",
+    "last_audit": "2026-07-25",
+    "next_audit": "2026-08-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.91,
+    "rul_hours": 9953,
+    "maintenance_count_ytd": 9,
+    "sensors": [
+      "temperature",
+      "humidity",
+      "airflow"
+    ],
+    "extra": {
+      "capacity_m3h": "5000-20000",
+      "cooling_kw": "50-200"
+    },
+    "live_sensors": {
+      "temperature": {
+        "value": 69.97,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "humidity": {
+        "value": 45.53,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 11971.53,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "HVAC-003",
+    "category": "HVAC",
+    "sub_type": "Accommodation AHU",
+    "location": {
+      "lat": 28.745935,
+      "lon": -88.182424,
+      "elevation_m": "+12m (process module)"
+    },
+    "install_date": "2017-10-01",
+    "expire_date": "2047-09-24",
+    "last_audit": "2026-07-30",
+    "next_audit": "2026-08-29",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.94,
+    "rul_hours": 31004,
+    "maintenance_count_ytd": 11,
+    "sensors": [
+      "temperature",
+      "humidity",
+      "airflow"
+    ],
+    "extra": {
+      "capacity_m3h": "5000-20000",
+      "cooling_kw": "50-200"
+    },
+    "live_sensors": {
+      "temperature": {
+        "value": 72.69,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "humidity": {
+        "value": 42.36,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "airflow": {
+        "value": 12184.04,
+        "unit": "m\u00b3/h",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DGN-001",
+    "category": "Diesel Generators",
+    "sub_type": "Backup Diesel Generator A",
+    "location": {
+      "lat": 28.746261,
+      "lon": -88.183304,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2019-10-31",
+    "expire_date": "2049-10-23",
+    "last_audit": "2026-07-25",
+    "next_audit": "2026-08-24",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.9,
+    "rul_hours": 18986,
+    "maintenance_count_ytd": 5,
+    "sensors": [
+      "power_output",
+      "fuel_level",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "rated_power_kw": "1500-2500",
+      "tank_capacity_l": "10000-20000"
+    },
+    "live_sensors": {
+      "power_output": {
+        "value": 9.6,
+        "unit": "MW",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 79.58,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 73.26,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.26,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "DGN-002",
+    "category": "Diesel Generators",
+    "sub_type": "Backup Diesel Generator B",
+    "location": {
+      "lat": 28.745569,
+      "lon": -88.183922,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-07-22",
+    "expire_date": "2048-07-14",
+    "last_audit": "2026-08-06",
+    "next_audit": "2026-09-05",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.87,
+    "rul_hours": 19807,
+    "maintenance_count_ytd": 7,
+    "sensors": [
+      "power_output",
+      "fuel_level",
+      "temperature",
+      "vibration"
+    ],
+    "extra": {
+      "rated_power_kw": "1500-2500",
+      "tank_capacity_l": "10000-20000"
+    },
+    "live_sensors": {
+      "power_output": {
+        "value": 9.58,
+        "unit": "MW",
+        "status": "nominal"
+      },
+      "fuel_level": {
+        "value": 76.44,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 72.52,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      },
+      "vibration": {
+        "value": 4.16,
+        "unit": "mm/s RMS",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-001",
+    "category": "UPS Systems",
+    "sub_type": "UPS A (Control Room)",
+    "location": {
+      "lat": 28.744761,
+      "lon": -88.184098,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2018-10-17",
+    "expire_date": "2048-10-09",
+    "last_audit": "2026-08-09",
+    "next_audit": "2026-09-08",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 6209,
+    "maintenance_count_ytd": 8,
+    "sensors": [
+      "battery_charge",
+      "load",
+      "temperature"
+    ],
+    "extra": {
+      "capacity_kva": "50-200",
+      "backup_time_min": "30-60",
+      "battery_type": "VRLA"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 94.63,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load": {
+        "value": 63.51,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 71.7,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-002",
+    "category": "UPS Systems",
+    "sub_type": "UPS B (ESD System)",
+    "location": {
+      "lat": 28.745685,
+      "lon": -88.183568,
+      "elevation_m": "+8m (cellar deck)"
+    },
+    "install_date": "2019-04-15",
+    "expire_date": "2049-04-07",
+    "last_audit": "2026-07-13",
+    "next_audit": "2026-08-12",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.88,
+    "rul_hours": 40278,
+    "maintenance_count_ytd": 2,
+    "sensors": [
+      "battery_charge",
+      "load",
+      "temperature"
+    ],
+    "extra": {
+      "capacity_kva": "50-200",
+      "backup_time_min": "30-60",
+      "battery_type": "VRLA"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 93.13,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load": {
+        "value": 60.3,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.83,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "UPS-003",
+    "category": "UPS Systems",
+    "sub_type": "UPS C (Telecom)",
+    "location": {
+      "lat": 28.744612,
+      "lon": -88.183696,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2019-02-19",
+    "expire_date": "2049-02-11",
+    "last_audit": "2026-08-01",
+    "next_audit": "2026-08-31",
+    "audit_frequency": "monthly",
+    "status": "warning",
+    "ts_fm_confidence": 0.97,
+    "rul_hours": 29460,
+    "maintenance_count_ytd": 10,
+    "sensors": [
+      "battery_charge",
+      "load",
+      "temperature"
+    ],
+    "extra": {
+      "capacity_kva": "50-200",
+      "backup_time_min": "30-60",
+      "battery_type": "VRLA"
+    },
+    "live_sensors": {
+      "battery_charge": {
+        "value": 96.44,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "load": {
+        "value": 58.57,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "temperature": {
+        "value": 69.33,
+        "unit": "\u00b0C",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRS-001",
+    "category": "Control Room Systems",
+    "sub_type": "Main SCADA System",
+    "location": {
+      "lat": 28.745039,
+      "lon": -88.183528,
+      "elevation_m": "+15m (main deck)"
+    },
+    "install_date": "2018-03-28",
+    "expire_date": "2048-03-20",
+    "last_audit": "2026-08-02",
+    "next_audit": "2026-09-01",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 28497,
+    "maintenance_count_ytd": 4,
+    "sensors": [
+      "system_health",
+      "network_status"
+    ],
+    "extra": {
+      "operator_stations": "4-6",
+      "scada_tags": "50000-150000",
+      "redundancy": "1oo2 / 2oo3"
+    },
+    "live_sensors": {
+      "system_health": {
+        "value": 98.53,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "network_status": {
+        "value": 1.0,
+        "unit": "bool (up)",
+        "status": "nominal"
+      }
+    }
+  },
+  {
+    "id": "CRS-002",
+    "category": "Control Room Systems",
+    "sub_type": "ESD Logic System",
+    "location": {
+      "lat": 28.746561,
+      "lon": -88.183332,
+      "elevation_m": "+30m (helideck)"
+    },
+    "install_date": "2019-08-16",
+    "expire_date": "2049-08-08",
+    "last_audit": "2026-06-17",
+    "next_audit": "2026-07-17",
+    "audit_frequency": "monthly",
+    "status": "nominal",
+    "ts_fm_confidence": 0.93,
+    "rul_hours": 7501,
+    "maintenance_count_ytd": 12,
+    "sensors": [
+      "system_health",
+      "network_status"
+    ],
+    "extra": {
+      "operator_stations": "4-6",
+      "scada_tags": "50000-150000",
+      "redundancy": "1oo2 / 2oo3"
+    },
+    "live_sensors": {
+      "system_health": {
+        "value": 99.18,
+        "unit": "%",
+        "status": "nominal"
+      },
+      "network_status": {
+        "value": 1.0,
+        "unit": "bool (up)",
+        "status": "nominal"
+      }
+    }
+  }
+];
+const CATEGORIES = [{"name": "Wells", "icon": "\ud83d\udee2\ufe0f", "count": 4}, {"name": "Separators", "icon": "\u2699\ufe0f", "count": 3}, {"name": "Compressors", "icon": "\ud83c\udf00", "count": 3}, {"name": "Pumps", "icon": "\ud83d\udd27", "count": 5}, {"name": "Heat Exchangers", "icon": "\ud83d\udd25", "count": 3}, {"name": "Flare System", "icon": "\ud83d\udd25", "count": 2}, {"name": "Storage Tanks", "icon": "\ud83d\udee2\ufe0f", "count": 3}, {"name": "Pipelines", "icon": "\ud83d\udd17", "count": 4}, {"name": "Valves", "icon": "\ud83d\udd29", "count": 8}, {"name": "Gas Detection Systems", "icon": "\ud83d\udca8", "count": 6}, {"name": "Fire Detection Systems", "icon": "\ud83d\udea8", "count": 5}, {"name": "Emergency Shutdown Valves", "icon": "\u26d4", "count": 5}, {"name": "Power Generators", "icon": "\u26a1", "count": 3}, {"name": "HVAC", "icon": "\ud83c\udf21\ufe0f", "count": 3}, {"name": "Diesel Generators", "icon": "\ud83d\udd0b", "count": 2}, {"name": "UPS Systems", "icon": "\ud83d\udd0c", "count": 3}, {"name": "Control Room Systems", "icon": "\ud83d\udda5\ufe0f", "count": 2}];
+
+// =====================================================================
+// Render asset cards
+// =====================================================================
+function renderAssets(filter = 'all') {
+  const grid = document.getElementById('asset-grid');
+  if (!grid) return;
+  const filtered = filter === 'all' ? ASSETS : ASSETS.filter(a => a.category === filter);
+  grid.innerHTML = filtered.map(a => {
+    const cat = CATEGORIES.find(c => c.name === a.category);
+    const sensorsHtml = Object.entries(a.live_sensors).map(([name, reading]) => `
+      <div class="sensor-reading">
+        <span class="label">${name.replace(/_/g, ' ')}</span>
+        <span class="value ${reading.status}" id="sensor-${a.id}-${name}">${reading.value} ${reading.unit}</span>
+      </div>
+    `).join('');
+    const rulBar = a.rul_hours ? `
+      <div style="grid-column: 1 / -1; margin-top: 4px;">
+        <div style="font-size: 10px; color: var(--text-mute); font-family: 'JetBrains Mono', monospace;">RUL: ${a.rul_hours.toLocaleString()}h (${(a.rul_hours/8760).toFixed(1)}y)</div>
+        <div class="rul-bar"><div class="rul-bar-fill" style="width: ${Math.min(100, a.rul_hours/500)}%"></div></div>
+      </div>
+    ` : '';
+    return `
+      <div class="asset-card ${a.status}" data-category="${a.category}">
+        <div class="asset-card-header">
+          <div style="display: flex; align-items: start;">
+            <span class="asset-icon">${cat.icon}</span>
+            <div class="asset-title">
+              <div class="asset-id">${a.id}</div>
+              <div class="asset-subtype">${a.sub_type}</div>
+            </div>
+          </div>
+          <span class="status-badge ${a.status}">${a.status}</span>
+        </div>
+        <div class="sensor-readings">${sensorsHtml}</div>
+        ${rulBar}
+        <div class="asset-meta">
+          <div><span class="key">Lat:</span><span class="val">${a.location.lat}</span></div>
+          <div><span class="key">Lon:</span><span class="val">${a.location.lon}</span></div>
+          <div><span class="key">Installed:</span><span class="val">${a.install_date}</span></div>
+          <div><span class="key">Expire:</span><span class="val">${a.expire_date}</span></div>
+          <div><span class="key">Last audit:</span><span class="val">${a.last_audit}</span></div>
+          <div><span class="key">Next audit:</span><span class="val">${a.next_audit}</span></div>
+          <div><span class="key">TS-FM conf:</span><span class="val">${a.ts_fm_confidence}</span></div>
+          <div><span class="key">Maint YTD:</span><span class="val">${a.maintenance_count_ytd}</span></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// =====================================================================
+// Live sensor updates (every 3 seconds)
+// =====================================================================
+const SENSOR_BASELINES = {
+  pressure: { base: 5000, variance: 50, unit: 'psi' },
+  temperature: { base: 72, variance: 5, unit: '°C' },
+  flow: { base: 450, variance: 20, unit: 'm³/h' },
+  vibration: { base: 4.5, variance: 0.5, unit: 'mm/s RMS' },
+  level: { base: 65, variance: 5, unit: '%' },
+  motor_current: { base: 180, variance: 10, unit: 'A' },
+  gas_concentration: { base: 5, variance: 2, unit: 'ppm' },
+  gas_flow: { base: 120, variance: 10, unit: 'kg·mol/h' },
+  radiation: { base: 2.5, variance: 0.3, unit: 'kW/m²' },
+  pilot_flame: { base: 1, variance: 0, unit: 'bool (lit)' },
+  temperature_in: { base: 85, variance: 3, unit: '°C' },
+  temperature_out: { base: 35, variance: 2, unit: '°C' },
+  position: { base: 75, variance: 2, unit: '% open' },
+  pressure_differential: { base: 15, variance: 1, unit: 'psi' },
+  detection_status: { base: 0, variance: 0, unit: 'bool (clear)' },
+  test_status: { base: 1, variance: 0, unit: 'bool (passed)' },
+  response_time: { base: 8, variance: 1, unit: 's' },
+  power_output: { base: 10, variance: 0.5, unit: 'MW' },
+  fuel_flow: { base: 850, variance: 30, unit: 'L/h' },
+  fuel_level: { base: 78, variance: 3, unit: '%' },
+  battery_charge: { base: 95, variance: 2, unit: '%' },
+  load: { base: 62, variance: 4, unit: '%' },
+  humidity: { base: 45, variance: 3, unit: '%' },
+  airflow: { base: 12000, variance: 200, unit: 'm³/h' },
+  system_health: { base: 99, variance: 1, unit: '%' },
+  network_status: { base: 1, variance: 0, unit: 'bool (up)' },
+};
+
+function updateSensors() {
+  let totalConfidence = 0;
+  let assetCount = 0;
+  ASSETS.forEach(asset => {
+    assetCount++;
+    totalConfidence += asset.ts_fm_confidence;
+    asset.sensors.forEach(sensorType => {
+      const baseline = SENSOR_BASELINES[sensorType] || { base: 50, variance: 5, unit: 'units' };
+      const variance = baseline.variance;
+      let value = baseline.base + (Math.random() - 0.5) * 2 * variance;
+      // Occasionally inject anomaly
+      if (Math.random() < 0.005 && asset.status !== 'critical') {
+        value = baseline.base + variance * 3 * (Math.random() > 0.5 ? 1 : -1);
+      }
+      value = Math.round(value * 100) / 100;
+      const status = Math.abs(value - baseline.base) > variance * 2 ? 'warning' : 'nominal';
+      const el = document.getElementById(`sensor-${asset.id}-${sensorType}`);
+      if (el) {
+        el.textContent = `${value} ${baseline.unit}`;
+        el.className = `value ${status}`;
+      }
+    });
+  });
+  // Update stats
+  const lastUpdate = document.getElementById('last-update');
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString('en-GB', { hour12: false });
+  const dataRate = document.getElementById('data-rate');
+  if (dataRate) dataRate.textContent = (140 + Math.floor(Math.random() * 50));
+  const avgConf = document.getElementById('avg-confidence');
+  if (avgConf) avgConf.textContent = (totalConfidence / assetCount).toFixed(2);
+}
+
+// =====================================================================
+// Filter assets by category
+// =====================================================================
+function filterAssets(category) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.closest('.filter-chip').classList.add('active');
+  renderAssets(category);
+}
+
+// =====================================================================
+// Init
+// =====================================================================
+renderAssets();
+updateSensors();
+setInterval(updateSensors, 3000);
+
+// Scroll-spy for sidebar
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const sections = document.querySelectorAll('.doc-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
