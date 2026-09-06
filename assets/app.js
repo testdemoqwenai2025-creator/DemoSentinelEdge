@@ -203,16 +203,37 @@ window.addEventListener('DOMContentLoaded', function () {
         { href: "engineering.html", label: "Engineering Hub", desc: "87-file repo" },
         { href: "system-design.html", label: "System Design", desc: "10-section doc" },
         { href: "architecture-deep.html", label: "Technical Deep Dive", desc: "Engineering due-diligence" },
+        { href: "architecture-interactive.html", label: "Interactive Architecture", desc: "Click + animate" },
+        { href: "comparison.html", label: "Competitive Comparison", desc: "27 dimensions, 8 competitors" },
         { href: "sectors.html", label: "Sectors Hub", desc: "7 verticals" },
-        { href: "scenario-offshore-oil-gas.html", label: "Offshore O&G Scenario", desc: "64 assets, 192 sensors" },
+      ]
+    },
+    {
+      section: "Live Scenarios",
+      items: [
+        { href: "scenario-offshore-oil-gas.html", label: "Oil & Gas Offshore", desc: "64 assets, 192 sensors" },
+        { href: "scenario-hospital-icu.html", label: "Hospital ICU", desc: "104 assets, 428 sensors" },
+        { href: "scenario-autonomous-vehicles.html", label: "Autonomous Vehicles", desc: "96 assets, 374 sensors" },
+        { href: "scenario-chemical-plant.html", label: "Chemical Plant", desc: "85 assets, 274 sensors" },
+        { href: "scenario-smart-grid.html", label: "Smart Grid", desc: "165 assets, 612 sensors" },
+        { href: "scenario-mining.html", label: "Mining", desc: "66 assets, 236 sensors" },
+        { href: "scenario-water-treatment.html", label: "Water Treatment", desc: "60 assets, 238 sensors" },
       ]
     },
     {
       section: "Tools & Engagement",
       items: [
-        { href: "roi-calculator.html", label: "ROI Calculator", desc: "Self-serve" },
+        { href: "roi-calculator.html", label: "ROI Calculator (general)", desc: "Self-serve" },
+        { href: "roi-oil-gas.html", label: "ROI: Oil & Gas", desc: "Sector-specific" },
+        { href: "roi-manufacturing.html", label: "ROI: Manufacturing", desc: "Sector-specific" },
+        { href: "roi-energy.html", label: "ROI: Energy", desc: "Sector-specific" },
+        { href: "carbon-calculator.html", label: "Carbon Calculator", desc: "ESG differentiator" },
+        { href: "federated-learning.html", label: "Federated Learning", desc: "The moat, visualized" },
+        { href: "portal.html", label: "Design Partner Portal", desc: "Self-serve signup" },
+        { href: "tenant-dashboard.html", label: "Tenant Dashboard", desc: "View sandbox" },
+        { href: "aisensoredgecomp-pitch-deck.pdf", label: "Pitch Deck PDF", desc: "12 slides, downloadable" },
         { href: "https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors", label: "Live MVP Dashboard", desc: "Real-time", external: true },
-        { href: "https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform", label: "Platform Source", desc: "87 files", external: true },
+        { href: "https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform", label: "Platform Source", desc: "99 files", external: true },
         { href: "https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-MVP", label: "MVP Source", desc: "Next.js", external: true },
       ]
     },
