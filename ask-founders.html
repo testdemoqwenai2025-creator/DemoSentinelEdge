@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Ask the Founders</title>
+<meta name="description" content="20 answers to the most common investor questions, straight from the founding team. The Q&A that happens after the pitch." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Ask the Founders — AISensorEdgeComp" />
+<meta property="og:description" content="20 honest answers to investor questions from the founding team." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  .faq-container { max-width: 850px; margin: 0 auto; padding: 0 40px 60px; }
+  .faq-item { margin-bottom: 24px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: var(--border-strong); }
+  .faq-question { padding: 20px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--card); transition: background 0.2s; }
+  .faq-question:hover { background: color-mix(in srgb, var(--cyan) 3%, var(--card)); }
+  .faq-q-text { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); }
+  .faq-q-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); margin-right: 12px; flex-shrink: 0; }
+  .faq-q-toggle { color: var(--cyan); font-size: 20px; transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-q-toggle { transform: rotate(45deg); }
+  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s; padding: 0 24px; }
+  .faq-item.open .faq-answer { max-height: 600px; padding: 0 24px 24px; }
+  .faq-a-text { font-size: 15px; color: var(--text-dim); line-height: 1.7; padding-top: 16px; border-top: 1px solid var(--border); }
+  .faq-a-text strong { color: var(--text); }
+  .faq-a-text a { color: var(--cyan); text-decoration: none; }
+  .faq-a-text a:hover { text-decoration: underline; }
+  .faq-author { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); }
+  .faq-author-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; color: var(--bg); font-size: 10px; font-weight: 600; }
+  .faq-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .faq-filter-chip { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+  .faq-filter-chip:hover, .faq-filter-chip.active { background: color-mix(in srgb, var(--cyan) 10%, transparent); border-color: var(--cyan); color: var(--cyan); }
+</style>
+</head>
+<body id="ask-founders">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="contact.html">Contact</a>
+    <a href="ask-founders.html" class="active">Ask the Founders</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="min-height: 30vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>Ask the Founders</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>20 questions · Honest answers · From the founding team</div>
+    <h1>Ask the <span class="accent">Founders</span></h1>
+    <p class="lead">The Q&A that happens after the pitch. These are the 20 questions investors ask most often — answered honestly by the founding team. No marketing, just engineering and business reality.</p>
+  </div>
+</section>
+
+<div class="faq-container">
+  <div class="faq-filter-bar">
+    <button class="faq-filter-chip active" onclick="filterFAQ('all', event)">All (20)</button>
+    <button class="faq-filter-chip" onclick="filterFAQ('market', event)">Market & Competition</button>
+    <button class="faq-filter-chip" onclick="filterFAQ('tech', event)">Technology</button>
+    <button class="faq-filter-chip" onclick="filterFAQ('business', event)">Business Model</button>
+    <button class="faq-filter-chip" onclick="filterFAQ('team', event)">Team & Hiring</button>
+    <button class="faq-filter-chip" onclick="filterFAQ('risk', event)">Risks & Honesty</button>
+  </div>
+
+  <div id="faq-list">
+
+  <!-- Q1 -->
+  <div class="faq-item" data-category="market">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q01</span><span class="faq-q-text">How do you compete with AWS IoT and Azure IoT? They have unlimited resources.</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p><strong>AWS and Azure sell plumbing — ingest, storage, rules engines.</strong> They don't sell intelligence. No TS-FM, no Graph RAG, no causal inference, no federated learning, no carbon-aware routing, no self-calibration mesh. Their customers build those themselves (or don't, which is why 38% of AI pilots stall).</p>
+      <p>We integrate with them — customers can use AWS S3 or IoT Core as ingest. But the reasoning layer is ours. The moat isn't features; it's the <strong>federated network effect</strong>. Every customer's data improves the TS-FM for all customers. AWS can't copy this because their customers don't trust them with data gradients — and rightly so, given AWS's business model is lock-in.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="faq-item" data-category="market">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q02</span><span class="faq-q-text">Why can't Cognite or Augury just add a foundation model and catch up?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>They can add a model — but they can't add the <strong>federated learning loop</strong>. Cognite is a data ops platform; their customers use it because data stays in their tenant. Augury is a vibration SaaS; their customers use it because it's turnkey. Neither can ask their customers to share gradients across the network — the trust model is different.</p>
+      <p>Also, our TS-FM isn't just a model — it's three architectural choices (industrial-only pretraining, sensor fusion cross-attention, causal-aware loss) that took Dr. Jian Liu's team 18 months to get right. Adding a generic TS model is easy; getting 0.89 AUC-ROC zero-shot on industrial data is not. See our <a href="blog/ts-fm-architecture.html">TS-FM architecture blog post</a> for the ablations.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="faq-item" data-category="market">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q03</span><span class="faq-q-text">Is this a $547B TAM or are you cherry-picking numbers?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>The $547B is from <strong>IoT Analytics' 2024-2030 Global IoT Market Forecast</strong> — the most widely cited source in the industry. We didn't pick it; it's the consensus number. Our SAM ($84B) narrows to AI-enabled IIoT + smart infrastructure (McKinsey IIoT 2024, BCG digital ops 2024). Our SOM ($3.2B) is a bottom-up estimate from our design-partner pipeline across agri + manufacturing + environment.</p>
+      <p>Could the TAM be smaller? Sure — if you exclude consumer IoT (smart home, wearables), which we do. But even at $84B SAM, the opportunity is real. We're not selling a $547B story; we're selling an $84B SAM with a $3.2B 5-year SOM.</p>
+      <div class="faq-author"><div class="faq-author-avatar">SC</div>Sofia Costa, CRO</div>
+    </div></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="faq-item" data-category="market">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q04</span><span class="faq-q-text">What happens if Google or Meta open-sources a better time-series foundation model?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Great — we'd swap our backbone for theirs if it's better. The TS-FM's value isn't the transformer architecture; it's the <strong>three deltas</strong> (industrial-only data, sensor fusion, causal-aware loss) + the <strong>federated learning loop</strong>. If Google open-sources a better base model, we fine-tune it on our industrial corpus and keep our causal-aware loss + sensor fusion layers. The foundation model is a commodity; the industrial specialization + the federated network effect is the moat.</p>
+      <p>Also, Google and Meta have shown zero interest in industrial time-series. Their foundation models are for web data (text, code, images). Industrial IoT is a small, weird, unsexy market for them. We'll be here long after they pivot to the next shiny thing.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="faq-item" data-category="tech">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q05</span><span class="faq-q-text">Your TS-FM beats Chronos by 0.07 AUC-ROC. Is that statistically significant?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Yes — on our held-out test set (1,000 labeled industrial events, 6 modalities, 7 asset classes), the 0.89 vs 0.82 delta has p &lt; 0.001 via bootstrap (10,000 resamples). But the more important point: the 0.07 AUC-ROC delta compounds at the <strong>decision threshold</strong>. At 0.85 confidence threshold, 0.89 AUC gives you 91% precision at 85% recall. 0.82 AUC gives you 78% precision at 85% recall. That's the difference between "operators trust the alerts" and "operators ignore the alerts."</p>
+      <p>The ablations show where the 0.07 comes from: causal-aware loss (+0.04), industrial-only training (+0.02), sensor fusion (+0.03). Remove any one and you're back at Chronos level. See <a href="blog/ts-fm-architecture.html">the blog post</a> for the full ablation table.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="faq-item" data-category="tech">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q06</span><span class="faq-q-text">How do you handle model drift in production? What if the TS-FM degrades over time?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Three monitors run continuously: <strong>feature drift</strong> (Population Stability Index per sensor, alarm at PSI &gt; 0.2), <strong>confidence distribution</strong> (output confidence over time, alert on significant shifts), and <strong>ground-truth feedback</strong> (when actual failures occur, compare to predictions, update per-asset-class confusion matrix). When PSI exceeds 0.2, we trigger a <strong>federated retraining round</strong> — each customer contributes gradients (with DP noise ε=1.0), aggregated in SGX, global model updated. Customers get the improved model within 24 hours.</p>
+      <p>This is why the federated learning loop matters — it's not just a moat; it's the mechanism that keeps the model accurate as the world changes. Without it, you'd retrain quarterly (if at all) and drift silently between retrainings.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="faq-item" data-category="tech">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q07</span><span class="faq-q-text">The causal inference claim is interesting but bold. How do you validate it in practice?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Validation is the hardest part — you can't deliberately break bearings to test if your intervention prediction was right. We use <strong>historical interventions</strong>: when operators actually did intervene (e.g., reduced compressor load), did the outcome match the prediction?</p>
+      <p>We have 100+ historical interventions from design-partner deployments. The agreement rate between predicted and actual outcomes is <strong>0.83</strong> — meaning 83% of the time, when the system said "reducing load will extend bearing life by 400 hours," the operator reduced load and the bearing lasted 380-420 hours. The other 17% is where the causal graph was incomplete (a hidden confounder we hadn't modeled). Each miss improves the PC algorithm's skeleton. See <a href="blog/causal-inference.html">our causal inference blog post</a>.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="faq-item" data-category="tech">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q08</span><span class="faq-q-text">Why edge compute? Cloud is cheaper per FLOP. Isn't edge a step backward?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Cloud is cheaper per FLOP but more expensive per <em>useful</em> inference when you factor in bandwidth, latency, and autonomy. For 10,000 sensors streaming at 1 Hz, that's 2 GB/hour to the cloud at $0.09/GB = $180/day in bandwidth alone. Edge inference at 2.5W (Hailo-8) costs $0.05/day in electricity. The edge is 3,600× cheaper for the inference part.</p>
+      <p>More importantly: <strong>safety-critical inferences can't depend on WAN</strong>. Gas leak detection on an offshore platform needs &lt;100ms. Cloud round-trip is 200-500ms. If the satellite link is down (which happens), the platform is blind. With edge autonomy (72 hours), the platform keeps running. Cloud is a co-processor, not a dependency. See <a href="edge-cloud-placement.html">the edge-cloud placement deep dive</a>.</p>
+      <div class="faq-author"><div class="faq-author-avatar">MR</div>Maya Rodriguez, CTO</div>
+    </div></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="faq-item" data-category="business">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q09</span><span class="faq-q-text">Your pricing is $1.50-$6.00/sensor/month. How does that compare to alternatives?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>AWS IoT Core charges $0.80 per million messages — cheap for ingest, but you still need to build the ML, the normalization, the alerts, the dashboards yourself. A typical DIY build costs $200K-$500K in engineering + $2K-$5K/month in cloud. Our pricing replaces that with a turnkey platform that includes the TS-FM, the self-calibration mesh, the liquid placement scheduler, the LLM query layer, and the edge runtime.</p>
+      <p>Cognite charges $50K-$500K/site/year. Augury charges $5K-$20K/machine/year. We're in the same range but include more (edge AI, federated learning, causal inference) at a lower entry point. The <a href="roi-calculator.html">ROI calculator</a> shows the math — most customers see 2-4 month payback.</p>
+      <div class="faq-author"><div class="faq-author-avatar">SC</div>Sofia Costa, CRO</div>
+    </div></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="faq-item" data-category="business">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q10</span><span class="faq-q-text">What's your gross margin? How does it scale?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Software gross margin: <strong>78-85%</strong> at scale (main cost is cloud compute for inference + storage, which is ~15-20% of revenue at 10k+ sensors). Edge hardware is pass-through (we don't manufacture — customers buy Hailo-8/Jetson from distributors). The federated learning revenue share is near-100% margin (gradients are tiny — kilobytes per round).</p>
+      <p>At 10,000 sensors: ~$25K/month revenue, ~$4K/month cloud cost → 84% gross margin. At 100,000 sensors: ~$250K/month revenue, ~$25K/month cloud cost → 90% gross margin (compute scales sub-linearly due to edge processing). We expect to reach 85% blended gross margin by end of Year 2.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="faq-item" data-category="business">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q11</span><span class="faq-q-text">What's your sales cycle? Industrial buyers are notoriously slow.</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>12-18 months for enterprise industrial, 2-3 months for mid-market. We shorten it with the <strong>60-day design partner pilot</strong> — free, full platform, engineering support, no NDA required. The pilot converts at ~60% (3 of 5 pilots converted to 3-year contracts). The key is the <a href="roi-calculator.html">ROI calculator</a> + the <a href="fault-injection.html">fault injection simulator</a> — both let the buyer self-serve the proof before talking to sales.</p>
+      <p>Our <a href="portal.html">self-service portal</a> provisions a sandbox in 10 minutes. The buyer's engineer tries the API on day 1. By day 30, they've run real sensor data through the TS-FM and seen anomalies. By day 60, they're asking "how do we sign a 3-year contract?"</p>
+      <div class="faq-author"><div class="faq-author-avatar">SC</div>Sofia Costa, CRO</div>
+    </div></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="faq-item" data-category="business">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q12</span><span class="faq-q-text">What's your CAC (customer acquisition cost)?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Currently ~$15K-$25K per design partner (engineering time for onboarding + 1 edge cluster shipped + 1 weekly check-in call). At scale, we expect CAC of $8K-$15K (self-serve portal + content marketing + 2 AEs). LTV at $50K-$150K/year per customer × 3-year average contract = $150K-$450K LTV. LTV:CAC ratio of 10:1 to 30:1 — healthy by any standard.</p>
+      <p>The highest-leverage CAC reducer is the <a href="aisensoredgecomp-pitch-deck.pdf">pitch deck PDF</a> + the <a href="comparison.html">competitive comparison</a> — investors and buyers share these internally, which creates inbound we don't pay for.</p>
+      <div class="faq-author"><div class="faq-author-avatar">SC</div>Sofia Costa, CRO</div>
+    </div></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="faq-item" data-category="team">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q13</span><span class="faq-q-text">Why did your CEO leave Cognite? Isn't Cognite the closest competitor?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>I left Cognite because I saw the <strong>intelligence gap</strong> — Cognite is excellent at data ops (normalizing, structuring, contextualizing industrial data), but they don't build ML models. Their customers bring their own. I saw that the next layer — the intelligence layer (TS-FM, Graph RAG, causal inference) — was where the value was going, and Cognite wasn't building it.</p>
+      <p>We don't compete with Cognite — we complement them. Cognite does data ops; we do intelligence. Some customers will use both. My 12 patents from Cognite are in data normalization, which is exactly what our Layer 02 (Connectivity) does. The canonical schema in our platform is informed by what I learned at Cognite about how industrial data actually works.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="faq-item" data-category="team">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q14</span><span class="faq-q-text">How do you hire TS-FM and causal inference talent? That's the rarest talent in ML.</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Dr. Jian Liu (Chief Scientist) has a 20-person academic network from CMU, NeurIPS, and ICML. He's already identified 8 candidates for the ML team — 3 from his lab, 3 from Augury (his former employer), 2 from Meta's time-series team. We also get inbound from our <a href="blog.html">engineering blog</a> — the TS-FM architecture post has generated 12 inbound resumes from ML engineers at Google, Amazon, and two startups.</p>
+      <p>The <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/tree/main/datasets">synthetic dataset</a> also helps — researchers who use it for their own papers discover us and reach out. We're building a research-grade reputation before we're even Series A.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="faq-item" data-category="team">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q15</span><span class="faq-q-text">What does the team look like post-Series A? How fast are you hiring?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Currently 8, expanding to 12 by end of Q1 2026, to 30 by Q4 2026 (Series A close). The breakdown: 9 ML/Research (TS-FM, causal, sensor fusion), 7 Edge/Platform Eng (KubeEdge, Kafka, Flink), 5 Solutions/Customer Success (vertical-specific), 5 Sales/Marketing, 4 Finance/Ops. We hire remote-first across NA + EU + APAC.</p>
+      <p>The key hires post-Series A: 2 senior ML engineers (causal inference + federated learning), 1 edge runtime lead (KubeEdge expert), 2 vertical solutions engineers (manufacturing + energy), 1 enterprise AE (manufacturing), 1 content/marketing lead. See our <a href="contact.html#careers">careers page</a>.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="faq-item" data-category="risk">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q16</span><span class="faq-q-text">What's your biggest risk? What could kill the company?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p><strong>Adoption risk.</strong> Industrial buyers have 12-18 month sales cycles. If we can't convert design partners to paid contracts fast enough, we burn through the Series A before reaching the $3-5M ARR needed for Series B. Mitigation: 60-day pilots with ROI guarantees, self-serve portal, sector-specific ROI calculators.</p>
+      <p>Second risk: <strong>talent</strong>. If Jian leaves, the TS-FM knowledge walks out the door. Mitigation: we've already open-sourced the training pipeline, documented the architecture in 5 blog posts, and are hiring 2 senior ML engineers to create redundancy.</p>
+      <p>Third risk: <strong>incumbent reaction</strong>. If AWS bundles a competing intelligence layer into IoT Core at zero marginal cost, we lose the "AWS doesn't do intelligence" argument. Mitigation: federated learning (they can't copy), vertical depth (they won't build), 18-month lead. See our <a href="what-we-dont-do.html">"what we don't do" page</a> for more honest gaps.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="faq-item" data-category="risk">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q17</span><span class="faq-q-text">Your benchmarks are "internal eval." Has anyone independently verified them?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Honest answer: no, not yet. The 0.89 AUC-ROC is from our internal held-out test set (1,000 labeled industrial events across 7 asset classes). We have a replication kit available to design partners under NDA — they can rerun the eval on their own data.</p>
+      <p>What we <em>have</em> verified independently: the self-calibration mesh was validated against the <strong>EPA AQS reference network</strong> (12-month trial, &lt;2% accuracy delta). The +18% yield in agriculture was verified by the <strong>3 design-partner farms</strong> against their 3-year historical baseline. The causal inference was backtested against <strong>100+ historical operator interventions</strong> (83% agreement). But the TS-FM AUC-ROC itself is internal — we'll submit to a NeurIPS workshop benchmark once TS-FM v2 is stable.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="faq-item" data-category="risk">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q18</span><span class="faq-q-text">You have no SOC 2, no ISO 27001, no IEC 62443. How do you sell to enterprise?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>This is a real gap and we don't hide it — see our <a href="what-we-dont-do.html">"What We Don't Do" page</a>. SOC 2 Type II is in flight (audit started Q3 2026, target Q1 2027). ISO 27001 scoping starts Q4 2026 (target Q2 2027). IEC 62443 (industrial cybersecurity) starts Q1 2027 (target Q3 2027).</p>
+      <p>In the meantime, we offer three workarounds: (1) <strong>air-gapped deployment</strong> — the full stack runs on a single k8s cluster with no external calls, so no data leaves the customer's network; (2) SOC 2 Type I (pre-audit) is available on request; (3) our security questionnaire is answered under NDA — it maps to SOC 2 Annex A controls even though the audit isn't complete.</p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="faq-item" data-category="risk">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q19</span><span class="faq-q-text">What if the federated learning moat doesn't compound as expected? What if customers opt out?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p>Even if 50% of customers opt out of federated learning, the model still improves from the other 50%. And the opt-out customer still gets a good model (0.89 AUC zero-shot) — they just don't contribute to the compounding. The risk isn't "what if everyone opts out" (they won't — the discount incentive is real) — it's "what if the model doesn't improve fast enough from federated gradients to create a structural gap."</p>
+      <p>In our simulations, after 36 months of federated learning across 20 customers (each contributing ~5M hours of data), the model's AUC on unseen asset classes improves from 0.89 to ~0.94. That's a 0.05 delta — meaningful but not insurmountable for a well-funded competitor. The real moat isn't the accuracy delta; it's the <strong>data network effect</strong> — after 36 months, we have 20 customers' worth of industrial patterns, and a new competitor starts from zero.</p>
+      <div class="faq-author"><div class="faq-author-avatar">JL</div>Dr. Jian Liu, Chief Scientist</div>
+    </div></div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="faq-item" data-category="risk">
+    <div class="faq-question" onclick="toggleFAQ(this)">
+      <div style="display: flex; align-items: center;"><span class="faq-q-num">Q20</span><span class="faq-q-text">If you could only tell investors one thing, what would it be?</span></div>
+      <span class="faq-q-toggle">+</span>
+    </div>
+    <div class="faq-answer"><div class="faq-a-text">
+      <p><strong>The four problems compound.</strong> Every IoT platform solves one problem — maybe two. We solve four, and each solution feeds the others. The canonical schema enables the self-calibration mesh. The calibration confidence feeds the placement scheduler. The placement scheduler routes the TS-FM. The TS-FM's confidence feeds back into the scheduler. And the federated learning loop improves the TS-FM across all customers.</p>
+      <p>This is why we're a platform, not a point solution. A point solution company can solve one problem well. A platform company solves four problems that compound — and the compounding is the moat. After 36 months of customer data compounding, the accuracy + trust + cost-efficiency gap vs any point solution is structural. <a href="problem.html#compound-value">See the compound effect →</a></p>
+      <div class="faq-author"><div class="faq-author-avatar">AK</div>Dr. Aarav Kapoor, CEO</div>
+    </div></div>
+  </div>
+
+  </div>
+
+  <div style="margin-top: 40px; padding: 24px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), color-mix(in srgb, var(--violet) 8%, var(--card))); border: 1px solid var(--border-strong); border-radius: 14px; text-align: center;">
+    <h3 style="font-size: 20px; margin-bottom: 12px;">Have a question we didn't answer?</h3>
+    <p style="color: var(--text-dim); font-size: 15px; margin-bottom: 20px;">Email us — we respond within 24 hours. No NDA required for general questions.</p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Question" class="btn btn-primary">partners@aisensoredgecomp.ai</a>
+      <a href="contact.html" class="btn btn-ghost">Contact page →</a>
+      <a href="portal.html" class="btn btn-ghost">Sign up as design partner →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="contact.html">Contact</a>
+    <a href="problem.html">The 4 Problems</a>
+    <a href="comparison.html">Competitive Comparison</a>
+    <a href="blog.html">Engineering Blog</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Ask the Founders &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+function toggleFAQ(el) {
+  var item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+function filterFAQ(category, event) {
+  document.querySelectorAll('.faq-filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.faq-item').forEach(item => {
+    if (category === 'all' || item.dataset.category === category) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// Auto-open first question
+document.querySelector('.faq-item').classList.add('open');
+</script>
+
+</body>
+</html>
