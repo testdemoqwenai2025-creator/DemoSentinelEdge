@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Test Plan (36 tests across 5 categories)</title>
+<meta name="description" content="Comprehensive testing & validation plan: 5 functional + 10 edge-case + 7 chaos + 9 simulation + 6 safety validation tests. Each with implementation, acceptance criteria, frequency, related edge cases + build plan phase." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Test Plan — 36 tests across 5 categories" />
+<meta property="og:description" content="Functional + edge-case + chaos + simulation + safety validation testing. Each test with implementation, acceptance, frequency." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/test-plan.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — Test Plan (36 tests)" />
+<meta name="twitter:description" content="Comprehensive testing across functional, edge-case, chaos, simulation, safety validation." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  html { scroll-behavior: smooth; overflow-y: scroll; }
+  body { min-height: 100vh; padding-bottom: 80px; }
+  .page-hero { min-height: 35vh; padding-top: 100px; }
+
+  /* Stats bar */
+  .tp-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin: -40px 0 40px; padding: 24px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, var(--card)), color-mix(in srgb, var(--violet) 6%, var(--card)));
+    border: 1px solid var(--border-strong); border-radius: 14px;
+    box-shadow: var(--shadow-card); position: relative; z-index: 5;
+  }
+  .tp-stats .stat { text-align: center; }
+  .tp-stats .stat .num { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 3vw, 40px); font-weight: 700; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .tp-stats .stat .lbl { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+  /* Frequency legend */
+  .tp-freq-legend {
+    display: flex; flex-wrap: wrap; gap: 14px; padding: 16px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 32px;
+  }
+
+  /* Nav */
+  .tp-nav {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 40px;
+    padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .tp-nav-item {
+    text-decoration: none; color: var(--text-dim); font-size: 13px;
+    padding: 10px 14px; background: var(--bg-2); border-radius: 8px;
+    border-left: 3px solid var(--border); transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .tp-nav-item:hover { border-color: var(--cyan); color: var(--cyan); }
+  .tp-nav-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--cyan) 10%, transparent);
+    color: var(--cyan);
+  }
+
+  /* Category section */
+  .tp-category { margin: 60px 0; }
+  .tp-cat-header {
+    display: flex; align-items: center; gap: 16px; padding: 20px 24px;
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--cat-color);
+    border-radius: 12px; margin-bottom: 24px;
+  }
+  .tp-cat-icon { font-size: 32px; line-height: 1; }
+  .tp-cat-content { flex: 1; }
+  .tp-cat-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .tp-cat-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+  .tp-cat-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute);
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
+  }
+
+  /* Test row */
+  .tp-test {
+    padding: 20px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 12px;
+    border-left: 3px solid var(--cat-color);
+  }
+  .tp-test-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .tp-test-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-mute);
+    padding: 4px 8px; background: var(--bg-2); border-radius: 4px; flex-shrink: 0;
+  }
+  .tp-test-name {
+    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600;
+    color: var(--text); flex: 1;
+  }
+  .tp-test-freq { flex-shrink: 0; }
+  .tp-test-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px;
+  }
+  .tp-test-impl, .tp-test-accept {
+    padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; font-size: 12.5px; line-height: 1.6;
+  }
+  .tp-test-impl {
+    background: color-mix(in srgb, var(--violet) 4%, var(--bg-2));
+    border-left: 2px solid var(--violet);
+  }
+  .tp-test-accept {
+    background: color-mix(in srgb, var(--green) 4%, var(--bg-2));
+    border-left: 2px solid var(--green);
+  }
+  .tp-impl-label, .tp-accept-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px;
+  }
+  .tp-impl-label { color: var(--violet); }
+  .tp-accept-label { color: var(--green); }
+  .tp-impl-text, .tp-accept-text { color: var(--text-dim); }
+  .tp-test-meta {
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+  .tp-meta-row { font-size: 11px; color: var(--text-mute); margin-bottom: 6px; }
+  .tp-meta-k {
+    font-family: 'JetBrains Mono', monospace; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.04em; margin-right: 6px;
+  }
+
+  /* Hub CTA */
+  .tp-hub-cta {
+    text-align: center; padding: 60px 40px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, transparent), color-mix(in srgb, var(--violet) 6%, transparent));
+    border: 1px solid var(--border); border-radius: 16px; margin: 60px 0;
+  }
+  .tp-hub-cta h2 { font-size: clamp(24px, 3vw, 32px); margin-bottom: 14px; }
+  .tp-hub-cta p { color: var(--text-dim); max-width: 700px; margin: 0 auto 28px; }
+  .tp-hub-cta .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  @media (max-width: 768px) {
+    .tp-test { padding: 16px; }
+    .tp-test-head { flex-wrap: wrap; }
+    .tp-test-freq { width: 100%; }
+    .tp-hub-cta { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body id="test-plan">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="build-plan.html">Build Plan</a>
+    <a href="edge-cases.html">Edge Cases</a>
+    <a href="test-plan.html" class="active" style="color: var(--cyan);">Test Plan</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="engineering.html">Engineering</a><span class="sep">/</span><span>Test Plan</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>37 tests · 5 categories · Continuous + PR + nightly + weekly + monthly + quarterly + annual</div>
+    <h1>Test <span class="accent">Plan</span></h1>
+    <p class="lead">A challenging application must be tested against abnormal conditions continuously. SentinelEdge's test plan covers <strong>37 tests across 5 categories</strong> — functional, edge-case, chaos, simulation, and safety validation. Each test has concrete implementation, acceptance criteria, frequency, and links to the edge cases + build plan phases it validates.</p>
+    <div class="page-hero-cta" style="margin-top: 24px;">
+      <a href="#functional" class="btn btn-primary">Browse tests →</a>
+      <a href="build-plan.html" class="btn btn-ghost">5-phase MVP build plan</a>
+      <a href="edge-cases.html" class="btn btn-ghost">104 edge cases addressed</a>
+    </div>
+  </div>
+</section>
+
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Stats bar -->
+  <div class="tp-stats">
+    <div class="stat"><div class="num">37</div><div class="lbl">Total Tests</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">Categories</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">Functional</div></div>
+    <div class="stat"><div class="num">10</div><div class="lbl">Edge-case</div></div>
+    <div class="stat"><div class="num">7</div><div class="lbl">Chaos</div></div>
+    <div class="stat"><div class="num">9</div><div class="lbl">Simulation</div></div>
+    <div class="stat"><div class="num">6</div><div class="lbl">Safety</div></div>
+  </div>
+
+  <!-- Frequency legend -->
+  <div class="tp-freq-legend">
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 8px;">Frequency legend:</span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span> 5 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span> 5 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span> 12 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span> 5 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span> 5 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #7c3aed 12%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">annual</span> 4 tests</span><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #22d3ee 12%, transparent); color: #22d3ee; border: 1px solid color-mix(in srgb, #22d3ee 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">continuous</span> 1 tests</span>
+  </div>
+
+  <!-- Nav -->
+  <div class="tp-nav">
+    <a href="#functional" class="tp-nav-item" style="border-left-color: #10b981;">✅ Functional Tests <span class="tp-nav-count">5</span></a>
+<a href="#edge-case" class="tp-nav-item" style="border-left-color: #06b6d4;">🛡️ Edge-Case Tests <span class="tp-nav-count">10</span></a>
+<a href="#chaos" class="tp-nav-item" style="border-left-color: #a855f7;">🌀 Chaos Testing <span class="tp-nav-count">7</span></a>
+<a href="#simulation" class="tp-nav-item" style="border-left-color: #f97316;">🎬 Simulation Testing <span class="tp-nav-count">9</span></a>
+<a href="#safety" class="tp-nav-item" style="border-left-color: #dc2626;">🛡️ Safety Validation <span class="tp-nav-count">6</span></a>
+  </div>
+
+  <!-- Category blocks -->
+  
+    <section class="tp-category" id="functional" style="--cat-color: #10b981;">
+      <div class="tp-cat-header">
+        <div class="tp-cat-icon">✅</div>
+        <div class="tp-cat-content">
+          <div class="tp-cat-title">Functional Tests</div>
+          <div class="tp-cat-subtitle">Happy-path + basic failure tests — must pass on every PR + nightly</div>
+        </div>
+        <div class="tp-cat-count">5 tests</div>
+      </div>
+      <div class="tp-tests">
+        <div class="tp-test" id="test-functional-1">
+          <div class="tp-test-head">
+            <div class="tp-test-num">functional-1</div>
+            <div class="tp-test-name">Valid telemetry accepted</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span></div>
+          </div>
+          <div class="tp-test-desc">Send a well-formed Avro message with valid schema, valid types, in-range values, sensible timestamp. Verify it lands in TimescaleDB within 2 sec (P95).</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">pytest + confluent-kafka Python producer. Send 1000 valid messages to mqtt-ingest topic. Assert all 1000 appear in TimescaleDB within 2 sec. Assert zero in dead-letter topic.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">100% of valid messages persisted &lt; 2 sec P95. 0% in dead-letter. 0% data loss.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Missing fields</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Invalid type</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Future timestamp</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Range violation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 1 — Foundation</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-functional-2">
+          <div class="tp-test-head">
+            <div class="tp-test-num">functional-2</div>
+            <div class="tp-test-name">Invalid telemetry quarantined</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span></div>
+          </div>
+          <div class="tp-test-desc">Send malformed messages (wrong Avro schema, missing required fields, invalid types, future timestamp, range violation). Verify each is routed to dead-letter topic + alert fired.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Send 5 categories of malformed messages (10 each). Assert all 50 land in dead-letter. Assert Schema Registry rejects. Assert violation-rate alarm fires when rate &gt; 1%.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">100% of malformed messages quarantined. 0% reach TimescaleDB. Violation-rate alarm fires at &gt; 1%.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Missing fields</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Invalid type</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Future timestamp</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Extreme timestamp</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Range violation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 1 — Foundation</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-functional-3">
+          <div class="tp-test-head">
+            <div class="tp-test-num">functional-3</div>
+            <div class="tp-test-name">Duplicates ignored</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span></div>
+          </div>
+          <div class="tp-test-desc">Send same message twice (same sensor_id + ts + value_hash) within 100 ms. Verify only one is persisted; the duplicate is silently dropped (logged for diagnosis).</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Send 100 messages, then resend the same 100 messages. Assert only 100 unique entries in TimescaleDB. Assert duplicate count logged in metrics (Prometheus duplicate_counter).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">&lt; 0.01% duplicate rate at 100K msg/sec ingest. Duplicate log entry per drop.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Duplicate messages</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Replayed messages</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-functional-4">
+          <div class="tp-test-head">
+            <div class="tp-test-num">functional-4</div>
+            <div class="tp-test-name">Late data handled</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span></div>
+          </div>
+          <div class="tp-test-desc">Send message with timestamp 10 min in the past (later than Flink watermark window). Verify it lands in Flink side-output (late-events topic), state is updated, no alarm re-trigger unless state changed.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Inject 100 messages with ts = now - 10 min into the stream. Assert all 100 appear in late-events Kafka topic. Assert TimescaleDB state is updated for affected sensors. Assert alarm fires only if state changed (e.g. alarm active → cleared).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">100% of late events routed to side-output. State updates correct. No spurious alarm re-fires.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Out-of-order data</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Late backfill</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Clock skew</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-functional-5">
+          <div class="tp-test-head">
+            <div class="tp-test-num">functional-5</div>
+            <div class="tp-test-name">Alerts generated correctly</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">every PR</span></div>
+          </div>
+          <div class="tp-test-desc">Trigger threshold/rate-of-change/duration/multi-condition rules via simulated sensor values. Verify alarms fire with correct priority (high/med/low), correct audit log entry, correct notification routing (email/pager/SCADA).</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Simulate 5 alarm scenarios: (1) methane &gt; 1% (threshold), (2) reactor T rising &gt; 5°C/min (rate-of-change), (3) bearing T &gt; 90°C for &gt; 5 min (duration), (4) flow low + pressure high (multi-condition), (5) ESD activation (safety-critical). Assert alarm fires within 200 ms (edge) / 5 sec (cloud). Assert audit log entry created. Assert notification routed to correct channel per ISA-18.2 priority.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">100% of triggered alarms fire within SLA. Audit log entries 100% complete. Notifications routed correctly per priority.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Alarm storm</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Cascading failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Wrong severity</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 1 — Foundation (basic) + Phase 2 (edge) + Phase 3 (correlation)</a></div>
+          </div>
+        </div></div>
+    </section>
+
+    <section class="tp-category" id="edge-case" style="--cat-color: #06b6d4;">
+      <div class="tp-cat-header">
+        <div class="tp-cat-icon">🛡️</div>
+        <div class="tp-cat-content">
+          <div class="tp-cat-title">Edge-Case Tests</div>
+          <div class="tp-cat-subtitle">Sensor + network + data edge cases — must pass nightly</div>
+        </div>
+        <div class="tp-cat-count">10 tests</div>
+      </div>
+      <div class="tp-tests">
+        <div class="tp-test" id="test-edge-case-1">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-1</div>
+            <div class="tp-test-name">Sensor stuck</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span></div>
+          </div>
+          <div class="tp-test-desc">Generate a constant value (zero variance) for &gt; N hours (configurable per sensor type — 1h for vibration, 30 min for SpO2). Verify stuck-value detector fires.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Device simulator: set sensor to constant 50.0 for 65 min. Assert stuck-value alarm fires at 60 min. Assert alarm has correct citation chain (zero variance &gt; 60 min). Assert alarm auto-clears when value changes.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Stuck-value alarm fires at configured threshold. Auto-clears when value changes. &lt; 1% false-positive rate (no alarm for naturally-stable sensors).</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stuck value</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor dead</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor physically blocked</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-2">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-2</div>
+            <div class="tp-test-name">Sensor drift</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span></div>
+          </div>
+          <div class="tp-test-desc">Generate a slowly-drifting value (e.g. +0.5°C/day on a thermocouple). Verify drift detection fires when drift exceeds threshold (e.g. 5% from baseline).</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Device simulator: linear drift 0.5°C/day for 14 days. Compress to 14-hour test (12x speedup). Assert drift alarm fires at day 10 (5% threshold). Assert self-calibration mesh corrects (cross-check with 2 redundant sensors).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Drift alarm fires within 24h of threshold breach. Self-calibration correction within 5% of true value.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor drift</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Calibration expired</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience (drift detection) + Phase 4 (self-calibration)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-3">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-3</div>
+            <div class="tp-test-name">Timestamp future</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span></div>
+          </div>
+          <div class="tp-test-desc">Send message with timestamp 10 min in the future (beyond 5-min tolerance). Verify rejected + quarantined. Send message 2 min in future (within tolerance) — verify accepted.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Send 50 messages with ts = now + 10 min (rejected) and 50 with ts = now + 2 min (accepted). Assert 50 in dead-letter, 50 in TimescaleDB. Assert clock-skew alert fires for the 10-min-future batch.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Future-ts &gt; 5 min: 100% rejected. Future-ts &lt; 5 min: 100% accepted. Clock-skew alert fires for the rejected batch.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Future timestamp</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Clock skew</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Clock drift in servers</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 1 — Foundation (basic check) + Phase 3 (watermark)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-4">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-4</div>
+            <div class="tp-test-name">Wrong unit</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span></div>
+          </div>
+          <div class="tp-test-desc">Send a message tagged as &#x27;psi&#x27; but containing the numeric value of Pa (e.g. 5000 instead of 70 psi). Verify LLM-assisted unit normalization + physics sanity check catches it.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Send a pressure reading of 5000 tagged as &#x27;psi&#x27; (impossible — wellhead pressure is 1000-5000 psi, but 5000 Pa = 0.7 psi is way below range). Assert rejected by physics check. Assert unit-mismatch alarm fires.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">100% of unit-mismatched messages rejected by physics check. Unit-mismatch alarm fires with correct citation (expected range vs received value).</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Wrong unit</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Unit mismatch</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Range violation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 1 — Foundation (schema) + Phase 3 (enrichment + physics check)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-5">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-5</div>
+            <div class="tp-test-name">Gateway offline</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Kill the edge gateway (process kill, not graceful shutdown). Verify SQLite buffer continues filling, no data loss. Restart gateway after 1h. Verify buffer replays to cloud with no duplicates.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">SIGKILL the edge runtime. Generate telemetry for 1h (sensor simulator continues). Restart gateway. Assert SQLite buffer has 1h of data. Assert replay to cloud completes within 4h. Assert idempotency: 0 duplicates in cloud TimescaleDB.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">0 data loss during 1h gateway-down. Replay completes within 4h. 0 duplicates.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Gateway failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Buffer overflow</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-6">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-6</div>
+            <div class="tp-test-name">Broker down</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Kill EMQX primary broker. Verify cluster failover &lt; 10 sec. Verify no message loss during failover. Verify clients reconnect with exponential backoff.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">SIGKILL EMQX primary. Send 1000 messages during failover window. Assert all 1000 persisted. Assert client reconnect within 30 sec. Assert alert fired (broker-down).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Failover &lt; 10 sec. 0 message loss during failover. Clients reconnect &lt; 30 sec.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">MQTT broker failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (failover drills)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-7">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-7</div>
+            <div class="tp-test-name">Kafka lag</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Overload Kafka at 200K msg/sec (above consumer capacity). Verify Circuit Breaker engages, Flink autoscales, lag stabilizes, no crash.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Producer: 200K msg/sec for 10 min. Consumer: deliberately undersized (single Flink TM). Assert Circuit Breaker engages at lag &gt; 100K. Assert Flink HPA scales up TMs. Assert Kafka lag stabilizes &lt; 50K. Assert 0 crashes.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Circuit Breaker engages. HPA scales within 5 min. Lag stabilizes. 0 crashes. 0 data loss (overflows to dead-letter if needed).</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Backpressure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stream processor crash</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Storage full</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing + Phase 5 (chaos)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-8">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-8</div>
+            <div class="tp-test-name">DB failover</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Kill TimescaleDB primary. Verify Patroni failover &lt; 10 sec. Verify no data loss. Verify Flink checkpoint restart succeeds.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">SIGKILL TimescaleDB primary. Send 1000 messages during failover. Assert all 1000 persisted after failover. Assert Patroni promotes replica &lt; 10 sec. Assert Flink restarts from last checkpoint.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Failover &lt; 10 sec. 0 data loss. Flink restart &lt; 5 min from checkpoint.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Database failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stream processor crash</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (failover drills)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-9">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-9</div>
+            <div class="tp-test-name">Clock skew</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #06b6d4 12%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">nightly</span></div>
+          </div>
+          <div class="tp-test-desc">Set a device clock 60 sec ahead of server. Verify skew correction (server-time + offset). Verify alert fires when skew &gt; 30 sec.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Set device simulator clock 60 sec ahead. Send 100 messages. Assert skew correction applied (server_time + 60 = device_time). Assert clock-skew alarm fires at &gt; 30 sec threshold.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Skew correction applied. Alarm fires at &gt; 30 sec. &lt; 5 sec skew tolerated silently.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Clock skew</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Clock drift in servers</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Out-of-order data</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing (watermark)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-edge-case-10">
+          <div class="tp-test-head">
+            <div class="tp-test-num">edge-case-10</div>
+            <div class="tp-test-name">Schema change</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span></div>
+          </div>
+          <div class="tp-test-desc">Deploy a new Avro schema (add optional field with default, remove deprecated field). Verify backward + forward compatibility. Verify dual-publish smooth migration.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Register schema v2 in Schema Registry (backward-compatible: add field with default). Deploy producer v2 (publishes v2). Verify consumer v1 still reads (ignores new field). Deploy consumer v2 (uses new field). Verify zero ingestion disruption.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">0 ingestion disruption. Backward + forward compatible. Dual-publish completes within 30 min.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Schema evolution</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Vendor format change</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing (schema registry)</a></div>
+          </div>
+        </div></div>
+    </section>
+
+    <section class="tp-category" id="chaos" style="--cat-color: #a855f7;">
+      <div class="tp-cat-header">
+        <div class="tp-cat-icon">🌀</div>
+        <div class="tp-cat-content">
+          <div class="tp-cat-title">Chaos Testing</div>
+          <div class="tp-cat-subtitle">Random failure injection in production-like environment — weekly chaos day</div>
+        </div>
+        <div class="tp-cat-count">7 tests</div>
+      </div>
+      <div class="tp-tests">
+        <div class="tp-test" id="test-chaos-1">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-1</div>
+            <div class="tp-test-name">Kill brokers</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Random kill of 1 EMQX broker in 3-node cluster. Verify cluster heals &lt; 30 sec. Verify no message loss. Verify client reconnect succeeds.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Litmus chaos experiment: kill 1 of 3 EMQX brokers at random time. SLO: cluster heals &lt; 30 sec, 0 message loss, all clients reconnect &lt; 60 sec. Auto-rollback if SLO breached.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Cluster heals &lt; 30 sec. 0 message loss. All clients reconnect &lt; 60 sec.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">MQTT broker failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (chaos tests)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-2">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-2</div>
+            <div class="tp-test-name">Kill stream processors</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Random kill of 1 Flink TaskManager (out of 8). Verify Flink restarts from last checkpoint &lt; 5 min. Verify exactly-once semantics preserved.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Litmus: kill 1 Flink TM. Verify Flink job restarts from checkpoint &lt; 5 min. Verify 0 duplicate output. Verify 0 data loss. Verify checkpoint success metric recovers.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Restart &lt; 5 min. 0 duplicates. 0 data loss. Checkpoint metric recovers.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stream processor crash</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Database failure</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (chaos tests)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-3">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-3</div>
+            <div class="tp-test-name">Network partition</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span></div>
+          </div>
+          <div class="tp-test-desc">Network partition between K8s worker nodes (50% partition). Verify K8s quorum maintains, app continues, partition heals automatically.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Litmus + tc (traffic control): partition 2 of 4 K8s nodes. Verify K8s API server quorum (3 of 5 etcd members reachable). Verify app pods on partitioned nodes are rescheduled. Verify partition heals when network restored.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">K8s quorum maintains. App pods rescheduled &lt; 5 min. Partition heals &lt; 1 min after restore.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Region outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Man-in-the-middle</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (chaos tests)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-4">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-4</div>
+            <div class="tp-test-name">Disk full</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span></div>
+          </div>
+          <div class="tp-test-desc">Fill disk to 95% on a Kafka broker. Verify alert fires at 85%, auto-expansion engages, message eviction per retention policy. Verify no crash.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Litmus: write 100 GB of junk to Kafka broker disk. Assert alert fires at 85%. Assert K8s PVC auto-expansion engages at 90%. Assert Kafka log retention evicts old segments. Assert broker does not crash.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Alert at 85%. Auto-expansion at 90%. Retention evicts. 0 crashes.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Storage full</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Buffer overflow</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (chaos tests)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-5">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-5</div>
+            <div class="tp-test-name">Certificate expiry</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span></div>
+          </div>
+          <div class="tp-test-desc">Let a TLS certificate expire. Verify alert fires 30 days before expiry. Verify auto-rotation via cert-manager. Verify no TLS failure in production.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Issue a cert with 7-day TTL (instead of 90-day). Wait 7 days. Assert alert fires 30 days before (we adjust to 5 days for test). Assert cert-manager auto-rotates. Assert no TLS failure in production (mTLS handshakes succeed).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Alert fires before expiry. Auto-rotation engages. 0 TLS failures in production.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">TLS failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (security)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-6">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-6</div>
+            <div class="tp-test-name">Region outage</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate AWS region loss (us-east-1). Verify edge autonomy (safety continues). Verify DR failover to backup region &lt; 5 min. Verify RPO 5 min, RTO 30 min.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Failover test: simulate region loss by blocking all traffic to us-east-1. Verify edge clusters continue operating (safety-critical functions local). Verify Route53 failover to us-east-2 &lt; 5 min. Verify RPO 5 min (data replicated to us-east-2). Verify RTO 30 min (services restored in us-east-2).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Edge autonomy maintained. Route53 failover &lt; 5 min. RPO 5 min. RTO 30 min.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Region outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Disaster recovery failure</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (DR drills)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-chaos-7">
+          <div class="tp-test-head">
+            <div class="tp-test-num">chaos-7</div>
+            <div class="tp-test-name">Replay burst</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span></div>
+          </div>
+          <div class="tp-test-desc">Replay 72h of buffered edge data (250 GB) after WAN restore. Verify cloud ingest handles burst without overload. Verify idempotency (0 duplicates). Verify no spurious alarms.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Pull WAN cable for 72h (edge buffer fills to 250 GB). Restore WAN. Verify replay starts. Assert replay rate-limited (no cloud overload). Assert idempotency (0 duplicates in cloud). Assert no spurious alarms (state already current).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Replay completes &lt; 4h. 0 duplicates. 0 spurious alarms. Cloud ingest stable.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Network outage</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Buffer overflow</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Replayed messages</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Late backfill</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience + Phase 5 (DR drills)</a></div>
+          </div>
+        </div></div>
+    </section>
+
+    <section class="tp-category" id="simulation" style="--cat-color: #f97316;">
+      <div class="tp-cat-header">
+        <div class="tp-cat-icon">🎬</div>
+        <div class="tp-cat-content">
+          <div class="tp-cat-title">Simulation Testing</div>
+          <div class="tp-cat-subtitle">Digital twin simulator generates normal + abnormal scenarios — continuous + on-demand</div>
+        </div>
+        <div class="tp-cat-count">9 tests</div>
+      </div>
+      <div class="tp-tests">
+        <div class="tp-test" id="test-simulation-1">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-1</div>
+            <div class="tp-test-name">Normal operations</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #22d3ee 12%, transparent); color: #22d3ee; border: 1px solid color-mix(in srgb, #22d3ee 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">continuous</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate 7 days of normal plant operation (all sensors in expected ranges, no faults). Verify zero false alarms. Verify TS-FM confidence remains high. Verify all dashboards populate correctly.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin simulator: 7-day continuous run with realistic operating regimes (start-up, steady, shutdown cycles). Assert &lt; 5 false alarms per week (target: 0). Assert TS-FM confidence &gt; 0.85 throughout. Assert dashboards render &lt; 500 ms.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">&lt; 5 false alarms per week. TS-FM confidence &gt; 0.85. Dashboards &lt; 500 ms.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False positive</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Concept drift</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Data drift</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML + Digital Twin</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-2">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-2</div>
+            <div class="tp-test-name">Startup</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate plant startup sequence (4-8 hours for offshore, 30 min for AV, 12-24h for chemical). Verify suppress non-safety alarms during startup window. Verify process-state context recognized.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: startup sequence with realistic sensor value progression. Assert non-safety alarms suppressed during startup window. Assert process-state context (&#x27;startup&#x27;) recognized from DCS. Assert safety alarms (e.g. gas leak) still fire.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Non-safety alarms suppressed during startup. Safety alarms still fire. Process state correctly recognized.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Startup condition</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Transient operation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing (process state) + Phase 4 (digital twin)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-3">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-3</div>
+            <div class="tp-test-name">Shutdown</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate controlled shutdown. Verify state-aware alarm logic (&#x27;shutdown&#x27; state suppresses trip alarms). Verify ESD sequence awareness.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: shutdown sequence (depressurization, equipment stop, valve close). Assert &#x27;shutdown&#x27; state from DCS recognized. Assert trip alarms suppressed (e.g. low-flow alarm on stopped pump). Assert ESD sequence alarms (e.g. rapid pressure drop) recognized as intentional.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Shutdown state correctly recognized. Trip alarms suppressed. ESD sequence alarms recognized as intentional.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Shutdown condition</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Blowdown / depressurization</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Transient operation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 3 — Stream Processing (process state) + Phase 4 (digital twin)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-4">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-4</div>
+            <div class="tp-test-name">Leak</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate gas leak (methane, H2S, EO depending on sector). Verify detection within 200 ms (edge) / 5 sec (cloud). Verify alarm + evacuation recommendation. Verify mass-balance physics check confirms.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: gas concentration rises from 0 to 1.2% over 60 sec (methane). Assert edge rule fires at 1.0% threshold &lt; 200 ms. Assert TS-FM anomaly score &gt; 0.9. Assert evacuation alarm + recommended route. Assert mass-balance physics check confirms leak (not sensor fault).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Detection &lt; 200 ms (edge). TS-FM anomaly &gt; 0.9. Evacuation alarm fires. Physics check confirms leak.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False negative</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Cross-sensitivity</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor physically blocked</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML (anomaly detection)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-5">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-5</div>
+            <div class="tp-test-name">Fire</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate fire detection (flame sensor + heat + smoke multi-sensor fusion). Verify fire alarm + ESD activation. Verify multi-sensor voting (2oo3) for confirmation.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: flame sensor + heat + smoke all triggered simultaneously. Assert fire alarm fires within 500 ms. Assert 2oo3 voting confirms (all 3 sensors agree). Assert ESD activation (if IEC 61511 SIL-3 system). Assert deluge system armed.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Fire alarm &lt; 500 ms. 2oo3 voting confirms. ESD activation. Deluge armed.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Dangerous condition</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False positive</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False negative</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML (multi-sensor fusion) + Phase 5 (safety validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-6">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-6</div>
+            <div class="tp-test-name">Gas release</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate toxic gas release (H2S, Cl2, EO). Verify shelter-in-place vs evacuation decision logic. Verify wind-direction sensor informs plume modeling. Verify public notification routing.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: H2S release at 100 ppm. Assert toxic-release alarm fires. Assert wind-direction sensor informs plume model. Assert decision logic (wind toward populated area → evacuation; wind away → shelter-in-place). Assert public notification routed to emergency response.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Toxic-release alarm fires. Plume model uses wind direction. Shelter-vs-evacuate decision correct. Notification routed.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Dangerous condition</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Emergency response delay</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML + Phase 5 (safety validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-7">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-7</div>
+            <div class="tp-test-name">Compressor failure</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate compressor bearing failure (vibration spectrum change, temperature rise, flow drop). Verify TS-FM detects anomaly early (days before trip). Verify RUL prediction updates.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: bearing-fault vibration spectrum (BPFO characteristic frequency) injected. Assert TS-FM detects anomaly within 24h (vs threshold rules: detect only at trip). Assert RUL prediction updates (e.g. 30 days remaining). Assert maintenance work order auto-created.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">TS-FM detects 7+ days before trip. RUL prediction updates. Work order auto-created.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor drift</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stuck value</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Spike / noise</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False negative</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML (RUL prediction)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-8">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-8</div>
+            <div class="tp-test-name">Sensor failure</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #a855f7 12%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">weekly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate all sensor failure modes: dead (no data), stuck (zero variance), drift (slow bias), spike (transient noise), saturation (clipped at min/max). Verify each detected with correct edge case mitigation.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Digital twin: 5 failure modes, one per sensor, for 1h each. Assert each detected by correct edge-case detector (stuck-value, drift, spike, saturation, heartbeat). Assert each triggers correct mitigation (e.g. cross-check, fail-safe, maintenance trigger).</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">All 5 failure modes detected. Correct mitigation per mode. &lt; 5% false-positive rate.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor dead</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Stuck value</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor drift</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Spike / noise</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Range saturation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 2 — Edge Resilience (sensor health) + Phase 4 (ML)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-simulation-9">
+          <div class="tp-test-head">
+            <div class="tp-test-num">simulation-9</div>
+            <div class="tp-test-name">Cyberattack</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #f97316 12%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">monthly</span></div>
+          </div>
+          <div class="tp-test-desc">Simulate 3 attack types: spoofed sensor (impossible physics), replay attack (old valid messages), MITM (intercept + modify). Verify each detected + rejected. Verify audit log captures attack signature.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Pen-test: (1) spoof methane = 0% while actual = 2% (physics check rejects — mass balance); (2) replay 30-day-old messages (nonce + last-seen-ts rejects); (3) MITM intercept + modify value (HMAC signature rejects). Assert all 3 attacks detected + rejected. Assert audit log captures attack signature.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">All 3 attacks detected + rejected. 0 successful spoofing. Audit log captures signature. Security alert fires.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor spoofing</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Replayed messages</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Man-in-the-middle</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Adversarial manipulation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (security + pen test)</a></div>
+          </div>
+        </div></div>
+    </section>
+
+    <section class="tp-category" id="safety" style="--cat-color: #dc2626;">
+      <div class="tp-cat-header">
+        <div class="tp-cat-icon">🛡️</div>
+        <div class="tp-cat-content">
+          <div class="tp-cat-title">Safety Validation</div>
+          <div class="tp-cat-subtitle">Formal safety engineering techniques — required for IEC 61511 / ISO 26262 / IEC 62304 certification</div>
+        </div>
+        <div class="tp-cat-count">6 tests</div>
+      </div>
+      <div class="tp-tests">
+        <div class="tp-test" id="test-safety-1">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-1</div>
+            <div class="tp-test-name">HAZOP (Hazard and Operability Study)</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #7c3aed 12%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">annual</span></div>
+          </div>
+          <div class="tp-test-desc">Structured technique: identify process hazards via guidewords (No, More, Less, Reverse, As Well As, Other Than) applied to each process parameter. Document deviations + causes + consequences + safeguards + recommendations.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">HAZOP workshop: 3-day facilitated session with process engineers + safety engineer + operator. Use HAZOP software (Phast or Hazop+). Output: HAZOP worksheet with 200+ deviations documented. Map each deviation to SentinelEdge alarm/rule + SIS safety layer. Verify platform catches each HAZOP-identified hazard.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">HAZOP worksheet complete (200+ deviations). Each hazard mapped to platform alarm. Platform catches 100% of HAZOP-identified hazards (or SIS catches, with platform advisory).</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Dangerous condition</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Cascading failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False negative</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (safety validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-safety-2">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-2</div>
+            <div class="tp-test-name">FMEA (Failure Modes and Effects Analysis)</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #7c3aed 12%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">annual</span></div>
+          </div>
+          <div class="tp-test-desc">Systematic technique: for each component, list failure modes + effects + severity + occurrence + detection + RPN (Risk Priority Number = S × O × D). Address high-RPN failures.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">FMEA workshop: 2-day session with engineering team. Use FMEA software (ReliaSoft or Excel template). Output: FMEA worksheet with 100+ failure modes documented. Compute RPN for each. Address all RPN &gt; 100 (or per sector threshold). Verify platform mitigates each high-RPN failure mode.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">FMEA worksheet complete (100+ failure modes). All RPN &gt; 100 addressed. Platform mitigates each.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor dead</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Sensor drift</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Gateway failure</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Database failure</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (safety validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-safety-3">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-3</div>
+            <div class="tp-test-name">STPA (System-Theoretic Process Analysis)</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #7c3aed 12%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">annual</span></div>
+          </div>
+          <div class="tp-test-desc">Modern technique for cyber-physical systems: identify unsafe control actions (UCAs) — control actions that, in given contexts, lead to hazards. Map to controller constraints + scenarios.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">STPA workshop: 3-day session with system engineers + safety engineer. Output: STPA worksheet with 50+ UCAs identified. Define controller constraints for each UCA. Verify platform enforces each constraint. (STPA catches hazards HAZOP misses — software-caused, controller-caused.)</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">STPA worksheet complete (50+ UCAs). Each UCA has controller constraint. Platform enforces 100% of constraints.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">System recommends unsafe action</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Automated control without certification</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Operator ignores alert</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (safety validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-safety-4">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-4</div>
+            <div class="tp-test-name">Alarm rationalization review</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #7c3aed 12%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">annual</span></div>
+          </div>
+          <div class="tp-test-desc">Per ISA-18.2: review every alarm for necessity, uniqueness, priority, setpoint, on-delay, off-delay, description, cause, consequence, corrective action. Target: &lt; 10 alarms/operator/shift.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Rationalization workshop: 5-day session with operators + process engineers. Review all 500+ alarms. For each: decide keep/modify/remove. Document rationalization. Update alarm config. Post-implementation: monitor alarm rate for 30 days. Target &lt; 10/operator/shift.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">All alarms rationalized. Alarm rate &lt; 10/operator/shift (down from typical 100+ baseline).</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Alarm fatigue</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Wrong severity</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Operator misreads dashboard</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (operator UX)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-safety-5">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-5</div>
+            <div class="tp-test-name">Operator-in-the-loop testing</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span></div>
+          </div>
+          <div class="tp-test-desc">Shadow sessions with real operators. Run simulations, observe operator response. System Usability Scale (SUS) survey target &gt; 80. Verify operator can acknowledge, diagnose, respond to alarms within SLA.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">10+ shadow sessions per design partner. Each session: 1h with 5 simulated alarm scenarios. Observe: time-to-acknowledge, time-to-diagnose, time-to-respond. Post-session SUS survey. Target: SUS &gt; 80, mean acknowledge &lt; 30 sec, mean diagnose &lt; 2 min.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">SUS &gt; 80. Time-to-ack &lt; 30 sec. Time-to-diagnose &lt; 2 min. 90%+ correct response to alarms.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Operator misreads dashboard</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Training gap</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Alarm fatigue</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 5 — Hardening (operator UX validation)</a></div>
+          </div>
+        </div>
+        <div class="tp-test" id="test-safety-6">
+          <div class="tp-test-head">
+            <div class="tp-test-num">safety-6</div>
+            <div class="tp-test-name">Incident replay</div>
+            <div class="tp-test-freq"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; background: color-mix(in srgb, #dc2626 12%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 25%, transparent); text-transform: uppercase; letter-spacing: 0.06em;">quarterly</span></div>
+          </div>
+          <div class="tp-test-desc">Replay historical incidents (from CMMS, regulator reports, public incident databases). Verify platform detects + responds correctly. Backtest on 90 days of historical data.</div>
+          <div class="tp-test-impl">
+            <span class="tp-impl-label">Implementation:</span>
+            <span class="tp-impl-text">Replay 10 historical incidents (e.g. Macondo, T2 Laboratories, Upper Big Branch, Northeast Blackout, Milwaukee Crypto, Flint MI). For each: replay sensor data through platform. Verify platform detects anomaly + fires alarm + recommends correct action. Compute detection time vs actual incident time.</span>
+          </div>
+          <div class="tp-test-accept">
+            <span class="tp-accept-label">Acceptance:</span>
+            <span class="tp-accept-text">Platform detects 100% of replayed incidents. Detection time &lt; actual incident discovery time (catches earlier). Recommended action matches actual corrective action.</span>
+          </div>
+          <div class="tp-test-meta">
+            <div class="tp-meta-row"><span class="tp-meta-k">Edge cases:</span> <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">False negative</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Rare event</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Cold start</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; background: color-mix(in srgb, var(--cyan) 6%, transparent); color: var(--cyan); border-radius: 3px; margin-right: 4px;">Incident investigation</span></div>
+            <div class="tp-meta-row"><span class="tp-meta-k">Build plan:</span> <a href="build-plan.html" style="color: var(--cyan); text-decoration: none; font-size: 11px;">Phase 4 — ML (backtest) + Phase 5 (validation)</a></div>
+          </div>
+        </div></div>
+    </section>
+
+  <!-- Hub CTA -->
+  <div class="tp-hub-cta">
+    <h2>37 tests across 5 categories — continuous validation</h2>
+    <p>SentinelEdge's test plan is integrated with the build plan (Phase 5 Hardening) and the edge cases catalog (104 cases × 7 sectors). Tests run continuously (simulation), every PR (functional), nightly (edge-case), weekly (chaos + simulation), monthly (chaos + simulation), quarterly (chaos + safety + incident replay), and annually (HAZOP + FMEA + STPA + alarm rationalization).</p>
+    <div class="btn-row">
+      <a href="build-plan.html" class="btn btn-primary">5-phase MVP build plan →</a>
+      <a href="edge-cases.html" class="btn btn-ghost">104 edge cases addressed →</a>
+      <a href="engineering.html" class="btn btn-ghost">Engineering Hub →</a>
+      <a href="production-stack.html" class="btn btn-ghost">Production Stack →</a>
+      <a href="portal.html" class="btn btn-ghost">Become a design partner →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering Hub</a>
+    <a href="build-plan.html">MVP Build Plan</a>
+    <a href="edge-cases.html">Edge Cases</a>
+    <a href="production-stack.html">Production Stack</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Test Plan (37 tests across 5 categories) &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
