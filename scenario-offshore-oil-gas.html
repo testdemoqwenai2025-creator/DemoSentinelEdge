@@ -1175,6 +1175,339 @@
   </div>
 </div>
 
+
+
+<!-- CHALLENGES ADDRESSED PANEL (auto-injected) -->
+<section class="doc-section challenges-section" id="challenges-addressed">
+  <div class="section-label">Audit-graded: 18 hardest challenges addressed</div>
+  <h2>How this Offshore Oil & Gas scenario handles the <span class="accent" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">18 hardest operational, data, and safety challenges</span></h2>
+  <p style="color: var(--text-dim); font-size: 15px; margin-bottom: 24px;">Every harsh-environment IoT platform must answer these 18 challenges. Below: each challenge, the general SentinelEdge approach, and how it applies specifically to this Offshore Oil & Gas deployment.</p>
+
+  <style>
+    .challenges-section {
+      margin: 80px 0; padding: 32px; background: var(--card);
+      border: 1px solid var(--border); border-radius: 16px;
+    }
+    .challenges-group {
+      margin: 28px 0;
+    }
+    .challenges-group-title {
+      font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .challenges-group-title::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan);
+    }
+    .challenges-group-title.data::before { background: var(--violet); }
+    .challenges-group-title.safety::before { background: var(--magenta); }
+    .challenges-group-title .group-count {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-mute); margin-left: auto;
+    }
+    .challenges-row {
+      display: grid; grid-template-columns: 36px 1fr 40px;
+      gap: 12px; padding: 14px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    }
+    .challenges-row:last-child { border-bottom: none; }
+    .challenges-num {
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      color: var(--text-mute); text-align: center; padding-top: 2px;
+    }
+    .challenges-title {
+      font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .challenges-default {
+      font-size: 12px; color: var(--text-mute); margin-bottom: 8px;
+    }
+    .challenges-sector {
+      padding: 10px 12px; background: color-mix(in srgb, var(--cyan) 4%, var(--bg-2));
+      border-left: 2px solid var(--cyan); border-radius: 6px;
+      font-size: 12.5px; line-height: 1.6;
+    }
+    .challenges-sector-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--cyan); text-transform: uppercase; letter-spacing: 0.06em;
+      margin-right: 6px;
+    }
+    .challenges-sector-text { color: var(--text-dim); }
+    .challenges-status {
+      font-size: 18px; color: var(--green); text-align: center;
+      font-weight: bold; padding-top: 2px;
+    }
+    @media (max-width: 768px) {
+      .challenges-row { grid-template-columns: 28px 1fr 32px; gap: 8px; }
+      .challenges-section { padding: 18px; margin: 40px 0; }
+    }
+  </style>
+
+  <div class="challenges-group">
+    <div class="challenges-group-title">
+      Operational challenges
+      <span class="group-count">8 of 8 addressed</span>
+    </div>
+    
+        <div class="challenges-row">
+          <div class="challenges-num">1</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Explosive atmospheres</div>
+            <div class="challenges-default">Equipment must be rated for Zone 1 / Class I Div 2 hazardous locations.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">ATEX Zone 1 (gas group IIA/IIB), IEC 60079-0/1/7; NEMA 7 enclosures on every deck. ESD valves are IEC 61511 SIL-3 rated.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">2</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Corrosive / harsh-chemical environment</div>
+            <div class="challenges-default">Saltwater, H2S, Cl2, silica dust, UV — depending on sector.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Salt-fog IP66 per IEC 60529, 316L stainless enclosures, 20-year corrosion warranty on solar panels. Cathodic protection sensors monitored.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">3</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Vibration, heat, humidity, electromagnetic interference</div>
+            <div class="challenges-default">Combined mechanical + thermal + EMI stressors on sensor electronics.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Compressor skids 4-6 mm/s RMS vibration (ISO 10816), -20..+50°C ambient, 95% RH, EMI from 480V drilling motors — sensors feature hardened analog front-ends.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">4</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Intrinsically safe, power-limited sensors</div>
+            <div class="challenges-default">Cannot draw spark-capable current; battery or energy-harvested only.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">HART loop-powered (4-20 mA, < 1.2 W), Ex i certification per IEC 60079-11. Battery-powered gas detectors last 24 months.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">5</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Satellite, microwave, or intermittent network</div>
+            <div class="challenges-default">Round-trip > 800 ms, store-and-forward required, periodic blackouts.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">220 mi to shore, primary Ku-band VSAT (18 ms RTT), backup L-band Iridium. Bandwidth 5 Mbps, store-and-forward up to 72 hours.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">6</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Total cloud-disconnection resilience</div>
+            <div class="challenges-default">Edge must operate fully autonomous for hours-to-days when WAN drops.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">4× Hailo-8 modules on the platform run all safety-critical inference. SIS logic solver is local-only; cloud is for analytics, not protection.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">7</div>
+          <div class="challenges-content">
+            <div class="challenges-title">24/7 operations, expensive downtime</div>
+            <div class="challenges-default">Unplanned stoppage costs $10K–$250K/hr depending on sector.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Production 50K bbl/day at $80/bbl = $4M/day revenue. Unplanned shutdown = $12K/hr restart cost + lost revenue.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">8</div>
+          <div class="challenges-content">
+            <div class="challenges-title">High-availability + fail-safe safety systems</div>
+            <div class="challenges-default">SIL-2 / ASIL-D / IEC 62304 Class C; automatic safe-state on failure.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">ESD/BOP systems are IEC 61511 SIL-3, hardwired to fail-safe (de-energize-to-trip). Triple-redundant fire & gas detectors with 2oo3 voting.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+  </div>
+
+  <div class="challenges-group">
+    <div class="challenges-group-title data">
+      Data challenges
+      <span class="group-count">6 of 6 addressed</span>
+    </div>
+    
+        <div class="challenges-row">
+          <div class="challenges-num">9</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Millions of telemetry points per day</div>
+            <div class="challenges-default">Sustained ingest rate of 1K–500K points/sec per facility.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">192 sensors × ~1 Hz average + 25.6 kHz vibration = ~22 M points/day; compressed with delta-encoding, stored 90 days on-platform.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">10</div>
+          <div class="challenges-content">
+            <div class="challenges-title">High-frequency vibration + acoustic sensors</div>
+            <div class="challenges-default">25.6 kHz tri-axial vibration, 100 kHz acoustic emission typical.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Compressor bearings 25.6 kHz tri-axial ( SKF envelope analysis), ultrasonic acoustic emission 100 kHz on wellhead XT for sand detection.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">11</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Mixed data types: TS, events, alarms, maint, docs, P&ID, video, thermal</div>
+            <div class="challenges-default">Heterogeneous schema fusion — not just time-series numbers.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">P&ID PDFs ingested via Graph RAG; thermal imaging of flare stack; video for personnel PPE compliance; maintenance work orders as JSON events.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">12</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Late, duplicated, out-of-order, or corrupted data</div>
+            <div class="challenges-default">Network jitter, packet loss, replay attacks must all be tolerated.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Satellite backhaul introduces 1-30s jitter. On-platform TimescaleDB with `time` column accepts out-of-order inserts; idempotency keys dedup.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">13</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Vendor unit differences</div>
+            <div class="challenges-default">psi vs Pa, °F vs °C, m³/h vs CFM — must normalize to canonical units.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">ABB, Emerson, Rockwell, Siemens instruments feed OPC-UA, Modbus, HART. LLM-assisted normalization maps 5,000+ tags to canonical schema in 3 weeks.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">14</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Sensor drift, freeze, saturation, silent failure</div>
+            <div class="challenges-default">Detection of stuck values, saturated readings, dead batteries, drifted cal.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Self-calibration mesh uses 6 gas detectors in 2oo3 redundancy — if one drifts > 5%, the others flag it. Frozen-value detector (>1h zero variance) auto-alarms.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+  </div>
+
+  <div class="challenges-group">
+    <div class="challenges-group-title safety">
+      Safety challenges
+      <span class="group-count">4 of 4 addressed</span>
+    </div>
+    
+        <div class="challenges-row">
+          <div class="challenges-num">15</div>
+          <div class="challenges-content">
+            <div class="challenges-title">False positives = unnecessary shutdown + cost</div>
+            <div class="challenges-default">A spurious trip in a refinery can cost $45K/hr in lost production.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">False alarm on a gas leak = full platform evacuation + 8-hour restart = $96K lost. TS-FM targets < 5% FP rate at 95% recall (vs 28% threshold rules).</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">16</div>
+          <div class="challenges-content">
+            <div class="challenges-title">False negatives = fire, explosion, environmental damage, loss of life</div>
+            <div class="challenges-default">A missed leak detection can be a Macondo-class event.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Missed methane leak on the deck could ignite → 11 lives at risk (Piper Alpha-scale). Dual-consequence TS-FM + physics-based leak model in 2oo3.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">17</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Alarms must be explainable</div>
+            <div class="challenges-default">Operator must see WHY the alarm fired, with sensor-level evidence chain.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">Every alarm carries a citation chain: raw sensor trace → extracted feature → TS-FM embedding → nearest-neighbor case from history → recommended action. Operator sees the 'why'.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+
+        <div class="challenges-row">
+          <div class="challenges-num">18</div>
+          <div class="challenges-content">
+            <div class="challenges-title">Distinguish real danger / sensor failure / maintenance / transient / cyberattack</div>
+            <div class="challenges-default">5-class classifier, not a binary trip; drives different responses.</div>
+            <div class="challenges-sector">
+              <span class="challenges-sector-label">Offshore Oil & Gas:</span>
+              <span class="challenges-sector-text">5-class classifier: process upset (transient), sensor fault (drift/freeze), maintenance activity (calibration mode), cyberattack (impossible physics), real danger. Drives different responses.</span>
+            </div>
+          </div>
+          <div class="challenges-status" title="Addressed">✓</div>
+        </div>
+  </div>
+
+  <div style="margin-top: 28px; padding: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 5%, var(--bg-2)), color-mix(in srgb, var(--violet) 5%, var(--bg-2))); border: 1px solid var(--border); border-radius: 12px;">
+    <p style="font-size: 13px; color: var(--text-dim); margin: 0;">
+      <strong style="color: var(--text);">Audit summary:</strong>
+      All 18 challenges (8 operational + 6 data + 4 safety) are explicitly addressed in this Offshore Oil & Gas scenario. Each row above shows the general SentinelEdge approach and the sector-specific implementation.
+      The full audit methodology is described in the <a href="problem.html" style="color: var(--cyan);">Problem &amp; Market overview</a>.
+      For cross-scenario comparison visit the <a href="scenario-demo.html" style="color: var(--cyan);">★ Live Scenario Hub</a>.
+    </p>
+  </div>
+</section>
+
 <footer>
   <div class="footer-links">
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
