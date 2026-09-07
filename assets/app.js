@@ -65,7 +65,7 @@ const QA_PAIRS = [
   { q: /team|founder/i, a: "Four founders: Dr. Aarav Kapoor (CEO, ex-Cognite Eng Director), Maya Rodriguez (CTO, ex-Microsoft Azure IoT Principal Eng, KubeEdge maintainer), Dr. Jian Liu (Chief Scientist, ex-Augury Head of ML, 28 NeurIPS/ICML papers), Sofia Costa (CRO, ex-Planet Labs VP Sales Agri, $0→$40M ARR). Combined 60+ years in industrial IoT, distributed systems, applied ML." },
   { q: /roi|return/i, a: "Vertical-specific ROI: Agriculture — +18% yield, −30% input cost (verified across 3 design-partner farms). Manufacturing — −42% unplanned downtime (target, based on Augury's published benchmarks and our zero-shot model performance). Environment — −85% calibration cost via self-calibrating sensor mesh. Energy — grid resilience KPIs pending pilot." },
   { q: /architecture|stack/i, a: "Four layers, one substrate: (1) Sensing — multi-modal sensor ontology, (2) Connectivity — protocol-agnostic bridge (LoRaWAN/5G/OPC-UA/MQTT), (3) Edge Compute — KubeEdge + TinyML + WASM + liquid workload placement, (4) Intelligence — TS-FM + Graph RAG + causal inference + LLM-native query. See the Architecture page for protocols, data flow, and benchmarks." },
-  { q: /contact|reach|email/i, a: "Investor relations: partners@aisensoredgecomp.ai · Design partners: design@aisensoredgecomp.ai · Press: press@aisensoredgecomp.ai. We respond within 24 hours. For technical deep-dives, mention your vertical and team size." },
+  { q: /contact|reach|email/i, a: "Investor relations: partners@aisensoredgecomp.ai · Design partners: testdemoqwenai2025@gmail.com · Press: press@aisensoredgecomp.ai. We respond within 24 hours. For technical deep-dives, mention your vertical and team size." },
   { q: /differ|competitor|why you/i, a: "Unlike horizontal platforms (AWS IoT, Azure IoT) we are vertical-first with pre-trained TS-FM. Unlike vertical specialists (Augury, Cognite, Satelligence) we are building the universal substrate — every wedge compounds the foundation model. Unlike DIY (ThingsBoard, Eclipse Ditto) we ship the intelligence layer, not just plumbing." },
   { q: /sensing|sensor|calibrat/i, a: "Layer 01 — Sensing: We ingest from any sensor (vibration, gas, vision, hyperspectral, mmWave, soil, weather, AIS, EO) and normalize to a canonical semantic schema. Self-calibration mesh uses physics redundancy + sparse ground truth + distributed estimation to cut recalibration cost by 85%. See the Sensing layer page for the full ontology." },
   { q: /connectivity|protocol|opc|modbus|mqtt/i, a: "Layer 02 — Connectivity: Protocol-agnostic bridge spanning OPC-UA, Modbus, Profinet, EtherCAT, MQTT, CoAP, LoRaWAN, NB-IoT, 5G mMTC, Wi-Fi HaLow, TSN, direct-to-satellite. LLM-assisted semantic normalization cuts new-factory onboarding from 6 months to 3 weeks. See the Connectivity layer page for the full protocol matrix." },
@@ -144,11 +144,9 @@ window.handleSearch = function () {
   sections.forEach(function (s) { observer.observe(s); });
 })();
 
-// === Set data-theme on click for theme toggle ===
-window.addEventListener('DOMContentLoaded', function () {
-  const themeBtn = document.querySelector('.theme-toggle');
-  if (themeBtn) themeBtn.addEventListener('click', window.toggleTheme);
-});
+// === Theme toggle button uses onclick="toggleTheme()" attribute directly ===
+// (No additional addEventListener needed — onclick attribute handles it.)
+// Adding a second listener would cause a double-toggle bug.
 
 // =====================================================================
 // MEGA-MENU NAV — injected on page load
@@ -206,6 +204,7 @@ window.addEventListener('DOMContentLoaded', function () {
         { href: "architecture-deep.html", label: "Technical Deep Dive", desc: "Engineering due-diligence" },
         { href: "architecture-interactive.html", label: "Interactive Architecture", desc: "Click + animate" },
         { href: "production-stack.html", label: "Production Stack", desc: "Edge→ML→Ops, 30 components" },
+        { href: "edge-cases.html", label: "Edge Cases Addressed", desc: "79 cases × 7 sectors" },
         { href: "comparison.html", label: "Competitive Comparison", desc: "27 dimensions, 8 competitors + deep-dive modals" },
         { href: "sectors.html", label: "Sectors Hub", desc: "7 verticals" },
       ]
@@ -285,9 +284,10 @@ window.addEventListener('DOMContentLoaded', function () {
     nav.appendChild(megaMenu);
 
     // Add a "Pages" trigger button in the nav-links area
+    let trigger = null;
     const navLinks = nav.querySelector(".nav-links");
     if (navLinks) {
-      const trigger = document.createElement("button");
+      trigger = document.createElement("button");
       trigger.className = "nav-btn";
       trigger.style.cssText = "padding: 6px 12px; font-size: 13px; background: transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;";
       trigger.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Pages ▾';
@@ -302,7 +302,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Close mega-menu on outside click
     document.addEventListener("click", function(e) {
-      if (!megaMenu.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+      if (trigger && !megaMenu.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
         megaMenu.classList.remove("open");
       }
     });
