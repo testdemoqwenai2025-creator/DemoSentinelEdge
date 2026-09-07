@@ -94,6 +94,105 @@
   </div>
 </section>
 
+<!-- SCENARIO SNAPSHOT (auto-injected) — 10-second overview before the detail -->
+<section class="scenario-snapshot" id="scenario-snapshot" style="background: linear-gradient(135deg, color-mix(in srgb, #fbbf24 4%, var(--card)), color-mix(in srgb, var(--violet) 4%, var(--card))); border: 1px solid var(--border-strong); border-radius: 14px; padding: 28px; margin: 32px auto; max-width: 1200px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Scenario snapshot · 10-second overview</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); margin: 0;">Smart Grid <span style="color: #fbbf24;">at a glance</span></h2>
+    </div>
+    <a href="scenario-demo.html" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px;">← All 7 scenarios</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">⚡</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Operator</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">MetroGrid Utilities</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📍</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Location</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">Chicago metro area, Illinois · 50 substations, 1.4M customers</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">🛠️</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Asset count</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">165 assets (transformers, breakers, capacitors, reclosers, PMUs, SCADA RTUs)</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📡</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Sensor count</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">612 sensor endpoints (PMU 30/60/120 Hz synchrophasor, SCADA 1 Hz, DFR event-based, transformer PD 100 kHz)</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📜</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Key compliance</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">NERC CIP · IEC 61850 · IEEE 1547 · C37.118 · IEEE 1547 · PRC-002 (disturbance recording)</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #fbbf24; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">⚠️</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Key fault scenarios</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">Transformer PD · solar curtailment · PMU frequency excursion · cascading blackout · cyberattack</div>
+        </div>
+        <a href="roi-smart-grid.html" style="text-decoration: none; color: inherit; grid-column: span 2; display: block; padding: 16px; background: linear-gradient(135deg, color-mix(in srgb, #fbbf24 8%, var(--bg-2)), var(--bg-2)); border: 1px solid color-mix(in srgb, #fbbf24 30%, transparent); border-left: 3px solid #fbbf24; border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 22px;">💰</div>
+            <div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.06em;">ROI calculator</div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #fbbf24; margin-top: 2px;">Open Smart Grid ROI Calculator →</div>
+            </div>
+          </div>
+        </a>
+  </div>
+
+  
+      <div style="padding: 18px 22px; background: color-mix(in srgb, #fbbf24 6%, var(--bg-2)); border: 1px solid color-mix(in srgb, #fbbf24 25%, transparent); border-left: 4px solid #fbbf24; border-radius: 10px; margin: 20px 0;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">⚠️ What makes this hard</div>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7; margin: 0;">50 substations spread across 6,000 sq mi with -40°C pole-mounted sensors in winter, lightning surge 8/20 μs 100 kA on every transmission line, GPS-disciplined clocks (1 μs accuracy per IEEE C37.118) required for PMU state estimation, and a missed transformer PD can mean internal arc + $5M transformer loss + 30-min blackout with $1M economic loss per MW-minute (NERC penalty structure).</p>
+      </div>
+
+  
+      <div style="padding: 18px 22px; background: var(--bg-2); border: 1px solid var(--border); border-left: 4px solid var(--cyan); border-radius: 10px; margin: 20px 0;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">📅 Day in the life · How a fault flows through SentinelEdge</div>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin: 0;">At 14:08:00.123456 UTC (sub-microsecond timestamp via GPS-disciplined clock), the PMU at substation 47 reports a 0.4 Hz frequency excursion on the 345 kV bus (normal: 60.000 ±0.05 Hz). At 14:08:00.124, the state estimator (Flink job running on cloud Kafka, ingesting 2.6B PMU samples/day fleet-wide) detects the excursion and correlates it with neighboring substations 46 and 48 — also showing 0.3-0.4 Hz excursions within 50 μs of each other, indicating a regional event (not a sensor fault). At 14:08:00.180, the TS-FM (350M-param model) scores the event as anomaly 0.91, nearest historical case: 2003 Northeast Blackout precursor pattern. At 14:08:00.250, the alarm reaches the system operator&#x27;s console with a 4-bullet citation chain: which substations are affected, frequency excursion magnitude, TS-FM anomaly score, recommended action (shed 200 MW of interruptible load to stabilize frequency). At 14:08:30, the operator initiates load shed. At 14:09:00, frequency stabilizes at 59.98 Hz and recovers to 60.00 by 14:11. Cascading blackout avoided (NERC investigation estimated $6B economic loss from the 2003 Northeast Blackout). The event is logged in the COMTRADE format per NERC PRC-002, retained 7 years, exportable to NERC ERCOT/PJM/CAL-ISO format. The protection relays (Schweitzer, SEL — independent of the platform, hardwired) were armed for under-frequency trip at 59.7 Hz, but the platform&#x27;s TS-FM caught it 8 seconds earlier — enough time for operator intervention rather than automatic trip.</p>
+      </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);">
+    <a href="#platform-overview" style="font-size: 12px; color: var(--cyan); text-decoration: none;">↓ Skip to full deployment details (15 sections below)</a>
+    <span style="color: var(--text-mute); margin: 0 4px;">·</span>
+    <a href="edge-cases.html" style="font-size: 12px; color: var(--cyan); text-decoration: none;">104 edge cases addressed for this sector →</a>
+    <span style="color: var(--text-mute); margin: 0 4px;">·</span>
+    <a href="build-plan.html" style="font-size: 12px; color: var(--cyan); text-decoration: none;">5-phase MVP build plan →</a>
+  </div>
+</section>
+<style>
+  @media (max-width: 768px) {
+    .scenario-snapshot {
+      padding: 18px !important;
+      margin: 16px !important;
+    }
+    .scenario-snapshot > div[style*="grid-template-columns: 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+
+
 <div class="page-layout">
   <aside class="sidebar">
     <h4>Scenario</h4>

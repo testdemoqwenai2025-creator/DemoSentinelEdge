@@ -94,6 +94,105 @@
   </div>
 </section>
 
+<!-- SCENARIO SNAPSHOT (auto-injected) — 10-second overview before the detail -->
+<section class="scenario-snapshot" id="scenario-snapshot" style="background: linear-gradient(135deg, color-mix(in srgb, #a855f7 4%, var(--card)), color-mix(in srgb, var(--violet) 4%, var(--card))); border: 1px solid var(--border-strong); border-radius: 14px; padding: 28px; margin: 32px auto; max-width: 1200px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Scenario snapshot · 10-second overview</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); margin: 0;">Hospital ICU <span style="color: #a855f7;">at a glance</span></h2>
+    </div>
+    <a href="scenario-demo.html" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px;">← All 7 scenarios</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">🏥</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Operator</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">Marin Health System</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📍</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Location</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">San Rafael, California · 24-bed Level III ICU</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">🛠️</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Asset count</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">104 assets (ventilators, infusion pumps, monitors, dialysis, ECG, SpO2, ABP)</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📡</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Sensor count</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">428 sensor endpoints (ECG 500 Hz, SpO2 100 Hz, vent 50 Hz, ABP 100 Hz)</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">📜</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Key compliance</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">HIPAA · FDA 510(k) Class II · IEC 62304 Class C · ISO 14971 · Joint Commission</div>
+        </div>
+        <div style="padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid #a855f7; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px;">⚠️</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em;">Key fault scenarios</span>
+          </div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5;">Ventilator disconnect · sepsis early warning · infusion occlusion · arrhythmia · lead-off</div>
+        </div>
+        <a href="roi-hospital-icu.html" style="text-decoration: none; color: inherit; grid-column: span 2; display: block; padding: 16px; background: linear-gradient(135deg, color-mix(in srgb, #a855f7 8%, var(--bg-2)), var(--bg-2)); border: 1px solid color-mix(in srgb, #a855f7 30%, transparent); border-left: 3px solid #a855f7; border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 22px;">💰</div>
+            <div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #a855f7; text-transform: uppercase; letter-spacing: 0.06em;">ROI calculator</div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #a855f7; margin-top: 2px;">Open Hospital ICU ROI Calculator →</div>
+            </div>
+          </div>
+        </a>
+  </div>
+
+  
+      <div style="padding: 18px 22px; background: color-mix(in srgb, #a855f7 6%, var(--bg-2)); border: 1px solid color-mix(in srgb, #a855f7 25%, transparent); border-left: 4px solid #a855f7; border-radius: 10px; margin: 20px 0;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #a855f7; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">⚠️ What makes this hard</div>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7; margin: 0;">EMI from 20+ medical devices per bed plus MRI next door (3T static field), SpO2 optical sensors drift 1-2% per 8-hour shift from sterilization cycles, and patient safety means a missed sepsis alarm increases mortality 22% per hour of delay — there is no tolerance for cloud round-trip latency on life-critical alerts.</p>
+      </div>
+
+  
+      <div style="padding: 18px 22px; background: var(--bg-2); border: 1px solid var(--border); border-left: 4px solid var(--cyan); border-radius: 10px; margin: 20px 0;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">📅 Day in the life · How a fault flows through SentinelEdge</div>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.75; margin: 0;">At 14:23 local time, a 67-year-old patient in bed 7 begins showing subtle signs of sepsis: heart rate climbs from 92 to 108 bpm over 30 minutes, SpO2 dips from 98% to 95%, respiratory rate rises from 18 to 22, temperature ticks up 0.4°C. No individual threshold is breached. At 14:53, the TS-FM (running on the local SGX enclave on the edge server in the hospital basement, 8 ms from the bedside monitor) detects the multi-signal pattern — anomaly score 0.87 — and fires an advisory alert. The alarm reaches the bedside nurse&#x27;s pager with a 4-bullet citation chain: which vital signs are trending, TS-FM embedding nearest to MIMIC-IV case #1187234 (sepsis confirmed 6h later), recommended action (blood culture + serum lactate + notify attending). At 14:55, the nurse acknowledges and orders blood culture + lactate. At 15:30, lactate returns at 3.2 mmol/L (sepsis-indicator). At 15:45, the attending physician orders IV antibiotics. Sepsis is confirmed at 18:00 — but caught 4 hours before it would have been caught by threshold rules alone. The entire event — vital sign trends, TS-FM inference, nurse acknowledgment, order, lab result, outcome — is recorded in the HIPAA-compliant audit log, retained 6 years, exportable to Joint Commission RCA format. False-alarm rate per shift dropped from 90% (legacy thresholds) to 8% (TS-FM at 95% recall).</p>
+      </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);">
+    <a href="#platform-overview" style="font-size: 12px; color: var(--cyan); text-decoration: none;">↓ Skip to full deployment details (15 sections below)</a>
+    <span style="color: var(--text-mute); margin: 0 4px;">·</span>
+    <a href="edge-cases.html" style="font-size: 12px; color: var(--cyan); text-decoration: none;">104 edge cases addressed for this sector →</a>
+    <span style="color: var(--text-mute); margin: 0 4px;">·</span>
+    <a href="build-plan.html" style="font-size: 12px; color: var(--cyan); text-decoration: none;">5-phase MVP build plan →</a>
+  </div>
+</section>
+<style>
+  @media (max-width: 768px) {
+    .scenario-snapshot {
+      padding: 18px !important;
+      margin: 16px !important;
+    }
+    .scenario-snapshot > div[style*="grid-template-columns: 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+
+
 <div class="page-layout">
   <aside class="sidebar">
     <h4>Scenario</h4>
