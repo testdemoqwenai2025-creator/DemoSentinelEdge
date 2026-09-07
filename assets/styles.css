@@ -1,4 +1,15 @@
 /* =====================================================================
+   FONT CONSISTENCY POLICY (added by consistency audit)
+   =====================================================================
+   - Body font: Inter, 16px, line-height 1.6 (all pages)
+   - H1 (page-hero): Space Grotesk, clamp(36px, 5.5vw, 64px) — shared via styles.css
+   - H1 (index.html hero only): clamp(40px, 7vw, 88px) — intentionally larger
+     because index.html is the landing page with a bigger hero. This is by design.
+   - H2/H3/H4: Space Grotesk, 600 weight, -0.02em letter-spacing
+   - Mono: JetBrains Mono (for code, labels, tags)
+   All pages load fonts from Google Fonts via the same <link> tag.
+   ===================================================================== */
+/* =====================================================================
    AISensorEdgeComp — Shared styles for all pages
    Used by: index.html, problem.html, architecture.html, layer-*.html,
             sensors.html, ai-stack.html, verticals.html, roadmap.html,
