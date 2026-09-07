@@ -204,7 +204,8 @@ window.handleSearch = function () {
         { href: "architecture-deep.html", label: "Technical Deep Dive", desc: "Engineering due-diligence" },
         { href: "architecture-interactive.html", label: "Interactive Architecture", desc: "Click + animate" },
         { href: "production-stack.html", label: "Production Stack", desc: "Edge→ML→Ops, 30 components" },
-        { href: "edge-cases.html", label: "Edge Cases Addressed", desc: "79 cases × 7 sectors" },
+        { href: "edge-cases.html", label: "Edge Cases Addressed", desc: "104 cases × 7 sectors" },
+        { href: "build-plan.html", label: "MVP Build Plan", desc: "5 phases, 28-36 weeks" },
         { href: "comparison.html", label: "Competitive Comparison", desc: "27 dimensions, 8 competitors + deep-dive modals" },
         { href: "sectors.html", label: "Sectors Hub", desc: "7 verticals" },
       ]

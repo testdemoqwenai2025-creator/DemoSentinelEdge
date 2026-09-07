@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — MVP Build Plan (5 phases, 28-36 weeks)</title>
+<meta name="description" content="Opinionated 5-phase MVP build plan: Foundation (4-6w) → Edge resilience (4w) → Stream processing (6w) → ML + digital twin (8-12w) → Hardening (6+w). Each phase has deliverables, engineering tasks, success criteria, acceptance tests, risks, edge cases addressed." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="MVP Build Plan — 5 phases, 28-36 weeks" />
+<meta property="og:description" content="Opinionated 5-phase MVP build plan with deliverables, tasks, success criteria, acceptance tests, risks, and edge cases addressed per phase." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/build-plan.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — MVP Build Plan (5 phases)" />
+<meta name="twitter:description" content="Opinionated 5-phase MVP build plan with deliverables, success criteria, and edge cases per phase." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  html { scroll-behavior: smooth; overflow-y: scroll; }
+  body { min-height: 100vh; padding-bottom: 80px; }
+
+  /* Hero */
+  .page-hero { min-height: 35vh; padding-top: 100px; }
+
+  /* Stats bar */
+  .bp-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin: -40px 0 60px; padding: 24px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, var(--card)), color-mix(in srgb, var(--violet) 6%, var(--card)));
+    border: 1px solid var(--border-strong); border-radius: 14px;
+    box-shadow: var(--shadow-card); position: relative; z-index: 5;
+  }
+  .bp-stats .stat { text-align: center; }
+  .bp-stats .stat .num { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 3vw, 40px); font-weight: 700; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .bp-stats .stat .lbl { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+  /* Phase nav */
+  .bp-nav {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 40px;
+    padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .bp-nav-item {
+    text-decoration: none; color: var(--text-dim); font-size: 13px;
+    padding: 10px 14px; background: var(--bg-2); border-radius: 8px;
+    border-left: 3px solid var(--border); transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .bp-nav-item:hover { border-color: var(--cyan); color: var(--cyan); }
+  .bp-nav-weeks {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--cyan) 10%, transparent);
+    color: var(--cyan); margin-left: auto;
+  }
+
+  /* Phase section */
+  .bp-phase {
+    margin: 80px 0; padding: 32px;
+    background: var(--card); border: 1px solid var(--border);
+    border-top: 4px solid var(--phase-color); border-radius: 14px;
+  }
+  .bp-phase-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .bp-phase-icon { font-size: 36px; line-height: 1; }
+  .bp-phase-content { flex: 1; }
+  .bp-phase-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700;
+    color: var(--text);
+  }
+  .bp-phase-tagline {
+    font-size: 14px; color: var(--text-dim); margin-top: 4px; line-height: 1.5;
+  }
+  .bp-phase-duration {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+    padding: 8px 14px; background: color-mix(in srgb, var(--phase-color) 10%, transparent);
+    color: var(--phase-color); border-radius: 8px; border: 1px solid color-mix(in srgb, var(--phase-color) 25%, transparent);
+  }
+
+  .bp-phase-meta {
+    margin-bottom: 24px; padding: 14px 16px;
+    background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+    border-radius: 8px; border: 1px solid var(--border);
+  }
+  .bp-meta-row { display: flex; gap: 10px; font-size: 13px; align-items: start; }
+  .bp-meta-k {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.04em; padding-top: 2px; flex-shrink: 0;
+  }
+  .bp-meta-v { color: var(--text-dim); line-height: 1.6; }
+
+  .bp-h3 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600;
+    color: var(--text); margin: 24px 0 12px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bp-h3::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--phase-color);
+  }
+
+  /* Deliverables */
+  .bp-deliverables { display: grid; gap: 12px; }
+  .bp-deliverable {
+    padding: 16px 18px; background: var(--bg-2);
+    border: 1px solid var(--border); border-left: 3px solid var(--phase-color);
+    border-radius: 8px;
+  }
+  .bp-del-name {
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .bp-del-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* Lists (tasks, success, acceptance) */
+  .bp-list {
+    list-style: none; padding-left: 0; counter-reset: bp-counter;
+  }
+  .bp-list li {
+    padding: 8px 0 8px 28px; position: relative; font-size: 13px;
+    line-height: 1.6; color: var(--text-dim);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+  .bp-list li:last-child { border-bottom: none; }
+  .bp-list li::before {
+    content: '→'; position: absolute; left: 0; top: 8px;
+    color: var(--phase-color); font-weight: 600;
+  }
+  .bp-list.bp-success li::before { content: '✓'; color: var(--green); }
+  .bp-list.bp-acceptance li::before { content: '◆'; color: var(--gold); }
+
+  /* Risks */
+  .bp-risks { display: grid; gap: 10px; }
+  .bp-risk {
+    padding: 14px 16px; background: color-mix(in srgb, var(--magenta) 4%, var(--bg-2));
+    border: 1px solid var(--border); border-left: 3px solid var(--magenta);
+    border-radius: 8px;
+  }
+  .bp-risk-name {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--magenta); margin-bottom: 4px;
+  }
+  .bp-risk-mit {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* Edge cases chips */
+  .bp-edge-cases {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .bp-edge-case-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 4px 10px; background: color-mix(in srgb, var(--cyan) 6%, transparent);
+    color: var(--cyan); border: 1px solid color-mix(in srgb, var(--cyan) 20%, transparent);
+    border-radius: 100px;
+  }
+
+  /* Summary cards at bottom */
+  .bp-summary {
+    margin: 60px 0; padding: 32px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, var(--card)), color-mix(in srgb, var(--violet) 6%, var(--card)));
+    border: 1px solid var(--border-strong); border-radius: 16px;
+  }
+  .bp-summary h2 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700;
+    margin-bottom: 16px; text-align: center;
+  }
+  .bp-summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .bp-summary-card {
+    padding: 18px; background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; text-align: center;
+  }
+  .bp-summary-card .num {
+    font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .bp-summary-card .lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px;
+  }
+
+  /* Hub CTA at bottom */
+  .bp-hub-cta {
+    text-align: center; padding: 60px 40px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, transparent), color-mix(in srgb, var(--violet) 6%, transparent));
+    border: 1px solid var(--border); border-radius: 16px; margin: 60px 0;
+  }
+  .bp-hub-cta h2 { font-size: clamp(24px, 3vw, 32px); margin-bottom: 14px; }
+  .bp-hub-cta p { color: var(--text-dim); max-width: 700px; margin: 0 auto 28px; }
+  .bp-hub-cta .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .bp-phase { padding: 18px; }
+    .bp-phase-header { flex-wrap: wrap; }
+    .bp-phase-duration { width: 100%; text-align: center; }
+    .bp-hub-cta { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body id="build-plan">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="production-stack.html">Stack</a>
+    <a href="edge-cases.html">Edge Cases</a>
+    <a href="build-plan.html" class="active" style="color: var(--cyan);">Build Plan</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="engineering.html">Engineering</a><span class="sep">/</span><span>Build Plan</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>5 phases · 28–36 weeks · 26 deliverables · 61 edge cases addressed</div>
+    <h1>MVP Build <span class="accent">Plan</span></h1>
+    <p class="lead">Opinionated 5-phase build plan for the SentinelEdge MVP. Each phase delivers value to design partners in 4–12 weeks. Phases can run partially in parallel (e.g. Phase 4 training while Phase 5 hardening). Total: 28–36 weeks from greenfield to production-grade.</p>
+    <div class="page-hero-cta" style="margin-top: 24px;">
+      <a href="#phase-1" class="btn btn-primary">Browse phases →</a>
+      <a href="production-stack.html" class="btn btn-ghost">Production Stack</a>
+      <a href="edge-cases.html" class="btn btn-ghost">Edge Cases Addressed</a>
+    </div>
+  </div>
+</section>
+
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Stats bar -->
+  <div class="bp-stats">
+    <div class="stat"><div class="num">5</div><div class="lbl">Phases</div></div>
+    <div class="stat"><div class="num">28–36</div><div class="lbl">Total Weeks</div></div>
+    <div class="stat"><div class="num">26</div><div class="lbl">Deliverables</div></div>
+    <div class="stat"><div class="num">57</div><div class="lbl">Engineering Tasks</div></div>
+    <div class="stat"><div class="num">61</div><div class="lbl">Edge Cases Addressed</div></div>
+  </div>
+
+  <!-- Phase nav -->
+  <div class="bp-nav">
+    <a href="#phase-1" class="bp-nav-item" style="border-left-color: #22d3ee;">🚀 Phase 1 — Foundation <span class="bp-nav-weeks">4–6 weeks</span></a><a href="#phase-2" class="bp-nav-item" style="border-left-color: #10b981;">🛡️ Phase 2 — Edge Resilience <span class="bp-nav-weeks">4 weeks</span></a><a href="#phase-3" class="bp-nav-item" style="border-left-color: #a855f7;">⚡ Phase 3 — Advanced Stream Processing <span class="bp-nav-weeks">6 weeks</span></a><a href="#phase-4" class="bp-nav-item" style="border-left-color: #7c3aed;">🧠 Phase 4 — ML and Digital Twin <span class="bp-nav-weeks">8–12 weeks</span></a><a href="#phase-5" class="bp-nav-item" style="border-left-color: #dc2626;">🛡️ Phase 5 — Hardening <span class="bp-nav-weeks">6+ weeks</span></a>
+  </div>
+
+  <!-- Phase blocks -->
+  
+    <section class="bp-phase" id="phase-1" style="--phase-color: #22d3ee;">
+      <div class="bp-phase-header">
+        <div class="bp-phase-icon">🚀</div>
+        <div class="bp-phase-content">
+          <div class="bp-phase-title">Phase 1 — Foundation</div>
+          <div class="bp-phase-tagline">Stand up the smallest end-to-end loop that delivers value: ingest → store → alert → dashboard</div>
+        </div>
+        <div class="bp-phase-duration">4–6 weeks</div>
+      </div>
+
+      <div class="bp-phase-meta">
+        <div class="bp-meta-row">
+          <span class="bp-meta-k">Dependencies:</span>
+          <span class="bp-meta-v">None — greenfield. Can run in parallel with hardware procurement + sensor commissioning.</span>
+        </div>
+      </div>
+
+      <h3 class="bp-h3">Deliverables (6)</h3>
+      <div class="bp-deliverables"><div class="bp-deliverable"><div class="bp-del-name">MQTT ingestion</div><div class="bp-del-desc">EMQX broker (3-node cluster, MQTT 5.0 + Sparkplug B). mTLS auth. Per-device topic ACLs. Schema Registry (Avro). Target: 10K msgs/sec sustained, 100K/sec burst.</div></div><div class="bp-deliverable"><div class="bp-del-name">Device simulator</div><div class="bp-del-desc">Python + asyncio. Generates synthetic telemetry for 100 sensors (vibration, temp, pressure, flow, gas). Configurable fault injection (stuck value, drift, spike, dead). 1M-row dataset for replay.</div></div><div class="bp-deliverable"><div class="bp-del-name">Telemetry validation</div><div class="bp-del-desc">Avro schema enforcement. Per-field range checks (e.g. bearing T &lt; 200°C). Physics sanity (e.g. pressure 0-5000 psi). Malformed → dead-letter topic. Violation rate alert &gt; 1%.</div></div><div class="bp-deliverable"><div class="bp-del-name">Time-series storage</div><div class="bp-del-desc">TimescaleDB (PostgreSQL + hypertables). 90-day hot retention. Continuous aggregates for hourly/daily rollups. Compression (8-12x via delta-of-delta).</div></div><div class="bp-deliverable"><div class="bp-del-name">Basic dashboards</div><div class="bp-del-desc">Grafana with TimescaleDB data source. Sensor overview, asset list, alarm panel. Read-only role for operators. Mobile-responsive. Light/dark theme.</div></div><div class="bp-deliverable"><div class="bp-del-name">Simple threshold alerts</div><div class="bp-del-desc">Per-sensor threshold (high/low). Alarm state machine (active/ack/cleared) per ISA-18.2. Email + PagerDuty routing. Audit log (ack/silence actions).</div></div></div>
+
+      <h3 class="bp-h3">Engineering tasks (8)</h3>
+      <ul class="bp-list"><li>Terraform: provision VPC, K8s cluster (3 nodes), EMQX, TimescaleDB, Grafana</li><li>Helm charts: emqx-cluster, timescaledb-cluster, grafana, schema-registry</li><li>Device simulator: Python package, configurable per-sensor profile, fault injection CLI</li><li>Avro schemas: sensor-reading.avsc, alarm-event.avsc, asset-state.avsc — versioned in Schema Registry</li><li>Alerting: Alertmanager + PagerDuty integration. Email/SMS/pager routes per severity</li><li>Dashboards: 3 Grafana dashboards (sensor overview, alarm panel, asset health). Templating per customer</li><li>CI/CD: GitHub Actions → build → push to container registry → ArgoCD sync</li><li>Documentation: 5-minute quickstart, 30-minute architecture walkthrough, API reference</li></ul>
+
+      <h3 class="bp-h3">Success criteria (7)</h3>
+      <ul class="bp-list bp-success"><li>Ingest 10K msgs/sec sustained for 24h with &lt; 1% message loss</li><li>Round-trip latency: sensor → dashboard &lt; 2 sec (P95)</li><li>Schema violation rate &lt; 1% (else: alert + investigate)</li><li>Threshold alert → operator notification &lt; 5 sec (P95)</li><li>Dashboard query response &lt; 500 ms (P95) at 1M rows</li><li>Successful restore from backup &lt; 30 min</li><li>0 high-severity security findings in code scan (Trivy + Semgrep)</li></ul>
+
+      <h3 class="bp-h3">Acceptance tests (6)</h3>
+      <ul class="bp-list bp-acceptance"><li>Load test: 100K msg/sec burst for 60 sec, no broker crash, all messages persisted</li><li>Fault injection: kill EMQX primary, failover &lt; 10 sec, no message loss</li><li>Fault injection: kill TimescaleDB primary, Patroni failover &lt; 10 sec, no data loss</li><li>Schema test: send malformed Avro → must land in dead-letter, alarm fired</li><li>Replay test: replay 1M-row dataset, all 1M rows persisted, 0 duplicates</li><li>Restore drill: restore from last nightly backup to isolated cluster, verify data integrity</li></ul>
+
+      <h3 class="bp-h3">Risks + mitigations (3)</h3>
+      <div class="bp-risks"><div class="bp-risk"><div class="bp-risk-name">EMQX performance tuning</div><div class="bp-risk-mit">Default config may not hit 10K/sec. Mitigation: tune Erlang async thread pool, socket buffer sizes; benchmark before production.</div></div><div class="bp-risk"><div class="bp-risk-name">TimescaleDB compression timing</div><div class="bp-risk-mit">Compression jobs may lock inserts. Mitigation: run compression during low-traffic window; use TimescaleDB 2.14+ with concurrent compression.</div></div><div class="bp-risk"><div class="bp-risk-name">Schema evolution</div><div class="bp-risk-mit">First schema is critical — wrong field types break everything downstream. Mitigation: design schema with a senior engineer + 2-day review; backward-compatible from day 1.</div></div></div>
+
+      <h3 class="bp-h3">Edge cases addressed in this phase (8)</h3>
+      <div class="bp-edge-cases"><span class="bp-edge-case-chip">Sensor dead (heartbeat monitoring)</span><span class="bp-edge-case-chip">Stuck value (variance check)</span><span class="bp-edge-case-chip">Range saturation (physics validation)</span><span class="bp-edge-case-chip">Wrong unit (schema validation)</span><span class="bp-edge-case-chip">Missing fields / Invalid type (Avro schema enforcement)</span><span class="bp-edge-case-chip">Future timestamp (sanity check)</span><span class="bp-edge-case-chip">Extreme timestamp (1970 / 2100 reject)</span><span class="bp-edge-case-chip">Network outage (basic — alert if no data &gt; 5 min)</span></div>
+    </section>
+
+    <section class="bp-phase" id="phase-2" style="--phase-color: #10b981;">
+      <div class="bp-phase-header">
+        <div class="bp-phase-icon">🛡️</div>
+        <div class="bp-phase-content">
+          <div class="bp-phase-title">Phase 2 — Edge Resilience</div>
+          <div class="bp-phase-tagline">The edge must survive network outages, equipment faults, and never lose data or fire false alarms</div>
+        </div>
+        <div class="bp-phase-duration">4 weeks</div>
+      </div>
+
+      <div class="bp-phase-meta">
+        <div class="bp-meta-row">
+          <span class="bp-meta-k">Dependencies:</span>
+          <span class="bp-meta-v">Phase 1 complete. Edge hardware selected (Hailo-8 + industrial gateway). At least 1 design-partner site available for field testing.</span>
+        </div>
+      </div>
+
+      <h3 class="bp-h3">Deliverables (5)</h3>
+      <div class="bp-deliverables"><div class="bp-deliverable"><div class="bp-del-name">Store-and-forward</div><div class="bp-del-desc">Edge SQLite circular buffer (250 GB capacity, ~72h at design-partner sensor volume). Replay on WAN restore with idempotency. Priority lanes: alarms &gt; safety &gt; telemetry. Replay rate-limited to avoid cloud overload.</div></div><div class="bp-deliverable"><div class="bp-del-name">Offline buffering</div><div class="bp-del-desc">Buffer survives edge gateway crash + reboot. WAL mode SQLite (atomic, ACID). Power-loss protection via UPS (8-hour holdover) + SSD PLP (Power Loss Protection). Buffer status telemetry to cloud.</div></div><div class="bp-deliverable"><div class="bp-del-name">Duplicate detection</div><div class="bp-del-desc">Idempotency key: sensor_id + ts (1s bucket) + value_hash. Dedup within 100 ms window at ingest. Redis-backed bloom filter for fast lookup. Drops logged with sample for diagnosis.</div></div><div class="bp-deliverable"><div class="bp-del-name">Sequence gap detection</div><div class="bp-del-desc">Per-device sequence number tracking. Gap &gt; N sec on critical tags → retransmission request. Gap-fill via physics model (e.g. linear interpolation for slow-changing tags). Gap log for compliance.</div></div><div class="bp-deliverable"><div class="bp-del-name">Edge rule engine</div><div class="bp-del-desc">Lua + WASM rule engine. Threshold, rate-of-change, deadband, duration, multi-condition rules. Per-asset configurable. Maintenance-mode aware. 2oo3 voting. Local alerting (never round-trips to cloud for safety-critical).</div></div></div>
+
+      <h3 class="bp-h3">Engineering tasks (10)</h3>
+      <ul class="bp-list"><li>Edge runtime: Rust service (ingest loop, rule engine, store-forward, scheduler). Cross-compile for x86_64 + ARM64</li><li>SQLite schema: 3 tables (readings, alarms, audit_log). WAL mode. Daily vacuum cron</li><li>Idempotency: Redis on edge (single-node, persistence AOF). Bloom filter (10M keys, 0.1% FPR)</li><li>Sequence tracking: per-device state in Redis. Gap detection at ingest (Flink job in cloud + edge local)</li><li>Rule engine: Lua sandbox + WASM runtime (Wasmtime). Rule DSL: declarative YAML, compiled to Lua</li><li>Rule types: threshold, rate-of-change, deadband, duration, multi-condition, asset-state, maintenance-mode, voting (2oo3)</li><li>Local alerting: MQTT local broker (mosquitto) on edge → SCADA + pager gateway. Hardwired alarm outputs for SIL-3</li><li>Edge ↔ cloud sync: differential replay (only send what cloud missed). Bandwidth-aware (compressed + prioritized)</li><li>UPS + SSD PLP: hardware spec + procurement. UPS status telemetry (battery %, runtime estimate, on-battery event)</li><li>Field test plan: deploy at 1 design-partner site, simulate WAN outage (pull cable), validate 72h buffer + replay</li></ul>
+
+      <h3 class="bp-h3">Success criteria (7)</h3>
+      <ul class="bp-list bp-success"><li>Edge survives 72h WAN outage with zero data loss (verified by replay)</li><li>Edge rule engine fires local alarm &lt; 200 ms (P95) from sensor reading</li><li>Duplicate detection: &lt; 0.01% duplicate rate at 100K msg/sec ingest</li><li>Sequence gap detection: catches 100% of gaps &gt; 5 sec on critical tags</li><li>Store-and-forward replay: full buffer (250 GB) replays to cloud &lt; 4h on WAN restore</li><li>Edge gateway crash + reboot: 0 data loss, 0 alarm missed, &lt; 30 sec downtime</li><li>UPS switchover (power loss): 0 data loss, 0 alarm missed, &lt; 100 ms downtime</li></ul>
+
+      <h3 class="bp-h3">Acceptance tests (6)</h3>
+      <ul class="bp-list bp-acceptance"><li>WAN outage test: pull WAN cable for 72h, verify buffer fills, no data loss. Restore WAN, verify replay completes</li><li>Power loss test: kill power to edge gateway. UPS holds. Verify 0 data loss. Verify edge reboot + catch-up</li><li>Fault injection: stuck value (set sensor to constant 50 for 1h) → must alarm at 1h variance=0</li><li>Fault injection: duplicate (replay same msg 10x) → 9 must be dropped, 1 persisted</li><li>Fault injection: gap (skip seq #50-#60) → gap alarm fires, retransmission request sent</li><li>Field test at design partner: 7-day deployment, daily WAN outage test, daily restore drill</li></ul>
+
+      <h3 class="bp-h3">Risks + mitigations (4)</h3>
+      <div class="bp-risks"><div class="bp-risk"><div class="bp-risk-name">Edge hardware selection delay</div><div class="bp-risk-mit">Some industrial gateways have 12+ week lead times. Mitigation: order 2 alternatives in parallel; use dev kit while waiting for production.</div></div><div class="bp-risk"><div class="bp-risk-name">Field test access</div><div class="bp-risk-mit">Design partner may not allow &#x27;pull the WAN cable&#x27; test. Mitigation: simulate at our lab with real device + network emulator; schedule field test week 4.</div></div><div class="bp-risk"><div class="bp-risk-name">SQLite write amplification</div><div class="bp-risk-mit">250 GB buffer on consumer SSD = 30-60 days of life. Mitigation: use industrial SSD (MLC NAND, 5-year warranty); monitor SSD wear via SMART.</div></div><div class="bp-risk"><div class="bp-risk-name">Rule engine performance</div><div class="bp-risk-mit">Lua + WASM may not hit 1 ms SLA on $1 MCUs. Mitigation: target x86 + Hailo-8 (minimum), drop to TinyML only when required.</div></div></div>
+
+      <h3 class="bp-h3">Edge cases addressed in this phase (13)</h3>
+      <div class="bp-edge-cases"><span class="bp-edge-case-chip">Network outage (edge buffering 72h)</span><span class="bp-edge-case-chip">Gateway failure (SQLite WAL survives crash)</span><span class="bp-edge-case-chip">Buffer overflow (priority lanes + circular buffer)</span><span class="bp-edge-case-chip">Duplicate messages (idempotency key dedup)</span><span class="bp-edge-case-chip">Out-of-order data (Flink watermark tolerance)</span><span class="bp-edge-case-chip">Partial data loss (sequence gap detection + retransmit)</span><span class="bp-edge-case-chip">Sensor dead (heartbeat + last-seen tracking)</span><span class="bp-edge-case-chip">Stuck value (variance check on edge)</span><span class="bp-edge-case-chip">Sensor drift (cross-check vs redundant sensors)</span><span class="bp-edge-case-chip">Calibration expired (block ML inference from uncalibrated)</span><span class="bp-edge-case-chip">Spike / noise (median filter at edge)</span><span class="bp-edge-case-chip">Intermittent readings (quality flag &#x27;Uncertain&#x27;)</span><span class="bp-edge-case-chip">Sensor mislocation (commissioning validation)</span></div>
+    </section>
+
+    <section class="bp-phase" id="phase-3" style="--phase-color: #a855f7;">
+      <div class="bp-phase-header">
+        <div class="bp-phase-icon">⚡</div>
+        <div class="bp-phase-content">
+          <div class="bp-phase-title">Phase 3 — Advanced Stream Processing</div>
+          <div class="bp-phase-tagline">Real-time stream processing with Kafka + Flink. Watermarks, late data, asset enrichment, alert correlation.</div>
+        </div>
+        <div class="bp-phase-duration">6 weeks</div>
+      </div>
+
+      <div class="bp-phase-meta">
+        <div class="bp-meta-row">
+          <span class="bp-meta-k">Dependencies:</span>
+          <span class="bp-meta-v">Phase 1 + Phase 2 complete. Phase 2&#x27;s edge buffer feeds the cloud pipeline. At least 1 design partner with &gt; 1K sensors for scale testing.</span>
+        </div>
+      </div>
+
+      <h3 class="bp-h3">Deliverables (5)</h3>
+      <div class="bp-deliverables"><div class="bp-deliverable"><div class="bp-del-name">Kafka/Flink pipeline</div><div class="bp-del-desc">Kafka 5 brokers (KRaft mode, no Zookeeper), 3 topics (raw, processed, audit). Flink 8 TMs (4 vCPU + 8GB each), exactly-once via 2PC. Checkpoint every 30s to S3. Savepoint for upgrades.</div></div><div class="bp-deliverable"><div class="bp-del-name">Watermarks</div><div class="bp-del-desc">Flink watermark strategy: bounded out-of-orderness (5 min for satellite, 30 sec for fiber). Punctuated watermarks for explicit event-time markers. Late events → side-output (not dropped).</div></div><div class="bp-deliverable"><div class="bp-del-name">Late data handling</div><div class="bp-del-desc">Side-output for late events (&gt; watermark). Allowed lateness 10 min (configurable). Update state on late arrival. Late events re-trigger alarm if state changes. Audit log for late arrivals.</div></div><div class="bp-deliverable"><div class="bp-del-name">Asset enrichment</div><div class="bp-del-desc">Asset metadata (hierarchy, criticality, owner, regulatory class) lookup from PostgreSQL at ingest. Cache in Redis (5-min TTL). Enrichment adds 8 fields per message. Joins: sensor → asset → system → plant.</div></div><div class="bp-deliverable"><div class="bp-del-name">Alert correlation</div><div class="bp-del-desc">Time-window correlation (alarms within 60 sec on same system → cluster). Root-cause graph (Neo4j) identifies source alarm. Cascading alarm suppression (display root cause, not 50 derived alarms). Causal inference (PC algorithm) for related alarms.</div></div></div>
+
+      <h3 class="bp-h3">Engineering tasks (13)</h3>
+      <ul class="bp-list"><li>Kafka cluster: 5 brokers, KRaft mode, RF=3, min.insync.replicas=2. Tiered storage to S3 (offload cold segments)</li><li>Flink cluster: 8 TMs, RocksDB state backend, async checkpointing to S3. Savepoint + restore tested weekly</li><li>Flink jobs: 6 jobs (ingest-validate, enrich, quality-rules, anomaly-detect-pre, alert-correlate, persist)</li><li>Watermark strategy: per-source configurable (satellite 5 min, fiber 30 sec, 5G 10 sec). Side-output sink for late</li><li>Late data: Flink allowed lateness 10 min. Update state + re-fire alarm if needed. Audit log for late arrivals</li><li>Asset enrichment: PostgreSQL &#x27;assets&#x27; table (1M rows max). Redis cache (5-min TTL). Bulk-load on startup</li><li>Alert correlation: sliding 60-sec window, group by system_id, cluster by cause-and-effect graph (Neo4j)</li><li>Neo4j: cause-and-effect model (asset → triggers → alarm). Loaded from CMMS + DCS P&amp;ID. Updated on new asset registration</li><li>Causal inference: PC algorithm (causal-learn Python lib). Run nightly on alarm history. Updates cause-and-effect graph</li><li>Cascading suppression: if root cause alarm fires, suppress derived alarms for same system for 5 min</li><li>Backpressure: Kafka quotas per topic, Flink HPA on lag, Circuit Breaker to shed load if persistent</li><li>Schema evolution: Confluent Schema Registry, backward + forward compatible. Dual-publish during migration</li><li>Monitoring: Flink metrics → Prometheus. Lag alert at &gt; 10K msg. Savepoint success/failure alert</li></ul>
+
+      <h3 class="bp-h3">Success criteria (7)</h3>
+      <ul class="bp-list bp-success"><li>Pipeline ingests 100K msg/sec sustained with &lt; 5 sec end-to-end latency (sensor → alarm)</li><li>Watermark strategy: 99.9% of events processed within 30 sec of arrival</li><li>Late events: &lt; 0.1% of total. Late events handled correctly (state updated, audit logged)</li><li>Alert correlation: 90% of cascading alarms correctly suppressed (display root cause only)</li><li>Causal inference: correctly identifies root cause in 80% of historical incidents (backtested)</li><li>Savepoint + restore: full pipeline restarts from savepoint &lt; 5 min with zero data loss</li><li>Backpressure: Kafka lag stable (&lt; 10K msg) at 100K msg/sec ingest for 24h</li></ul>
+
+      <h3 class="bp-h3">Acceptance tests (7)</h3>
+      <ul class="bp-list bp-acceptance"><li>Load test: 100K msg/sec for 24h. Verify no data loss, no duplicate, end-to-end latency &lt; 5 sec</li><li>Late data: inject 1000 events with 10-min late timestamp. All must hit side-output, state updated correctly</li><li>Alarm storm: inject 50 simultaneous alarms on one system. Root-cause correctly identified, 49 derived suppressed</li><li>Causal inference: backtest on 90 days of historical alarms. Verify cause-and-effect graph updates correctly</li><li>Savepoint: trigger savepoint, restart Flink job. Verify zero data loss, savepoint &lt; 5 min</li><li>Backpressure: 200K msg/sec for 10 min (overload). Verify Circuit Breaker engages, Kafka lag stabilizes, no crash</li><li>Schema evolution: deploy new Avro schema (add field with default). Verify zero ingestion disruption</li></ul>
+
+      <h3 class="bp-h3">Risks + mitigations (4)</h3>
+      <div class="bp-risks"><div class="bp-risk"><div class="bp-risk-name">Flink state growth</div><div class="bp-risk-mit">RocksDB state can grow to TBs. Mitigation: incremental checkpointing, state TTL (90 days), periodic compaction.</div></div><div class="bp-risk"><div class="bp-risk-name">Neo4j scale</div><div class="bp-risk-mit">Cause-and-effect graph for 1M assets = ~10M relationships. Mitigation: Neo4j 5.x with sharding, or move to PostgreSQL + Apache AGE if scale issues.</div></div><div class="bp-risk"><div class="bp-risk-name">Watermark tuning</div><div class="bp-risk-mit">Wrong watermark = either drop too many events or accept stale data. Mitigation: per-source tuning, weekly review of late-arrival rate, alert if &gt; 1%.</div></div><div class="bp-risk"><div class="bp-risk-name">Causal inference accuracy</div><div class="bp-risk-mit">PC algorithm may produce wrong causal links from noisy data. Mitigation: human-in-the-loop review of high-confidence causal links; conservative threshold for new links.</div></div></div>
+
+      <h3 class="bp-h3">Edge cases addressed in this phase (11)</h3>
+      <div class="bp-edge-cases"><span class="bp-edge-case-chip">Out-of-order data (Flink watermark 5 min/30 sec)</span><span class="bp-edge-case-chip">Late backfill (side-output, no re-trigger)</span><span class="bp-edge-case-chip">Clock skew (watermark tolerance)</span><span class="bp-edge-case-chip">Alarm storm (correlation + suppression)</span><span class="bp-edge-case-chip">Cascading failure (root-cause graph)</span><span class="bp-edge-case-chip">Transient operation (time-window logic)</span><span class="bp-edge-case-chip">Stream processor crash (Flink checkpoint + restart)</span><span class="bp-edge-case-chip">Backpressure (Kafka quotas + HPA + Circuit Breaker)</span><span class="bp-edge-case-chip">Storage full (Kafka tiered storage to S3)</span><span class="bp-edge-case-chip">Database failure (TimescaleDB replication + Patroni)</span><span class="bp-edge-case-chip">Cost explosion (downsampling at edge, compression)</span></div>
+    </section>
+
+    <section class="bp-phase" id="phase-4" style="--phase-color: #7c3aed;">
+      <div class="bp-phase-header">
+        <div class="bp-phase-icon">🧠</div>
+        <div class="bp-phase-content">
+          <div class="bp-phase-title">Phase 4 — ML and Digital Twin</div>
+          <div class="bp-phase-tagline">TS-FM anomaly detection, predictive maintenance, digital twin state, root-cause graph</div>
+        </div>
+        <div class="bp-phase-duration">8–12 weeks</div>
+      </div>
+
+      <div class="bp-phase-meta">
+        <div class="bp-meta-row">
+          <span class="bp-meta-k">Dependencies:</span>
+          <span class="bp-meta-v">Phase 3 complete. At least 6 months of historical data at design partner. Labeled maintenance records from CMMS. GPU cluster (8× A100 80GB) for TS-FM training.</span>
+        </div>
+      </div>
+
+      <h3 class="bp-h3">Deliverables (4)</h3>
+      <div class="bp-deliverables"><div class="bp-deliverable"><div class="bp-del-name">Anomaly detection</div><div class="bp-del-desc">350M-param TS-FM (transformer + sparse autoencoder). Pretrained on 50M hours of public industrial data (NASA bearings, CWRU, SECOM, ARPA-E). Zero-shot on any asset class. 0.89 AUC-ROC. Fine-tunable per asset class with 7 days of data.</div></div><div class="bp-deliverable"><div class="bp-del-name">Predictive maintenance models</div><div class="bp-del-desc">Per-asset-class RUL (Remaining Useful Life). XGBoost + TS-FM features. Trained on labeled maintenance events from CMMS. Output: probability of failure in 7/14/30 days + recommended action.</div></div><div class="bp-deliverable"><div class="bp-del-name">Digital twin state</div><div class="bp-del-desc">Asset state machine (running/stopped/maintenance/fault). Digital twin update on every state change. Current setpoint, current load, current efficiency. Persisted in PostgreSQL + Neo4j. Time-travel query (Iceberg snapshot).</div></div><div class="bp-deliverable"><div class="bp-del-name">Root-cause graph</div><div class="bp-del-desc">Neo4j cause-and-effect graph (sensor → asset → system → plant). Causal inference (PC algorithm + do-calculus). When alarm fires, query graph for upstream causes (within 60-sec window). Display root cause + recommended action.</div></div></div>
+
+      <h3 class="bp-h3">Engineering tasks (12)</h3>
+      <ul class="bp-list"><li>TS-FM training: 8× A100 80GB cluster. PyTorch + FSDP. Mixed precision (bf16). 50M hours pretraining, 2 weeks wall clock</li><li>TS-FM inference: ONNX Runtime (x86) + Hailo Model Compiler (Hailo-8). Liquid placement decides edge-vs-cloud. Inference cache 5-min TTL</li><li>RUL models: per-asset-class XGBoost. Features from TS-FM (embeddings) + hand-crafted (rolling stats, trends). Train on CMMS labeled events</li><li>Model registry: MLflow. Model versioning, stage transitions (staging/prod). Canary deploy (5% traffic first)</li><li>Drift detection: Evidently AI. PSI &gt; 0.2 → retrain trigger. Weekly drift report to ML team</li><li>Federated learning: DP noise + SGX secure aggregation. Cross-customer model improvement. Opt-in per customer. Gradients only, no raw data leaves customer</li><li>Digital twin: PostgreSQL &#x27;asset_state&#x27; table (time-series). Neo4j &#x27;cause_effect&#x27; graph. Asset state machine (UML state diagram → JSON config)</li><li>Root-cause query: Cypher query on alarm → upstream sensors + recent state changes + causal links. Cached 5-min TTL</li><li>LLM-native query: Graph RAG (LangChain + Neo4j + OpenAI/Anthropic). Operator asks &#x27;why did this alarm fire?&#x27;, gets cited answer with sensor trace</li><li>Model monitoring: PSI, KS-test, ground-truth feedback loop (operator marks alarm false → retrain signal). Prometheus metrics for inference latency, accuracy drift</li><li>MLOps: MLflow + Feast (feature store) + Evidently (drift). CI/CD for models (retrain → test → canary → promote). Airflow DAGs</li><li>Documentation: model cards per asset class. Evaluation reports. Bias + fairness checks (esp. for hospital/AV)</li></ul>
+
+      <h3 class="bp-h3">Success criteria (8)</h3>
+      <ul class="bp-list bp-success"><li>TS-FM zero-shot: 0.89 AUC-ROC on unseen asset classes (backtested on 90 days holdout)</li><li>RUL prediction: &lt; 20% MAPE on assets with &gt; 100 historical failures (backtested)</li><li>False positive rate: &lt; 5% at 95% recall (target; vs 28% threshold rules)</li><li>False negative rate: &lt; 1% (safety-critical — must catch all real danger)</li><li>Digital twin: 100% of asset state changes captured &lt; 5 sec latency</li><li>Root-cause query: &lt; 2 sec (P95) for causal-graph lookup</li><li>LLM-native query: &lt; 5 sec (P95) for Graph RAG answer with citations</li><li>Federated learning: 0 raw data leaves customer. Only DP-noised gradients shared</li></ul>
+
+      <h3 class="bp-h3">Acceptance tests (9)</h3>
+      <ul class="bp-list bp-acceptance"><li>Zero-shot test: deploy TS-FM on unseen asset class (e.g. train on pumps, test on compressors). Verify AUC &gt; 0.85</li><li>RUL backtest: 90 days historical data. Predict failures 7 days ahead. Verify MAPE &lt; 20%</li><li>False positive: 30-day field test at design partner. Verify &lt; 5% FP rate (vs 28% threshold baseline)</li><li>False negative: red-team with simulated failures (e.g. bearing fault injected). Verify 100% detection</li><li>Digital twin: state change → query digital twin within 5 sec. Verify accurate state</li><li>Root cause: trigger known cascade (e.g. power loss → 50 alarms). Verify root cause identified correctly</li><li>LLM query: operator asks &#x27;why did alarm X fire?&#x27;. Verify cited answer with sensor trace + recommended action</li><li>Federated learning: train across 2 design partners. Verify model improves for both. Verify 0 raw data shared</li><li>Drift: induce distribution shift (e.g. new asset class). Verify PSI &gt; 0.2 triggers retrain alert</li></ul>
+
+      <h3 class="bp-h3">Risks + mitigations (5)</h3>
+      <div class="bp-risks"><div class="bp-risk"><div class="bp-risk-name">TS-FM training cost</div><div class="bp-risk-mit">8× A100 for 2 weeks = $50-80K. Mitigation: preemptive GPUs (60% discount), spot instances, AWS/Google Cloud credits for startups.</div></div><div class="bp-risk"><div class="bp-risk-name">Labeled data scarcity</div><div class="bp-risk-mit">CMMS labels often wrong or incomplete. Mitigation: human-in-the-loop labeling, active learning on uncertain labels, use TS-FM zero-shot as fallback.</div></div><div class="bp-risk"><div class="bp-risk-name">Federated learning complexity</div><div class="bp-risk-mit">DP + SGX is research-grade. Mitigation: ship non-federated first (Phase 4), add federated in Phase 5 hardening.</div></div><div class="bp-risk"><div class="bp-risk-name">LLM hallucination</div><div class="bp-risk-mit">LLM may invent causes. Mitigation: Graph RAG (grounded in graph data), citation chain, operator can verify each claim against sensor trace.</div></div><div class="bp-risk"><div class="bp-risk-name">Causal inference false positives</div><div class="bp-risk-mit">PC algorithm may produce spurious causal links. Mitigation: human-in-the-loop review, conservative threshold, only display high-confidence links to operator.</div></div></div>
+
+      <h3 class="bp-h3">Edge cases addressed in this phase (13)</h3>
+      <div class="bp-edge-cases"><span class="bp-edge-case-chip">False positive (confidence scoring + multi-sensor confirmation)</span><span class="bp-edge-case-chip">False negative (safety rules independent of ML)</span><span class="bp-edge-case-chip">Concept drift (PSI &gt; 0.2 triggers retrain)</span><span class="bp-edge-case-chip">Data drift (feature monitoring, KS-test)</span><span class="bp-edge-case-chip">Rare event (TS-FM zero-shot, physics simulation)</span><span class="bp-edge-case-chip">Cold start (transfer learning, manufacturer baseline)</span><span class="bp-edge-case-chip">Sensor correlation breaks (residual monitoring)</span><span class="bp-edge-case-chip">Label noise (human-in-the-loop labeling)</span><span class="bp-edge-case-chip">Model overconfidence (MC dropout, calibrated probabilities)</span><span class="bp-edge-case-chip">Adversarial manipulation (physics checks, redundancy)</span><span class="bp-edge-case-chip">Explanation missing (LLM-native query with citations)</span><span class="bp-edge-case-chip">Shadow mode mismatch (canary testing, replay validation)</span><span class="bp-edge-case-chip">Model poisoning (data governance, signed training datasets)</span></div>
+    </section>
+
+    <section class="bp-phase" id="phase-5" style="--phase-color: #dc2626;">
+      <div class="bp-phase-header">
+        <div class="bp-phase-icon">🛡️</div>
+        <div class="bp-phase-content">
+          <div class="bp-phase-title">Phase 5 — Hardening</div>
+          <div class="bp-phase-tagline">Production-grade security, chaos testing, failover drills, audit logs, compliance reports, operator UX validation</div>
+        </div>
+        <div class="bp-phase-duration">6+ weeks</div>
+      </div>
+
+      <div class="bp-phase-meta">
+        <div class="bp-meta-row">
+          <span class="bp-meta-k">Dependencies:</span>
+          <span class="bp-meta-v">Phase 1-4 complete. At least 3 design partners in production. Compliance officer engaged. Security partner (Bishop Fox or similar) for penetration test.</span>
+        </div>
+      </div>
+
+      <h3 class="bp-h3">Deliverables (6)</h3>
+      <div class="bp-deliverables"><div class="bp-deliverable"><div class="bp-del-name">Security hardening</div><div class="bp-del-desc">SOC 2 Type II audit prep. IEC 62443-3-3 SL-3 scoping. Penetration test (3rd party). mTLS enforced everywhere. Secrets in HashiCorp Vault. Network segmentation per asset class. Secure boot + TPM 2.0 on edge. SAST + DAST + SCA in CI/CD.</div></div><div class="bp-deliverable"><div class="bp-del-name">Chaos tests</div><div class="bp-del-desc">Chaos engineering framework (Litmus or Gremlin). Inject: node kill, network partition, disk full, clock skew, broker crash, Flink job kill, DB failover. Run weekly. Production + staging. Auto-rollback on SLO breach.</div></div><div class="bp-deliverable"><div class="bp-del-name">Failover tests</div><div class="bp-del-desc">Periodic failover drills: EMQX cluster failover (weekly), TimescaleDB Patroni failover (weekly), Kafka broker failover (monthly), region failover (quarterly), edge WAN loss (daily at design partner). Documented runbook + automated test.</div></div><div class="bp-deliverable"><div class="bp-del-name">Audit logs</div><div class="bp-del-desc">Append-only event log (OpenSearch with WORM index). Every operator action (acknowledge, bypass, override, login) creates timestamped + signed event. Retention 5-10 years per regulatory. Tamper-evident (chain of hashes).</div></div><div class="bp-deliverable"><div class="bp-del-name">Compliance reports</div><div class="bp-del-desc">Auto-generated audit-ready reports: EPA OOOO-b (methane emissions, monthly), BSEE SEMS (offshore safety, annual), OSHA PSM (chemical safety, quarterly), NERC CIP (grid cybersecurity, quarterly), HIPAA (hospital, annual), FDA 510(k) (device, annual). Regulator format (CEDRI XML, CSV, PDF).</div></div><div class="bp-deliverable"><div class="bp-del-name">Operator UX validation</div><div class="bp-del-desc">Shadow sessions with real operators (10+ per design partner). UX testing (System Usability Scale target &gt; 80). Alarm rationalization per ISA-18.2 (target &lt; 10 alarms/operator/shift). Drill mode for new operators. Bilingual support (EN/ES for offshore US GoM).</div></div></div>
+
+      <h3 class="bp-h3">Engineering tasks (14)</h3>
+      <ul class="bp-list"><li>SOC 2 Type II: 12-month observation period. Engage Vanta/Drata for evidence collection. Annual audit by 3rd party (BDO, KPMG, or similar)</li><li>IEC 62443-3-3 SL-3: scoping + gap analysis. Engage TÜV Rheinland or DNV for assessment. Zonal + conduit model. SL 3 requires: identification, use control, system integrity, data confidentiality, restricted data flow, timely events, resource availability</li><li>Pen test: Bishop Fox or NCC Group. Black-box + white-box. Findings → fix → re-test. Annual cadence</li><li>Secrets management: HashiCorp Vault (open-source). Per-tenant secrets. Auto-rotation 90 days. Edge: Vault Agent + AppRole auth</li><li>Network segmentation: K8s NetworkPolicy per namespace. Edge VLAN per asset class. mTLS via cert-manager + custom CA. Zero-trust</li><li>Secure boot: UEFI Secure Boot + signed boot chain. TPM 2.0 for key storage + measured boot. Remote attestation</li><li>SAST + DAST + SCA: SonarQube (SAST), OWASP ZAP (DAST), Trivy + Snyk (SCA). In CI/CD, block on high</li><li>Chaos: Litmus or Gremlin. Weekly chaos day. Game days with operations team. Auto-rollback if SLO breach</li><li>Failover drills: automated via Argo Workflows. Documented runbooks. Quarterly DR exercise with ops team</li><li>Audit log: OpenSearch with WORM index (immutable). Per-action hash chain. Tamper-evident verification tool</li><li>Compliance reports: Airflow DAGs. Monthly EPA, quarterly OSHA/NERC, annual HIPAA/FDA. Regulator format (XML/CSV/PDF). Auto-send to compliance officer for review</li><li>Operator UX: shadow sessions (10+ per partner), SUS survey, alarm rationalization workshop, drill-mode UI feature</li><li>Bilingual: i18n with ICU MessageFormat. EN + ES (offshore GoM). Add ZH/AR per design partner region</li><li>Documentation: security whitepaper, compliance matrix, incident response runbook, operator training videos</li></ul>
+
+      <h3 class="bp-h3">Success criteria (8)</h3>
+      <ul class="bp-list bp-success"><li>SOC 2 Type II: 0 material findings. Audit complete. Report available to customers</li><li>IEC 62443-3-3 SL-3: 0 gaps. Certification by TÜV/DNV</li><li>Pen test: 0 critical/high findings after remediation. Annual cadence established</li><li>Chaos tests: 100% of chaos experiments auto-recover within SLO. Mean time to detect &lt; 1 min, mean time to recover &lt; 5 min</li><li>Failover drills: 100% pass rate. RPO 5 min, RTO 30 min for hot path</li><li>Audit log: 100% of operator actions logged. Tamper-evident verification passes</li><li>Compliance reports: 100% on-time generation. 0 errors in regulator format</li><li>Operator UX: SUS &gt; 80 (industry standard for &#x27;good&#x27;). Alarm rate &lt; 10/operator/shift</li></ul>
+
+      <h3 class="bp-h3">Acceptance tests (10)</h3>
+      <ul class="bp-list bp-acceptance"><li>SOC 2 audit: 12-month observation, 0 material findings</li><li>IEC 62443: third-party assessment, 0 SL-3 gaps</li><li>Pen test: 3rd party, 0 critical/high after fix</li><li>Chaos day: inject 10 chaos experiments (node kill, network partition, disk full, clock skew, broker crash, Flink kill, DB failover, region failover, edge WAN loss, S3 outage). All auto-recover within SLO</li><li>Failover drill: kill EMQX primary in production, verify failover &lt; 10 sec, 0 data loss</li><li>Audit log: query for all operator actions on a specific alarm. Verify all logged + signed + tamper-evident</li><li>Compliance report: generate EPA OOOO-b monthly report. Verify XML format, all required fields, sensor lineage for every data point</li><li>Operator UX: shadow 10 operators, run SUS survey. Target &gt; 80. Run alarm rationalization workshop, target &lt; 10 alarms/shift</li><li>Bilingual: switch UI to ES, verify all alarms localized</li><li>DR drill: full restore from backup to isolated cluster. RPO 5 min, RTO 30 min</li></ul>
+
+      <h3 class="bp-h3">Risks + mitigations (5)</h3>
+      <div class="bp-risks"><div class="bp-risk"><div class="bp-risk-name">SOC 2 audit timeline</div><div class="bp-risk-mit">12-month observation means we can&#x27;t ship SOC 2 report until 12 months after Phase 5 start. Mitigation: start SOC 2 observation immediately; provide SOC 2 Type I in interim.</div></div><div class="bp-risk"><div class="bp-risk-name">IEC 62443 complexity</div><div class="bp-risk-mit">SL-3 certification is non-trivial. May take 18-24 months. Mitigation: scope to specific deployment (e.g. chemical plant only) for first certification; expand later.</div></div><div class="bp-risk"><div class="bp-risk-name">Operator adoption</div><div class="bp-risk-mit">Operators may distrust ML alarms. Mitigation: Phase 5 includes shadow mode (ML suggests, operator decides) for 30 days, then advisory mode, then full trust. Feedback loop for false alarms.</div></div><div class="bp-risk"><div class="bp-risk-name">Compliance drift</div><div class="bp-risk-mit">Regulations change. Mitigation: compliance officer on retainer, quarterly regulatory review, automated report format updates.</div></div><div class="bp-risk"><div class="bp-risk-name">Bilingual content drift</div><div class="bp-risk-mit">Translations can become stale as features change. Mitigation: i18n linter in CI/CD, native-speaker review per major release.</div></div></div>
+
+      <h3 class="bp-h3">Edge cases addressed in this phase (16)</h3>
+      <div class="bp-edge-cases"><span class="bp-edge-case-chip">Disaster recovery failure (periodic restore drills)</span><span class="bp-edge-case-chip">Data corruption (ZFS bit-rot + checksums)</span><span class="bp-edge-case-chip">Region outage (multi-region or edge autonomy)</span><span class="bp-edge-case-chip">Operator misreads dashboard (UX testing + shadow sessions)</span><span class="bp-edge-case-chip">Language barrier (i18n + bilingual)</span><span class="bp-edge-case-chip">Training gap (training + drill mode + feedback loop)</span><span class="bp-edge-case-chip">Responsibility ambiguity (ownership matrix in alarm payload)</span><span class="bp-edge-case-chip">Manual work order missing (CMMS integration)</span><span class="bp-edge-case-chip">Shift handover gap (LLM handover summary)</span><span class="bp-edge-case-chip">Data retention requirement (tiered storage + WORM archive)</span><span class="bp-edge-case-chip">Audit trail missing (append-only event log)</span><span class="bp-edge-case-chip">Privacy issue (anonymization + RBAC)</span><span class="bp-edge-case-chip">Data sovereignty (regional deployment)</span><span class="bp-edge-case-chip">Safety certification (advisory vs certified SIS boundary)</span><span class="bp-edge-case-chip">Environmental reporting (auto-generated audit-ready reports)</span><span class="bp-edge-case-chip">Incident investigation (full lineage + replayability + chain-of-custody)</span></div>
+    </section>
+
+  <!-- Summary -->
+  <div class="bp-summary">
+    <h2>Plan summary</h2>
+    <div class="bp-summary-grid">
+      <div class="bp-summary-card"><div class="num">5</div><div class="lbl">Phases</div></div>
+      <div class="bp-summary-card"><div class="num">28–36</div><div class="lbl">Weeks end-to-end</div></div>
+      <div class="bp-summary-card"><div class="num">26</div><div class="lbl">Total deliverables</div></div>
+      <div class="bp-summary-card"><div class="num">57</div><div class="lbl">Engineering tasks</div></div>
+      <div class="bp-summary-card"><div class="num">37</div><div class="lbl">Success criteria</div></div>
+      <div class="bp-summary-card"><div class="num">38</div><div class="lbl">Acceptance tests</div></div>
+      <div class="bp-summary-card"><div class="num">21</div><div class="lbl">Risks identified</div></div>
+      <div class="bp-summary-card"><div class="num">61</div><div class="lbl">Edge cases addressed</div></div>
+    </div>
+  </div>
+
+  <!-- Hub CTA -->
+  <div class="bp-hub-cta">
+    <h2>5-phase MVP plan, ready to execute</h2>
+    <p>This build plan is opinionated but not religious — every phase has explicit success criteria, acceptance tests, risks, and edge cases addressed. The phases are sequenced to deliver value to design partners within 4–6 weeks (Phase 1) and reach production-grade within 28–36 weeks (end of Phase 5).</p>
+    <div class="btn-row">
+      <a href="engineering.html" class="btn btn-ghost">← Engineering Hub</a>
+      <a href="production-stack.html" class="btn btn-ghost">Production Stack →</a>
+      <a href="edge-cases.html" class="btn btn-ghost">Edge Cases Addressed →</a>
+      <a href="comparison.html" class="btn btn-ghost">Competitive Comparison →</a>
+      <a href="portal.html" class="btn btn-primary">Become a design partner →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering Hub</a>
+    <a href="production-stack.html">Production Stack</a>
+    <a href="edge-cases.html">Edge Cases Addressed</a>
+    <a href="comparison.html">Competitive Comparison</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; MVP Build Plan &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

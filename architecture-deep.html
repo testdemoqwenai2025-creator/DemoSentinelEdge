@@ -127,9 +127,10 @@
   .code-block-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-bottom: -8px; padding: 4px 10px; background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 4px 4px 0 0; display: inline-block; }
 
   /* TABLE */
-  .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  .data-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
-  .data-table td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+  .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+  .data-table thead, .data-table tbody, .data-table tr { width: max-content; max-width: 100%; }
+  .data-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .data-table td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); white-space: normal; word-break: break-word; }
   .data-table td strong { color: var(--text); }
   .data-table tr:hover { background: color-mix(in srgb, var(--cyan) 3%, transparent); }
 
@@ -684,6 +685,56 @@
 
       <h4>How do we evaluate?</h4>
       <p>Design-partner program: 60-day evaluation, free, with engineering support. We commit to onboarding your sensor estate (up to 50k tags) within 2 weeks. You commit to a weekly engineering check-in. Email <a href="mailto:testdemoqwenai2025@gmail.com" style="color: var(--cyan);">testdemoqwenai2025@gmail.com</a> to start.</p>
+    </section>
+
+    <!-- EDGE CASES SUMMARY BLOCK (auto-injected) -->
+    <section class="doc-section" style="background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 4%, var(--card)), color-mix(in srgb, var(--violet) 4%, var(--card))); border: 1px solid var(--border-strong); border-radius: 14px; padding: 28px; margin: 40px 0;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Edge Cases Coverage Summary</div>
+      <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 14px; color: var(--text);">
+        104 edge cases + functional design <span style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">across 9 categories</span>
+      </h3>
+      <p style="color: var(--text-dim); font-size: 14px; line-height: 1.7; margin-bottom: 20px;">
+        SentinelEdge addresses all <strong style="color: var(--cyan);">104 edge cases</strong> across 9 categories (sensor, network, data quality, process, ML, safety, infrastructure, human/organizational, regulatory), with sector-specific mitigations for each of 7 scenarios (offshore, hospital, AV, chemical, grid, mining, water) — totaling <strong style="color: var(--cyan);">728 sector-specific responses</strong>. Plus functional design (real-time ingestion, 15-step stream pipeline, 9-type rule engine).
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px;">
+        <div style="padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--cyan);">104</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Edge cases addressed</div>
+        </div>
+        <div style="padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--violet);">9</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Categories</div>
+        </div>
+        <div style="padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--green);">728</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Sector-specific responses</div>
+        </div>
+        <div style="padding: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--gold);">31</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Functional design items</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #06b6d4 10%, transparent); color: #06b6d4; border: 1px solid color-mix(in srgb, #06b6d4 20%, transparent); border-radius: 4px;">📡 Sensor (15)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #a855f7 10%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 20%, transparent); border-radius: 4px;">🌐 Network (13)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #22d3ee 10%, transparent); color: #22d3ee; border: 1px solid color-mix(in srgb, #22d3ee 20%, transparent); border-radius: 4px;">📊 Data Quality (12)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #f97316 10%, transparent); color: #f97316; border: 1px solid color-mix(in srgb, #f97316 20%, transparent); border-radius: 4px;">⚙️ Process (16)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #a855f7 10%, transparent); color: #a855f7; border: 1px solid color-mix(in srgb, #a855f7 20%, transparent); border-radius: 4px;">🧠 ML (13)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #dc2626; border: 1px solid color-mix(in srgb, #dc2626 20%, transparent); border-radius: 4px;">🛡️ Safety (10)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #0891b2 10%, transparent); color: #0891b2; border: 1px solid color-mix(in srgb, #0891b2 20%, transparent); border-radius: 4px;">🏗️ Infrastructure (10)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #10b981 10%, transparent); color: #10b981; border: 1px solid color-mix(in srgb, #10b981 20%, transparent); border-radius: 4px;">👥 Human/Org (8)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; background: color-mix(in srgb, #7c3aed 10%, transparent); color: #7c3aed; border: 1px solid color-mix(in srgb, #7c3aed 20%, transparent); border-radius: 4px;">📜 Regulatory (7)</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-dim); margin: 0;">
+        Each edge case has a general mitigation strategy + a sector-specific implementation per scenario (offshore, hospital, AV, chemical, grid, mining, water). All referenced regulations are concrete (BSEE SEMS, OSHA PSM, EPA SDWA, NERC CIP, IEC 61511, ISO 26262, HIPAA, MSHA, FDA 510(k), etc.).
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;">
+        <a href="edge-cases.html" class="btn btn-primary" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); border: none;">
+          View all 104 edge cases + functional design →
+        </a>
+        <a href="build-plan.html" class="btn btn-ghost">5-phase MVP build plan →</a>
+        <a href="production-stack.html" class="btn btn-ghost">Production stack →</a>
+      </div>
     </section>
 
   </div>
