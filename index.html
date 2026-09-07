@@ -587,67 +587,6 @@
   .float-search:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 40px color-mix(in srgb, var(--cyan) 60%, transparent); }
   .float-search svg { width: 22px; height: 22px; }
   @media (max-width: 768px) { .float-search { bottom: 20px; right: 20px; width: 48px; height: 48px; } }
-
-  /* === LIVE MVP BANNER === */
-  .live-banner {
-    margin: -20px auto 0;
-    max-width: 1200px;
-    padding: 0 40px;
-    position: relative;
-    z-index: 5;
-  }
-  .live-banner-card {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 12%, var(--card)) 0%, color-mix(in srgb, var(--violet) 12%, var(--card)) 100%);
-    border: 1px solid var(--border-strong);
-    border-radius: 16px;
-    padding: 28px 32px;
-    display: flex; align-items: center; justify-content: space-between; gap: 24px;
-    flex-wrap: wrap;
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--cyan) 12%, transparent);
-    position: relative; overflow: hidden;
-  }
-  .live-banner-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
-  }
-  .live-banner-left { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 280px; }
-  .live-banner-icon {
-    width: 56px; height: 56px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    display: flex; align-items: center; justify-content: center;
-    color: var(--bg);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 40%, transparent);
-    flex-shrink: 0;
-  }
-  .live-banner-text h3 {
-    font-size: 19px; margin-bottom: 4px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .live-banner-text h3 .live-pill {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    padding: 3px 8px; border-radius: 4px;
-    background: color-mix(in srgb, var(--green) 15%, transparent);
-    color: var(--green);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
-    font-weight: 500;
-  }
-  .live-banner-text p { font-size: 14px; color: var(--text-dim); line-height: 1.5; max-width: 600px; }
-  .live-banner-cta {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 14px 24px; border-radius: 8px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: var(--bg); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
-    text-decoration: none; cursor: pointer; transition: all 0.25s; border: none;
-    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 25%, transparent);
-    flex-shrink: 0;
-  }
-  .live-banner-cta:hover { transform: translateY(-2px); box-shadow: 0 0 36px color-mix(in srgb, var(--cyan) 45%, transparent); }
-  @media (max-width: 768px) {
-    .live-banner { padding: 0 20px; margin-top: -30px; }
-    .live-banner-card { padding: 20px; flex-direction: column; align-items: stretch; }
-    .live-banner-left { flex-direction: row; }
-  }
 </style>
 </head>
 <body>
@@ -658,30 +597,19 @@
     <span>AISensorEdgeComp</span>
   </div>
   <div class="nav-links">
-    <a href="problem.html">Problem</a>
-    <a href="architecture.html">Architecture</a>
-    <a href="sensors.html">Sensors</a>
-    <a href="ai-stack.html">AI Stack</a>
-    <a href="verticals.html">Verticals</a>
-    <a href="roadmap.html">Roadmap</a>
-    <a href="team.html">Team</a>
-    <a href="engineering.html" style="color: var(--cyan);">Engineering</a>
-    <a href="sensor-types.html" style="color: var(--green);">Sensor Types</a>
-    <a href="sectors.html" style="color: var(--violet);">Sectors</a>
-    <a href="scenario-offshore-oil-gas.html" style="color: var(--gold);">Scenario: Offshore O&amp;G</a>
-    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan); font-weight: 600;">
-      <span class="live-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); margin-right:6px; animation: pulse 2s ease-in-out infinite;"></span>Live MVP
-    </a>
+    <a href="#problem">Problem</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#sensors">Sensors</a>
+    <a href="#ai">AI Stack</a>
+    <a href="#verticals">Verticals</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#team">Team</a>
   </div>
   <div class="nav-actions">
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
-    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="nav-btn" style="border-color: var(--cyan); color: var(--cyan);">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      <span class="label">Live Dashboard</span>
-    </a>
     <button class="nav-btn" onclick="openModal('loginModal')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
       <span class="label">Login</span>
@@ -706,10 +634,7 @@
       bridging the physical world and reasoning AI.
     </p>
     <div class="hero-ctas">
-      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        Open Live MVP &rarr;
-      </a>
+      <a href="#contact" class="btn btn-primary">Get Started &rarr;</a>
       <a href="architecture-deep.html" class="btn btn-ghost">Technical Deep Dive</a>
       <button class="btn btn-ghost" onclick="openModal('searchModal')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -736,25 +661,6 @@
     </div>
   </div>
 </section>
-
-<!-- LIVE MVP BANNER -->
-<div class="live-banner">
-  <div class="live-banner-card reveal">
-    <div class="live-banner-left">
-      <div class="live-banner-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      </div>
-      <div class="live-banner-text">
-        <h3>Live MVP Dashboard <span class="live-pill"><span class="dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--green); margin-right:4px; box-shadow:0 0 6px var(--green); animation: pulse 2s ease-in-out infinite;"></span>running now</span></h3>
-        <p>Real-time sensor mesh (8 multi-modal sensors), edge AI inference routing, live time-series chart, and AI-powered Q&A — all running in a deployable Next.js app.</p>
-      </div>
-    </div>
-    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-banner-cta">
-      Open Live Dashboard
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-</div>
 
 <!-- PROBLEM & MARKET -->
 <section id="problem">
@@ -1042,6 +948,104 @@
   </div>
 </section>
 
+<!-- LIVE SCENARIO DEMOS CTA -->
+<section id="live-scenarios" class="section-alt">
+  <div class="section-inner">
+    <div class="section-label reveal">★ Live Scenario Demos</div>
+    <h2 class="section-title reveal">Don't just read the spec. <span class="accent">Watch it run.</span></h2>
+    <p class="section-lead reveal">
+      Seven interactive, browser-streamed deployments: offshore platform, chemical plant, hospital ICU, smart grid, mining, water treatment, autonomous fleet. 640 assets. 2354 sensors. Each scenario has its own URL, live telemetry, fault-injection panel, maintenance log, audit trail, compliance dashboard, and ROI calculator.
+    </p>
+    <div class="scenario-cta-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:28px 0;">
+      <a href="scenario-demo.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--cyan) 8%,var(--card)),color-mix(in srgb,var(--violet) 8%,var(--card)));border:1px solid var(--border-strong);transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">🛰️</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Open Scenario Hub</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">All 7 scenarios side-by-side. Filter by harsh-environment type. Hub-exclusive comparison + FAQ.</div>
+          <div style="margin-top:12px;color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:12px;">scenario-demo.html →</div>
+        </div>
+      </a>
+      <a href="scenario-offshore-oil-gas.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #dc2626;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">🛢️</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Offshore Oil &amp; Gas</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">Atlantis-7 · Gulf of Mexico. 64 assets, 192 sensors. 4 protocols. ATEX Zone 1.</div>
+          <div style="margin-top:12px;color:#dc2626;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-chemical-plant.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #f97316;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">⚗️</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Chemical Plant</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">NovaChem · Houston Ship Channel. 85 assets, 274 sensors. IEC 61511 SIL-2.</div>
+          <div style="margin-top:12px;color:#f97316;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-hospital-icu.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #a855f7;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">🏥</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Hospital ICU</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">Marin Health · 24-bed. 104 assets, 428 sensors. HIPAA + IEC 62304 Class C.</div>
+          <div style="margin-top:12px;color:#a855f7;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-smart-grid.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #fbbf24;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">⚡</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Smart Grid</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">MetroGrid · Chicago. 165 assets, 612 sensors. NERC CIP + IEC 61850.</div>
+          <div style="margin-top:12px;color:#fbbf24;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-mining.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #f97316;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">⛏️</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Mining</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">Apex Mining · Atacama, 4500 m. 66 assets, 236 sensors. MSHA + SERNAGEOMIN.</div>
+          <div style="margin-top:12px;color:#f97316;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-water-treatment.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #0ea5e9;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">💧</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Water Treatment</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">ClearWater · Denver, 80 MGD. 60 assets, 238 sensors. SDWA + EPA LCR.</div>
+          <div style="margin-top:12px;color:#0ea5e9;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+      <a href="scenario-autonomous-vehicles.html" class="reveal" style="text-decoration:none;color:inherit;">
+        <div style="padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid #06b6d4;transition:all 0.3s;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:24px;">🚗</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--text);">Autonomous Fleet</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);">FleetOps AI · Palo Alto, 96-vehicle L4. 96 assets, 374 sensors. ISO 26262 ASIL-D.</div>
+          <div style="margin-top:12px;color:#06b6d4;font-family:'JetBrains Mono',monospace;font-size:12px;">Live scenario →</div>
+        </div>
+      </a>
+    </div>
+    <div class="reveal" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;">
+      <a href="scenario-demo.html" class="btn btn-primary">Browse all 7 scenarios →</a>
+      <a href="sectors.html" class="btn btn-ghost">Compare sector configs side-by-side</a>
+      <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-ghost">Open Live MVP Dashboard</a>
+    </div>
+  </div>
+</section>
+
 <!-- ROADMAP -->
 <section id="roadmap">
   <div class="section-inner">
@@ -1153,25 +1157,17 @@
         founding team — or explore the live MVP dashboard.
       </p>
       <div class="contact-actions">
-        <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="btn btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Open Live MVP Dashboard &rarr;
-        </a>
-        <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-ghost">Request Briefing</a>
-        <a href="mailto:design@aisensoredgecomp.ai?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
+        <a href="mailto:partners@aisensoredgecomp.ai?subject=Investor%20Briefing%20Request&body=We%27d%20like%20to%20schedule%20a%20technical%20briefing%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0ARole%3A%0AVertical%20interest%3A%0APreferred%20time%3A" class="btn btn-primary">Request Briefing &rarr;</a>
+        <a href="mailto:testdemoqwenai2025@gmail.com?subject=Design%20Partner%20Inquiry&body=We%27d%20like%20to%20explore%20becoming%20a%20design%20partner%20for%20AISensorEdgeComp.%0A%0AOrganization%3A%0AVertical%3A%0ASensor%20estate%20size%3A%0AUse%20case%3A" class="btn btn-ghost">Become a Design Partner</a>
       </div>
       <div class="contact-meta">
-        <div class="contact-meta-block">
-          <div class="label">Live MVP Dashboard</div>
-          <div class="value"><a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener">preview-chat-beeb4b2b-…space-z.ai</a></div>
-        </div>
         <div class="contact-meta-block">
           <div class="label">Investor Relations</div>
           <div class="value"><a href="mailto:partners@aisensoredgecomp.ai">partners@aisensoredgecomp.ai</a></div>
         </div>
         <div class="contact-meta-block">
           <div class="label">Design Partners</div>
-          <div class="value"><a href="mailto:design@aisensoredgecomp.ai">design@aisensoredgecomp.ai</a></div>
+          <div class="value"><a href="mailto:testdemoqwenai2025@gmail.com">testdemoqwenai2025@gmail.com</a></div>
         </div>
         <div class="contact-meta-block">
           <div class="label">Press</div>
@@ -1182,198 +1178,15 @@
   </div>
 </section>
 
-    </div>
-  </div>
-</section>
-
-<!-- EXPLORE DEEPER -->
-<section id="explore-deeper" style="background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); border-top: 1px solid var(--border); padding: 100px 40px;">
-  <div class="section-inner" style="max-width: 1200px; margin: 0 auto;">
-    <div class="section-label reveal" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">09 · Explore Deeper</div>
-    <h2 class="reveal" style="font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 24px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;">Multi-page deep dives. <span class="accent" style="background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Granular on each.</span></h2>
-    <p class="reveal" style="font-size: 18px; color: var(--text-dim); max-width: 760px; margin-bottom: 56px;">Every section above has its own dedicated deep-dive page. Every layer of the four-layer architecture has its own page. Each one links back to the live MVP — try the concepts in production as you read.</p>
-
-    <!-- Topical pages -->
-    <div class="reveal" style="margin-bottom: 32px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Topical deep dives</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
-        <a href="problem.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">01 · Problem</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Problem & Market</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Four structural problems, market sizing, why now</div>
-        </a>
-        <a href="architecture.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">02 · Architecture</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Architecture Overview</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Four layers, one substrate, end-to-end data flow</div>
-        </a>
-        <a href="sensors.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">03 · Sensors</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Sensor Modalities</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Eight modalities, sample rates, calibration, use cases</div>
-        </a>
-        <a href="ai-stack.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">04 · AI Stack</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">AI/ML Stack</div>
-          <div style="font-size: 13px; color: var(--text-dim);">TS-FM, liquid placement, federated, LLM query</div>
-        </a>
-        <a href="verticals.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">05 · Verticals</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Vertical Wedges</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Agri, manufacturing, environment, energy, smart city</div>
-        </a>
-        <a href="roadmap.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">06 · Roadmap</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Six-quarter Roadmap</div>
-          <div style="font-size: 13px; color: var(--text-dim);">From wedge MVP to platform GA to international</div>
-        </a>
-        <a href="team.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">07 · Team</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Founders & Advisors</div>
-          <div style="font-size: 13px; color: var(--text-dim);">From Cognite, Microsoft, Augury, Planet Labs</div>
-        </a>
-        <a href="contact.html" style="display: block; padding: 18px 20px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">08 · Contact</div>
-          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">Investors & Partners</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Briefing requests, design partners, press, careers</div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Layer pages -->
-    <div class="reveal" style="margin-bottom: 32px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Layer deep dives (the four-layer architecture)</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
-        <a href="layer-sensing.html" style="display: block; padding: 20px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">01</div>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Sensing Layer</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Sensor ontology, canonical schema, self-calibration mesh</div>
-        </a>
-        <a href="layer-connectivity.html" style="display: block; padding: 20px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">02</div>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Connectivity Layer</div>
-          <div style="font-size: 13px; color: var(--text-dim);">12 protocols, LLM-assisted semantic normalization</div>
-        </a>
-        <a href="layer-edge.html" style="display: block; padding: 20px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">03</div>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Edge Compute Layer</div>
-          <div style="font-size: 13px; color: var(--text-dim);">Liquid workload placement, edge autonomy, silicon</div>
-        </a>
-        <a href="layer-intelligence.html" style="display: block; padding: 20px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), var(--card)); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">04</div>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Intelligence Layer</div>
-          <div style="font-size: 13px; color: var(--text-dim);">TS-FM, Graph RAG, causal inference, LLM query</div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Engineering + Sectors -->
-    <div class="reveal" style="margin-bottom: 32px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Engineering &amp; Sectors</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-        <a href="engineering.html" style="display: block; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 10%, var(--card)), var(--card)); border: 1px solid var(--border-strong); text-decoration: none; color: var(--text); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--cyan), var(--violet), transparent);"></div>
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; color: var(--bg);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">Engineering Artifacts</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;">platform repo + system design</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">87-file deployable platform scaffold (FastAPI + MQTT + Kafka + TimescaleDB + Docker Compose), production architecture (Kafka + Flink + Iceberg + ClickHouse + Kubernetes), Avro/Protobuf schemas, 130+ test scenarios, ML design, 7 sector configs.</div>
-        </a>
-        <a href="system-design.html" style="display: block; padding: 22px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text);" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: color-mix(in srgb, var(--cyan) 15%, transparent); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">System Design Document</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">for engineering teams</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">Full end-to-end system design: hot path, cold path, 13 components, schemas, ML design, security model, operations, failure modes, production sizing.</div>
-        </a>
-        <a href="sectors.html" style="display: block; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, var(--card)), var(--card)); border: 1px solid var(--border-strong); text-decoration: none; color: var(--text); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--violet), var(--cyan));"></div>
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--violet), var(--cyan)); display: flex; align-items: center; justify-content: center; color: var(--bg);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">Sector Configurations</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--violet); text-transform: uppercase; letter-spacing: 0.08em;">7 verticals · compliance + ROI</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">Oil &amp; gas, chemical plant, hospital ICU, autonomous vehicles, smart grid, mining, water treatment — each with compliance regime, ROI benchmarks, buyer profile, reference architecture.</div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Live MVP + briefing -->
-    <div class="reveal" style="margin-bottom: 32px;">
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">▸ Try it live</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-        <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="display: block; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 12%, var(--card)), color-mix(in srgb, var(--violet) 12%, var(--card))); border: 1px solid var(--border-strong); text-decoration: none; color: var(--text); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);"></div>
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; color: var(--bg);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">Live MVP Dashboard</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 4px;">
-                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite;"></span>running now
-              </div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">Real-time sensor mesh, edge AI inference, time-series chart, AI-powered Q&A — running in a deployable Next.js app.</div>
-        </a>
-        <a href="architecture-deep.html" style="display: block; padding: 22px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text);" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: color-mix(in srgb, var(--cyan) 15%, transparent); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">Technical Deep Dive</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">for engineering due diligence</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">Full engineering-level spec: protocols, data flow, ML architecture, security, benchmarks, ops, tech FAQ.</div>
-        </a>
-        <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-MVP" target="_blank" rel="noopener" style="display: block; padding: 22px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); text-decoration: none; color: var(--text);" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform=''">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: color-mix(in srgb, var(--violet) 15%, transparent); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--violet);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.3-3.2-.1-.4-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
-            </div>
-            <div>
-              <div style="font-size: 16px; font-weight: 600;">MVP Source Code</div>
-              <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Next.js 16 · deployable</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--text-dim);">Full source code on GitHub — clone, install, deploy. Public under testdemoqwenai2025-creator/AISensorEdgeComp-MVP.</div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <footer>
   <div class="footer-links">
-    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
-    <a href="problem.html">Problem</a>
-    <a href="architecture.html">Architecture</a>
-    <a href="engineering.html">Engineering</a>
-    <a href="sectors.html">Sectors</a>
+    <a href="#problem">Problem</a>
     <a href="architecture-deep.html">Technical Deep Dive</a>
-    <a href="team.html">Team</a>
-    <a href="contact.html">Contact</a>
+    <a href="#team">Team</a>
     <a href="mailto:press@aisensoredgecomp.ai">Press</a>
     <a href="https://github.com/testdemoqwenai2025-creator/DemoSentinelEdge" target="_blank" rel="noopener">GitHub</a>
   </div>
-    &copy; 2026 AISensorEdgeComp &middot; Multi-page investor preview &middot; <a href="#top">Back to top</a>
+  &copy; 2026 AISensorEdgeComp &middot; Confidential investor preview &middot; <a href="#top">Back to top</a>
 </footer>
 
 <!-- LOGIN MODAL -->
@@ -1486,7 +1299,7 @@
     { q: /team|founder/i, a: "Four founders: Dr. Aarav Kapoor (CEO, ex-Cognite Eng Director), Maya Rodriguez (CTO, ex-Microsoft Azure IoT Principal Eng, KubeEdge maintainer), Dr. Jian Liu (Chief Scientist, ex-Augury Head of ML, 28 NeurIPS/ICML papers), Sofia Costa (CRO, ex-Planet Labs VP Sales Agri, $0→$40M ARR). Combined 60+ years in industrial IoT, distributed systems, applied ML." },
     { q: /roi|return/i, a: "Vertical-specific ROI: Agriculture — +18% yield, −30% input cost (verified across 3 design-partner farms). Manufacturing — −42% unplanned downtime (target, based on Augury's published benchmarks and our zero-shot model performance). Environment — −85% calibration cost via self-calibrating sensor mesh. Energy — grid resilience KPIs pending pilot." },
     { q: /architecture|stack/i, a: "Four layers, one substrate: (1) Sensing — multi-modal sensor ontology, (2) Connectivity — protocol-agnostic bridge (LoRaWAN/5G/OPC-UA/MQTT), (3) Edge Compute — KubeEdge + TinyML + WASM + liquid workload placement, (4) Intelligence — TS-FM + Graph RAG + causal inference + LLM-native query. See the Technical Deep Dive page for protocols, data flow, and benchmarks." },
-    { q: /contact|reach|email/i, a: "Investor relations: partners@aisensoredgecomp.ai · Design partners: design@aisensoredgecomp.ai · Press: press@aisensoredgecomp.ai. We respond within 24 hours. For technical deep-dives, mention your vertical and team size." },
+    { q: /contact|reach|email/i, a: "Investor relations: partners@aisensoredgecomp.ai · Design partners: testdemoqwenai2025@gmail.com · Press: press@aisensoredgecomp.ai. We respond within 24 hours. For technical deep-dives, mention your vertical and team size." },
     { q: /differ|competitor|why you/i, a: "Unlike horizontal platforms (AWS IoT, Azure IoT) we are vertical-first with pre-trained TS-FM. Unlike vertical specialists (Augury, Cognite, Satelligence) we are building the universal substrate — every wedge compounds the foundation model. Unlike DIY (ThingsBoard, Eclipse Ditto) we ship the intelligence layer, not just plumbing." }
   ];
   function handleSearch() {

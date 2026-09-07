@@ -163,6 +163,7 @@ window.addEventListener('DOMContentLoaded', function () {
       section: "Landing",
       items: [
         { href: "index.html", label: "Home", desc: "Overview + hero" },
+        { href: "scenario-demo.html", label: "★ Live Scenario Demos", desc: "7 scenarios hub", isHub: true },
       ]
     },
     {
@@ -211,6 +212,7 @@ window.addEventListener('DOMContentLoaded', function () {
     {
       section: "Live Scenarios",
       items: [
+        { href: "scenario-demo.html", label: "★ Scenario Hub", desc: "All 7 in one place", isHub: true },
         { href: "scenario-offshore-oil-gas.html", label: "Oil & Gas Offshore", desc: "64 assets, 192 sensors" },
         { href: "scenario-hospital-icu.html", label: "Hospital ICU", desc: "104 assets, 428 sensors" },
         { href: "scenario-autonomous-vehicles.html", label: "Autonomous Vehicles", desc: "96 assets, 374 sensors" },
