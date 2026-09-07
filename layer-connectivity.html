@@ -90,7 +90,7 @@
 
 <section class="doc-section" id="ingest">
   <div class="section-label">Ingest protocols</div>
-  <h2>Bridge any industrial protocol, <span class="accent'>past or present.</span></h2>
+  <h2>Bridge any industrial protocol, <span class="accent">past or present.</span></h2>
   <p>The connectivity layer ingests from the eleven protocols below. Each has its own open-source edge gateway (`aseco-*-gw`), all producing the canonical measurement schema. The gateways are stateless, horizontally scalable, and run on any k8s node or standalone device.</p>
   <table class="data-table">
     <thead>
@@ -159,7 +159,7 @@
 
 <section class="doc-section" id="llm-mapping">
   <div class="section-label">LLM-assisted mapping</div>
-  <h2>The frontier: <span class="accent'>6 months → 3 weeks.</span></h2>
+  <h2>The frontier: <span class="accent">6 months → 3 weeks.</span></h2>
   <p>The ontology-mapping stage is the frontier. Most platforms require manual mapping tables — one row per tag — built by 30-person SI teams over 6 months. We use a fine-tuned LLM that consumes the source's metadata (OPC-UA node descriptions, Modbus register names, MQTT topic strings) and proposes a canonical mapping with confidence scores.</p>
 
   <div class="code-block-label">llm-mapping-example.json</div>

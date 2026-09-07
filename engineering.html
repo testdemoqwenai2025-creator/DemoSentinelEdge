@@ -157,7 +157,7 @@
 
 <section class="doc-section">
   <div class="section-label">Open-source platform scaffold</div>
-  <h2>87 files. <span class="accent'>Real, deployable code.</span></h2>
+  <h2>87 files. <span class="accent">Real, deployable code.</span></h2>
   <p>The full platform scaffold is published as a public GitHub repo. Clone, configure, deploy. Every component is real code you can run with <code>docker compose up</code> — not pseudocode or sketches.</p>
 
   <div style="display: flex; gap: 14px; flex-wrap: wrap; margin: 24px 0;">
@@ -224,7 +224,7 @@ make test</pre>
 
 <section class="doc-section">
   <div class="section-label">Production architecture</div>
-  <h2>From <code>docker compose up</code> <span class="accent'>to production Kubernetes.</span></h2>
+  <h2>From <code>docker compose up</code> <span class="accent">to production Kubernetes.</span></h2>
   <p>The Helm chart lets you deploy the same stack to a production Kubernetes cluster. It includes Strimzi Kafka operator, Flink Kubernetes operator, ClickHouse operator, and HPA for ingest + API services.</p>
 
   <div class="diagram">
@@ -275,7 +275,7 @@ make test</pre>
 
 <section class="doc-section">
   <div class="section-label">Data schemas</div>
-  <h2>Avro for Kafka. <span class="accent'>Protobuf for gRPC + storage.</span></h2>
+  <h2>Avro for Kafka. <span class="accent">Protobuf for gRPC + storage.</span></h2>
   <p>Every Kafka topic has an Avro schema registered with the Confluent Schema Registry. Every gRPC service and storage format uses Protobuf. Both express the same logical contracts.</p>
 
   <table class="data-table">
@@ -293,7 +293,7 @@ make test</pre>
 
 <section class="doc-section">
   <div class="section-label">Test matrix</div>
-  <h2>130+ edge-case scenarios. <span class="accent'>Severity-ranked.</span></h2>
+  <h2>130+ edge-case scenarios. <span class="accent">Severity-ranked.</span></h2>
   <p>The full test matrix lives at <code>tests/matrix.yaml</code>. Each scenario has an ID, name, input, expected output, and severity (critical/warning/info). Run via <code>make test</code> or <code>pytest tests/test_matrix.py</code>.</p>
 
   <table class="data-table">
@@ -320,7 +320,7 @@ make test</pre>
 
 <section class="doc-section">
   <div class="section-label">ML design</div>
-  <h2>TS-FM + RUL + <span class="accent'>model monitoring.</span></h2>
+  <h2>TS-FM + RUL + <span class="accent">model monitoring.</span></h2>
   <p>Three subsystems compose the ML layer:</p>
   <div class="card-grid-3">
     <div class="card">
@@ -343,7 +343,7 @@ make test</pre>
 
 <section class="doc-section">
   <div class="section-label">Sector configurations</div>
-  <h2>Same platform. <span class="accent'>7 sector configs.</span></h2>
+  <h2>Same platform. <span class="accent">7 sector configs.</span></h2>
   <p>The platform is sector-agnostic. Each vertical has its own config under <code>sectors/</code> with sector-specific sensors, compliance, ROI, reference architecture, and Grafana dashboards.</p>
 
   <div class="card-grid-4">

@@ -89,7 +89,7 @@
 
 <section class="doc-section" id="overview">
   <div class="section-label">1. Overview</div>
-  <h2>Four layers. <span class="accent'>One substrate.</span></h2>
+  <h2>Four layers. <span class="accent">One substrate.</span></h2>
   <p>The AISensorEdgeComp platform is a four-layer substrate that any sensor, any protocol, any vertical can plug into — and any operator can query in natural language. This document describes the production system end-to-end.</p>
 
   <div class="diagram">
@@ -113,7 +113,7 @@
 
 <section class="doc-section" id="hot-path">
   <div class="section-label">2. Hot path (real-time)</div>
-  <h2>Sensor → ingest → Kafka → Flink → <span class="accent'>TimescaleDB → API.</span></h2>
+  <h2>Sensor → ingest → Kafka → Flink → <span class="accent">TimescaleDB → API.</span></h2>
   <p>The hot path handles real-time ingest and inference. End-to-end latency target: < 5 seconds from sensor reading to alert emission.</p>
 
   <div class="diagram">
@@ -162,7 +162,7 @@
 
 <section class="doc-section" id="cold-path">
   <div class="section-label">3. Cold path (batch + OLAP)</div>
-  <h2>Flink → Iceberg → <span class="accent'>ClickHouse.</span></h2>
+  <h2>Flink → Iceberg → <span class="accent">ClickHouse.</span></h2>
   <p>The cold path handles long-term storage and OLAP queries. After 30 days, data ages out of TimescaleDB and is archived to Iceberg (Parquet on S3). ClickHouse ingests from Iceberg for fast analytical queries across the full historical record.</p>
 
   <div class="diagram">
@@ -282,7 +282,7 @@
 
 <section class="doc-section" id="security">
   <div class="section-label">7. Security model</div>
-  <h2>Per-customer isolation. <span class="accent'>Federated learning only.</span></h2>
+  <h2>Per-customer isolation. <span class="accent">Federated learning only.</span></h2>
   <ul>
     <li><strong>TLS everywhere</strong> — all inter-service traffic uses mTLS via Istio sidecars.</li>
     <li><strong>Per-customer encryption keys</strong> — KMS-derived, rotated quarterly. No employee access to raw sensor data.</li>
@@ -325,7 +325,7 @@
 
 <section class="doc-section" id="sizing">
   <div class="section-label">10. Production sizing</div>
-  <h2>120 vCPU. 256 GiB RAM. <span class="accent'>10 TiB storage.</span></h2>
+  <h2>120 vCPU. 256 GiB RAM. <span class="accent">10 TiB storage.</span></h2>
   <table class="data-table">
     <thead><tr><th>Component</th><th>Replicas</th><th>CPU / Memory</th><th>Storage</th></tr></thead>
     <tbody>

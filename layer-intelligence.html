@@ -90,7 +90,7 @@
 
 <section class="doc-section" id="ts-fm">
   <div class="section-label">Time-series foundation model</div>
-  <h2>One model. <span class="accent'>Every sensor.</span> Zero labels.</h2>
+  <h2>One model. <span class="accent">Every sensor.</span> Zero labels.</h2>
   <p>A 350M-parameter transformer, pretrained on 50M hours of public industrial time-series: NASA bearings, Case Western Reserve, SECOM, UCI gas turbine, ARPA-E, plus ~12M hours of scraped OPC-UA streams from public research datasets. Architecture is in the Chronos / Lag-Llama / Moment family — tokenized time-series with a causal transformer backbone.</p>
 
   <h3>Architecture</h3>
@@ -139,7 +139,7 @@
 
 <section class="doc-section" id="graph-rag">
   <div class="section-label">Graph RAG</div>
-  <h2>Retrieval-augmented reasoning <span class="accent'>over sensor + ERP.</span></h2>
+  <h2>Retrieval-augmented reasoning <span class="accent">over sensor + ERP.</span></h2>
   <p>Beyond raw measurements, the platform builds a knowledge graph: sensors → assets → processes → maintenance events → ERP transactions. An LLM query like "why did line 3 throughput drop Tuesday morning?" traverses this graph to assemble evidence.</p>
 
   <div class="code-block-label">graph-rag-traversal.json</div>
@@ -175,7 +175,7 @@
 
 <section class="doc-section" id="causal">
   <div class="section-label">Causal inference</div>
-  <h2>Correlation is not causation. <span class="accent'>We lift one into the other.</span></h2>
+  <h2>Correlation is not causation. <span class="accent">We lift one into the other.</span></h2>
   <p>The platform uses the PC algorithm + do-calculus to lift correlated signals into causal graphs. This is the difference between "vibration went up before failure" and "vibration caused failure."</p>
 
   <div class="callout"><strong>Why this matters</strong><p>Without causal inference, every anomaly looks the same and operators chase ghosts. With it, the system can recommend interventions — not just describe patterns. This is the moat: most industrial AI platforms stop at correlation. We are the first to ship causal at industrial scale.</p></div>
@@ -190,7 +190,7 @@
 
 <section class="doc-section" id="llm-query">
   <div class="section-label">LLM-native query layer</div>
-  <h2>Natural language in. <span class="accent'>Cited answer out.</span></h2>
+  <h2>Natural language in. <span class="accent">Cited answer out.</span></h2>
   <p>"Why did line 3 throughput drop Tuesday morning?" — the system reasons across vibration, current, temperature, vision, and ERP records, with verifiable citation chains. No Grafana required.</p>
   <p>The query layer is what makes the platform usable for plant managers, ops VPs, and executives who don't want to learn a query language. Under the hood: a fine-tuned LLM that translates the natural-language question into (a) a TS-FM retrieval query, (b) a Graph RAG traversal, and (c) a causal-inference test. The final answer is composed from the three results, with citations back to the sensor readings, maintenance logs, and ERP records that grounded it.</p>
   <div class="callout"><strong>Live demo</strong><p>The "Search with AI" feature on the live MVP (https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/) is a simplified version of this — it uses a grounded system prompt to answer questions about the platform. The production version runs against your real sensor + ERP data.</p></div>
@@ -198,7 +198,7 @@
 
 <section class="doc-section" id="pinn">
   <div class="section-label">Physics-informed neural networks</div>
-  <h2>Domain constraints <span class="accent'>in the loss function.</span></h2>
+  <h2>Domain constraints <span class="accent">in the loss function.</span></h2>
   <p>For verticals where the underlying physics is well-known (compressor thermodynamics, Bernoulli flow, heat transfer), we embed the physics as constraints in the model loss function. The TS-FM can't predict a pressure drop that violates Bernoulli — the loss penalizes it. This is the difference between "model learned the data" and "model learned the physics."</p>
   <p>Current PINN modules: Bernoulli (flow networks), ideal gas law (compressors), heat diffusion (HVAC), crop growth (agronomic models). More are added per vertical.</p>
 </section>
