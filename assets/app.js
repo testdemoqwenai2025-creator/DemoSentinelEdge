@@ -205,7 +205,8 @@ window.addEventListener('DOMContentLoaded', function () {
         { href: "system-design.html", label: "System Design", desc: "10-section doc" },
         { href: "architecture-deep.html", label: "Technical Deep Dive", desc: "Engineering due-diligence" },
         { href: "architecture-interactive.html", label: "Interactive Architecture", desc: "Click + animate" },
-        { href: "comparison.html", label: "Competitive Comparison", desc: "27 dimensions, 8 competitors" },
+        { href: "production-stack.html", label: "Production Stack", desc: "Edge→ML→Ops, 30 components" },
+        { href: "comparison.html", label: "Competitive Comparison", desc: "27 dimensions, 8 competitors + deep-dive modals" },
         { href: "sectors.html", label: "Sectors Hub", desc: "7 verticals" },
       ]
     },

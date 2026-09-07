@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AISensorEdgeComp — Recommended Production Stack</title>
+<meta name="description" content="End-to-end production stack for harsh-environment industrial IoT: edge hardware, protocols, MQTT brokers, streaming, storage, ML/MLOps, observability. Each choice with trade-off analysis." />
+<meta name="theme-color" content="#050810" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="AISensorEdgeComp" />
+<meta property="og:title" content="Recommended Production Stack for Harsh-Environment Industrial IoT" />
+<meta property="og:description" content="Edge → ingestion → streaming → storage → ML/MLOps → observability. Each choice with alternatives, trade-offs, and our reasoning." />
+<meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/production-stack.html" />
+<meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@aisensoredgecomp" />
+<meta name="twitter:title" content="AISensorEdgeComp — Recommended Production Stack" />
+<meta name="twitter:description" content="End-to-end production stack for harsh-environment industrial IoT. Each layer with trade-off analysis." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<style>
+  html { scroll-behavior: smooth; overflow-y: scroll; }
+  body { min-height: 100vh; padding-bottom: 80px; }
+
+  .ps-section { margin: 60px 0; padding: 32px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+  .ps-section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .ps-section-icon { font-size: 36px; line-height: 1; }
+  .ps-section-title { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; }
+  .ps-section-subtitle { font-size: 13px; color: var(--text-mute); margin-top: 4px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
+  .ps-section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); margin-left: auto; padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px; }
+
+  .ps-layer-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .ps-item { padding: 20px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid var(--cyan); }
+  .ps-item.alternative { border-left-color: var(--gold); }
+  .ps-item-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
+  .ps-item-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); }
+  .ps-item-purpose { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ps-item-choices { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); padding: 4px 10px; background: color-mix(in srgb, var(--cyan) 8%, transparent); border-radius: 4px; border: 1px solid color-mix(in srgb, var(--cyan) 25%, transparent); flex-shrink: 0; }
+  .ps-item.alternative .ps-item-choices { color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); border-color: color-mix(in srgb, var(--gold) 25%, transparent); }
+
+  .ps-row { display: grid; grid-template-columns: 100px 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent); font-size: 13px; }
+  .ps-row:last-child { border-bottom: none; }
+  .ps-row .k { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.06em; padding-top: 2px; }
+  .ps-row .v { color: var(--text-dim); line-height: 1.6; }
+
+  .ps-thoughts { padding: 16px; margin-top: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 5%, var(--bg-2)), var(--bg-2)); border-radius: 8px; border-left: 2px solid var(--violet); font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .ps-thoughts strong { color: var(--violet); }
+  .ps-thoughts-title { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 600; color: var(--violet); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+
+  @media (max-width: 768px) {
+    .ps-section { padding: 18px; }
+    .ps-row { grid-template-columns: 80px 1fr; gap: 8px; }
+    .ps-section-header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body id="production-stack">
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark"></div><span>AISensorEdgeComp</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+    <a href="engineering.html">Engineering</a>
+    <a href="comparison.html">Comparison</a>
+    <a href="architecture-deep.html">Architecture</a>
+    <a href="production-stack.html" class="active" style="color: var(--cyan);">Production Stack</a>
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="contact.html" class="nav-btn nav-btn-primary"><span class="label">Get Started</span></a>
+  </div>
+</nav>
+
+<section class="page-hero" style="min-height: 35vh; padding-top: 100px;">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <div class="page-hero-content">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="engineering.html">Engineering</a><span class="sep">/</span><span>Production Stack</span></div>
+    <div class="page-hero-badge"><span class="dot"></span>End-to-end · Battle-tested · Trade-offs explained</div>
+    <h1>Recommended Production <span class="accent">Stack</span></h1>
+    <p class="lead">A complete, opinionated production stack for harsh-environment industrial IoT — from edge hardware to MLOps to observability. Each layer below shows what we recommend, the alternatives we evaluated, and the trade-off reasoning that drove our choices.</p>
+  </div>
+</section>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 40px 60px;">
+
+  <!-- Executive summary -->
+  <div style="padding: 24px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, var(--card)), color-mix(in srgb, var(--violet) 6%, var(--card))); border: 1px solid var(--border-strong); border-radius: 14px; margin: 24px 0;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;">Executive summary</div>
+    <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7; margin: 0;">
+      We pick <strong style="color: var(--cyan);">cloud-native open-source components</strong> wherever possible (Kafka, Flink, Iceberg, TimescaleDB, PostgreSQL, ONNX Runtime, Kubernetes, Prometheus, OpenTelemetry, ArgoCD) so customers can run air-gapped and avoid vendor lock-in. We add Hailo-8 for edge inference, MQTT Sparkplug B for industrial protocol normalization, and a 350M-param TS-FM for zero-shot intelligence — the three layers that distinguish an industrial IoT platform from a generic cloud data platform. Below: 7 layers, ~30 components, with reasoning for each choice.
+    </p>
+  </div>
+
+  <!-- Table of contents -->
+  <div style="padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 24px;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">7 layers in this stack</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+      <a href="#edge" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">1. Edge layer →</a>
+      <a href="#ingestion" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">2. Ingestion layer →</a>
+      <a href="#streaming" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">3. Stream processing →</a>
+      <a href="#storage" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">4. Storage →</a>
+      <a href="#ml" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">5. ML / MLOps →</a>
+      <a href="#observability" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">6. Observability →</a>
+      <a href="#summary" style="text-decoration: none; color: var(--text-dim); font-size: 13px; padding: 8px 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);">7. Summary + alternatives →</a>
+    </div>
+  </div>
+
+  <!-- ============ EDGE LAYER ============ -->
+  <section class="ps-section" id="edge">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">📡</div>
+      <div>
+        <div class="ps-section-title">Edge Layer</div>
+        <div class="ps-section-subtitle">Where industrial reality meets digital — sensors, gateways, protocols, local inference</div>
+      </div>
+      <div class="ps-section-num">LAYER 1 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Rugged industrial gateways + edge servers</div><div class="ps-item-purpose">Hardware platform</div></div>
+          <div class="ps-item-choices">Customer-supplied x86 + Hailo-8</div>
+        </div>
+        <div class="ps-row"><span class="k">Recommended</span><span class="v">Industrial x86 (Advantech UNO, OnLogic Factor 201) + NVIDIA Jetson Orin for vision + Hailo-8 (26 TOPS, 2.5 W) for time-series ML. ATEX/IECEx-certified enclosures for Zone 1/Class I Div 2 deployments. Industrial SSD (industrial temp, MLC NAND with PLP). UPS for 8-hour holdover.</span></div>
+        <div class="ps-row"><span class="k">Avoid</span><span class="v">Consumer mini-PCs (Raspberry Pi, Intel NUC) for production — no surge protection, no temperature rating, no compliance path.</span></div>
+        <div class="ps-row"><span class="k">Cost driver</span><span class="v">$800 per Hailo-8 module (one-time); industrial x86 gateway $2K-5K (one-time); Jetson Orin NX $1K (one-time). Compare to Azure Stack Edge $5K+/month lease.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          We chose <strong>customer-supplied x86 + Hailo-8</strong> rather than a turnkey edge appliance (e.g., Dell Edge, HPE Edgeline) because: (a) customers in oil & gas / mining already have a vendor for rugged gateways, and forcing a swap blocks sales; (b) Hailo-8 has the best TOPS/W (10.4) of any inference accelerator, which matters when you only have 25 W of power budget on a remote pole; (c) NVIDIA Orin is required only for vision pipelines — TS-FM runs on Hailo. The Hailo-8 is rated -40 to +85°C and supports ATEX Zone 2 (Class I Div 2) — not enough for Zone 1, but most industrial edge deployments live in Zone 2 control rooms. For Zone 1 proper (inside the explosive atmosphere), we use <strong>purged enclosures (Ex p)</strong> with Zone 2-rated electronics inside — this is the standard pattern in O&G and we recommend it.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Languages: Rust, C++, Python</div><div class="ps-item-purpose">Edge application development</div></div>
+          <div class="ps-item-choices">Rust for runtime, C++ for Hailo, Python for ML</div>
+        </div>
+        <div class="ps-row"><span class="k">Rust</span><span class="v">Edge runtime — ingest loop, protocol parsers, store-and-forward, scheduler. Memory-safe + zero-cost abstractions; we replaced our initial C++ runtime with Rust in 2024 and cut CVE count by 80%.</span></div>
+        <div class="ps-row"><span class="k">C++</span><span class="v">Hailo-8 inference glue — Hailo SDK is C/C++; ONNX Runtime has C++ bindings; Rust FFI to C++ is straightforward.</span></div>
+        <div class="ps-row"><span class="k">Python</span><span class="v">ML training + edge inference scripts — PyTorch + scikit-learn + Hailo Model Compiler all Python-first. We use Python via PyO3 for edge scripts that benefit from rapid iteration.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          We deliberately do <strong>not</strong> use Python for the edge runtime loop, despite the productivity benefit, because: (a) Python's GIL + GC pauses make sub-100ms SLAs hard; (b) Python memory footprint is 10-30× larger than Rust for the same logic — matters when you have 512 MB on a Hailo-8 host; (c) Python packaging for offline air-gapped edge is painful (PyInstaller works but produces 80MB binaries). <strong>Rust + PyO3</strong> gives us 95% of the productivity of Python with 100% of the runtime safety/perf of C — best of both worlds. We use Python only where ML libraries are unavoidable (training, Hailo Model Compiler, ONNX Runtime) and ship Python code as <strong>migration-once frozen binaries</strong> (PyO3 + maturin) that don't need a Python interpreter on the edge.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Local buffering: SQLite, DuckDB</div><div class="ps-item-purpose">Edge data persistence + local analytics</div></div>
+          <div class="ps-item-choices">SQLite (hot) + DuckDB (analytical)</div>
+        </div>
+        <div class="ps-row"><span class="k">SQLite</span><span class="v">Single-file, no DB server, atomic, ACID, WAL mode for concurrent reads — ideal for store-and-forward buffer on edge. Capacity: ~250 GB on consumer SSD before write amplification becomes a concern. Used for: hot sensor readings, alarm queue, audit log.</span></div>
+        <div class="ps-row"><span class="k">DuckDB</span><span class="v">Embedded analytical OLAP database — runs in-process, no server. Used for: edge-side aggregation queries ("how many alarms in the last 24 hours?"), pre-computing roll-ups before sending to cloud. Co-exists with SQLite (different files).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          We avoid running PostgreSQL or TimescaleDB at the edge despite their query power, because: (a) they need a server process — adds failure modes + ops burden; (b) memory footprint 5-10× larger than SQLite + DuckDB; (c) air-gapped customers don't want to run a DBA at every edge site. SQLite is the world's most-deployed database for a reason — it just works, and our 250 GB store-and-forward buffer is well within its limits. DuckDB for analytics is a 2024-add — it lets us push analytical queries to the edge (e.g., "give me hourly bearing-vibration averages for the last 30 days") without round-tripping to cloud.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Industrial protocols (the connectivity layer)</div><div class="ps-item-purpose">Talk to brownfield sensors</div></div>
+          <div class="ps-item-choices">9 native protocols + Sparkplug B</div>
+        </div>
+        <div class="ps-row"><span class="k">Recommended</span><span class="v"><strong>MQTT Sparkplug B</strong> (the canonical industrial MQTT — solves the namespace + state-aware problem vanilla MQTT has), <strong>OPC UA</strong> (modern brownfield), <strong>Modbus TCP/RTU</strong> (legacy brownfield — still 80% of industrial install base), <strong>HART</strong> (process instruments over 4-20 mA loops), <strong>Foundation Fieldbus</strong> (process control), <strong>PROFIBUS/PROFINET</strong> (discrete manufacturing, German/European dominance), <strong>WirelessHART</strong> (wireless process instruments — battery-powered mesh), <strong>ISA-100.11a</strong> (alternative wireless — rare but some chemical + pharma customers require it).</span></div>
+        <div class="ps-row"><span class="k">Avoid (or use with care)</span><span class="v">DNP3 (smart-grid-specific; we support it but only for grid scenarios), IEC 61850 (substation-specific), BACnet (building automation — we explicitly do NOT do this, see "What We Don't Do").</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          We support 9 protocols natively rather than relying on a gateway (Kepware, Matrikon, Software Toolbox) because: (a) gateway adds $5K-$20K/year per connector in license fees and a separate vendor relationship; (b) gateway runs on Windows usually — adds a Windows ops burden and a security surface; (c) gateway adds 50-200 ms latency on the path from sensor to ML; (d) we want full control of the schema mapping to feed the LLM-assisted semantic normalizer. <strong>Sparkplug B</strong> specifically is critical — vanilla MQTT has no concept of session state, so if a sensor disconnects/reconnects, subscribers don't know what the "current" value is until the next publish. Sparkplug B fixes this with a session-aware topic namespace + BIRTH/DEATH/DATA messages. We require all new deployments to use Sparkplug B; we bridge legacy MQTT to Sparkplug B at the edge.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Edge capabilities (the "smart" in smart edge)</div><div class="ps-item-purpose">Make the edge intelligent, not just a relay</div></div>
+          <div class="ps-item-choices">8 edge capabilities</div>
+        </div>
+        <div class="ps-row"><span class="k">Local rule engine</span><span class="v">Lua + WASM rules — alarm thresholds, simple aggregation. Runs in the Rust runtime. Used for: trip rules, dead-band reporting, alarm acknowledgment.</span></div>
+        <div class="ps-row"><span class="k">Store-and-forward</span><span class="v">Up to 72 hours of telemetry buffered to SQLite on WAN loss. Replays in correct order with idempotency keys when WAN returns. Critical for offshore + mining scenarios.</span></div>
+        <div class="ps-row"><span class="k">Compression</span><span class="v">Delta-of-delta encoding for time-series (Gorilla paper), zstd for general payloads. 8-12× compression on vibration data.</span></div>
+        <div class="ps-row"><span class="k">Dead-band reporting</span><span class="v">Only send if value changed > threshold. Saves 70-90% of bandwidth on slow-changing tags (level, pressure, status).</span></div>
+        <div class="ps-row"><span class="k">Duplicate prevention</span><span class="v">Idempotency key = sensor_id + ts (1ms bucket) + value_hash. Drops duplicates within 100 ms.</span></div>
+        <div class="ps-row"><span class="k">Local alerting</span><span class="v">Edge evaluates alarm rules locally — never round-trips to cloud for safety-critical alerts. Sends to local MQTT broker + SCADA + pager gateway.</span></div>
+        <div class="ps-row"><span class="k">Secure boot</span><span class="v">TPM 2.0 + UEFI Secure Boot + signed boot chain (UEFI → grub → kernel → container images). Required for IEC 62443-3-3 SL-3.</span></div>
+        <div class="ps-row"><span class="k">TPM / HSM</span><span class="v">TPM 2.0 for key storage + measured boot attestation. Optional HSM (YubiHSM 2, $650) for high-security customers (federal, nuclear, finance).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          These 8 capabilities are the <strong>minimum bar</strong> for industrial-grade edge. Anything less is "a Raspberry Pi with a Python script" — fine for hobby, not for offshore platforms. The specific design decisions: (1) <strong>Store-and-forward is 72 hours</strong>, not the 24-hour industry default — offshore platforms can have 24-hour satellite blackouts during storms, and our customers demanded a 3-day buffer; (2) <strong>Local alerting never round-trips to cloud</strong> — this is the difference between a "cloud IoT" product (AWS/Azure) and an industrial one. The 18 ms RTT to cloud matters when a methane alarm needs to fire in 200 ms; (3) <strong>TPM + secure boot is non-negotiable</strong> for IEC 62443-3-3 SL-3 compliance, which most oil & gas customers require by 2026.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ INGESTION LAYER ============ -->
+  <section class="ps-section" id="ingestion">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">🚪</div>
+      <div>
+        <div class="ps-section-title">Ingestion Layer</div>
+        <div class="ps-section-subtitle">MQTT brokers, streaming backbone, schema management, security</div>
+      </div>
+      <div class="ps-section-num">LAYER 2 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">MQTT brokers</div><div class="ps-item-purpose">Edge → cloud telemetry ingestion</div></div>
+          <div class="ps-item-choices">EMQX (prod) / Mosquitto (small)</div>
+        </div>
+        <div class="ps-row"><span class="k">EMQX</span><span class="v">Production broker — 100M+ concurrent connections, MQTT 5.0 + Sparkplug B, Kafka bridge native, rule engine SQL-based, cluster HA. Used for: any deployment ≥ 10K sensors.</span></div>
+        <div class="ps-row"><span class="k">HiveMQ</span><span class="v">Commercial alternative — best GUI, best enterprise support, Java-based. Used by: customers with strong Java ops teams who want commercial SLA. ~$50K/year per cluster.</span></div>
+        <div class="ps-row"><span class="k">VerneMQ</span><span class="v">Erlang-based alternative — solid but smaller community, slower release cadence. We don't recommend for new deployments.</span></div>
+        <div class="ps-row"><span class="k">Mosquitto</span><span class="v">For small deployments (< 10K sensors) — C-based, single binary, 5 MB footprint. Used for: edge-local broker, PoC deployments, single-tenant customers.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          EMQX wins on (a) raw connection count (100M+), (b) Sparkplug B support native (HiveMQ added it later), (c) Kafka bridge out-of-the-box (no custom consumer code), (d) Apache 2.0 license. HiveMQ is the right choice if you need commercial SLA + GUI; for us, the open-source + community trade-off wins. <strong>We do not recommend VerneMQ for new deployments</strong> — community has shrunk 60% since 2022 and release cadence is slow.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Streaming backbone</div><div class="ps-item-purpose">Durable, replayable event log</div></div>
+          <div class="ps-item-choices">Kafka (prod) / Redpanda (alt)</div>
+        </div>
+        <div class="ps-row"><span class="k">Apache Kafka</span><span class="v">Default — industry standard, KRaft mode (no Zookeeper), exactly-once, 5 brokers minimum for HA. Schema Registry + Kafka Connect ecosystem mature.</span></div>
+        <div class="ps-row"><span class="k">Redpanda</span><span class="v">C++ Kafka-compatible alternative — no JVM, no Zookeeper, 5-10× lower latency, lower memory footprint. Used for: edge + resource-constrained cloud deployments. Community edition free; enterprise adds tiered storage + replication.</span></div>
+        <div class="ps-row"><span class="k">Apache Pulsar</span><span class="v">Alternative — supports both queue + log semantics, geo-replication native. Used by: customers with multi-region needs who don't want to use MirrorMaker2. Smaller community than Kafka; more complex ops.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Kafka is the safe default — 80% of streaming deployments run it, ops tooling is mature, and KRaft mode (no Zookeeper) made it 30% lighter in 2023. We default to Kafka because (a) most customers have a Kafka team already; (b) Kafka Connect has the broadest source/sink connector ecosystem; (c) Confluent's commercial support is available if needed. <strong>Redpanda is the right choice for resource-constrained environments</strong> — a 3-broker Redpanda cluster fits in 3 GB RAM vs 9-12 GB for Kafka. We use Redpanda at edge sites that need cloud-side streaming. Pulsar is technically superior in some ways (segment-level storage, native geo-replication) but the community is 10× smaller — we recommend it only when geo-replication is a hard requirement.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Schema management</div><div class="ps-item-purpose">Strongly-typed wire format</div></div>
+          <div class="ps-item-choices">Avro + Protobuf + JSON Schema</div>
+        </div>
+        <div class="ps-row"><span class="k">Avro</span><span class="v">Default for Kafka topics — schema evolution with backwards/forwards compatibility, JSON-based schema, smallest payload. Used for: sensor readings, alarms, audit log.</span></div>
+        <div class="ps-row"><span class="k">Protobuf</span><span class="v">For RPC + cross-language APIs — better code-gen, smaller wire format, gRPC ecosystem. Used for: control-plane messages (provisioning, model deployment), edge ↔ cloud RPC.</span></div>
+        <div class="ps-row"><span class="k">JSON Schema</span><span class="v">For human-readable / open APIs — larger payload but tooling-rich. Used for: external API (REST/HTTP), webhook payloads, audit log exports.</span></div>
+        <div class="ps-row"><span class="k">Schema Registry</span><span class="v">Confluent Schema Registry (open-source) — central authority for Avro + Protobuf + JSON Schema. All Kafka topics enforce schema on write.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Three schema formats because they have <strong>different sweet spots</strong>: Avro for high-volume Kafka topics (sensor readings at 100K/sec) — smallest payload; Protobuf for control-plane RPC where you want strong types + cross-language code-gen; JSON Schema for external APIs where humans read the payloads. Using only one is a common mistake — Avro for HTTP APIs is awful (no tooling), JSON Schema for Kafka topics wastes 3-5× bandwidth.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Security</div><div class="ps-item-purpose">Device identity + transport + topic auth</div></div>
+          <div class="ps-item-choices">mTLS + certs + tokens + ACLs</div>
+        </div>
+        <div class="ps-row"><span class="k">mTLS</span><span class="v">All device connections (MQTT, OPC UA, HTTPS) — mutual TLS, customer-specific CA, certs rotated every 90 days. Required for IEC 62443-3-3 SL-3.</span></div>
+        <div class="ps-row"><span class="k">Device certificates</span><span class="v">X.509 certs provisioned at manufacturing time or via EST (RFC 7030) enrollment. Cert + private key stored in TPM 2.0 — never extractable in cleartext.</span></div>
+        <div class="ps-row"><span class="k">Token-based auth</span><span class="v">JWT for user-facing APIs (5-min lifetime, refresh via OAuth2); mTLS for machine-to-machine. Avoid long-lived API keys — they leak.</span></div>
+        <div class="ps-row"><span class="k">Topic ACLs</span><span class="v">Per-device MQTT ACL — each device can only publish to its own topic namespace (e.g., <code>tenant/abc/site-7/sensor/1234/#</code>). Prevents lateral movement if a device is compromised.</span></div>
+        <div class="ps-row"><span class="k">Rate limiting</span><span class="v">Per-device publish rate cap (default 100 msg/sec) — prevents noisy-neighbor + DDoS scenarios. Quota tracked in Redis with sliding-window algorithm.</span></div>
+        <div class="ps-row"><span class="k">Quarantine topics</span><span class="v">Sensors that produce malformed/malformed payloads are auto-quarantined to a separate Kafka topic + the device is throttled. Operator reviews and either fixes or revokes. Prevents poison-message attacks.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          The standard IoT security stack has been mTLS + X.509 + JWT for 5+ years — no surprises. The non-obvious choices: (1) <strong>Topic ACLs are the security boundary</strong>, not just network isolation — a compromised sensor should only be able to publish to its own namespace, never to other tenants' topics. EMQX supports this natively; (2) <strong>Quarantine topics</strong> are critical — a single bad sensor can DoS the whole ingest pipeline by spamming malformed Avro. Quarantine + auto-throttle limits blast radius; (3) <strong>TPM-stored private keys</strong> are required for IEC 62443-3-3 SL-3 — extractable keys in software break the audit chain.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STREAM PROCESSING ============ -->
+  <section class="ps-section" id="streaming">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">⚡</div>
+      <div>
+        <div class="ps-section-title">Stream Processing</div>
+        <div class="ps-section-subtitle">Real-time transformations, windows, joins, anomaly routing</div>
+      </div>
+      <div class="ps-section-num">LAYER 3 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Apache Flink</div><div class="ps-item-purpose">Primary stream processor</div></div>
+          <div class="ps-item-choices">Flink 1.18+ (default)</div>
+        </div>
+        <div class="ps-row"><span class="k">Use for</span><span class="v">Event-time processing with watermarks (handles out-of-order data correctly), exactly-once semantics via 2PC, windowed aggregations (tumbling, sliding, session), stateful joins (sensor stream + maintenance log), ML inference routing (call Hailo-8 edge or cloud model based on liquid placement decision).</span></div>
+        <div class="ps-row"><span class="k">Why Flink</span><span class="v">True streaming (not micro-batch), stateful, exactly-once, savepoints for state migration, robust CEP (Complex Event Processing) for alarm patterns. Industry standard for industrial streaming.</span></div>
+        <div class="ps-row"><span class="k">Sizing</span><span class="v">8 TaskManagers, 4 vCPU + 8 GB each = 32 vCPU + 64 GB total. RocksDB state backend for > 1 TB state. Checkpoint interval 30s, checkpoint to S3.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Flink vs Spark Structured Streaming: Flink is true streaming (one-event-at-a-time), Spark is micro-batch (process every N seconds). For industrial alarm scenarios where 200 ms matters, Flink wins. Flink's checkpoint mechanism (Chandy-Lamport distributed snapshot) is more mature than Spark's. We use Flink for the main pipeline + savepoints for in-place version upgrades. <strong>The complexity tax of Flink is real</strong> — 8 TMs with RocksDB tuning is non-trivial ops work — but it's the right tool for safety-critical real-time.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Kafka Streams</div><div class="ps-item-purpose">Lightweight stream processing</div></div>
+          <div class="ps-item-choices">For < 10K sensor deployments</div>
+        </div>
+        <div class="ps-row"><span class="k">Use for</span><span class="v">Lighter deployments where Flink is overkill — single service, no separate cluster, embedded in the application. State stores via RocksDB, exactly-once via transactions.</span></div>
+        <div class="ps-row"><span class="k">Limitations</span><span class="v">No event-time watermarks (processing-time only — bad for out-of-order data), no CEP, no advanced windows. Java-only.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Kafka Streams is the right answer for "I have 1000 sensors and a small ops team" — runs in your existing Java/Spring Boot app, no Flink cluster to operate. We use it for design-partner PoCs and small customers. Once a customer crosses 10K sensors or needs CEP (alarm pattern detection), graduate to Flink.
+        </div>
+      </div>
+
+      <div class="ps-item alternative">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Apache Spark Structured Streaming</div><div class="ps-item-purpose">Batch + stream unified analytics</div></div>
+          <div class="ps-item-choices">For batch + ML feature engineering</div>
+        </div>
+        <div class="ps-row"><span class="k">Use for</span><span class="v">Batch + stream unified analytics — same code path for "process last 90 days of data" (batch) and "process new data as it arrives" (stream). ML feature engineering pipelines (build features for training + serve same features online).</span></div>
+        <div class="ps-row"><span class="k">Limitations</span><span class="v">Micro-batch by default (not true streaming); latency minimum ~100ms; less mature watermark handling than Flink.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Spark Structured Streaming is the right tool for ML feature engineering where you want one codebase for offline training + online serving. We use it for the feature pipeline that builds rolling-window features (24-hour vibration RMS, 7-day alarm rate) — same Spark job runs in batch mode nightly + stream mode continuously. For pure alarm routing + low-latency inference, Flink. <strong>Both can co-exist</strong> — Flink for hot path, Spark for feature pipeline.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STORAGE ============ -->
+  <section class="ps-section" id="storage">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">💾</div>
+      <div>
+        <div class="ps-section-title">Storage</div>
+        <div class="ps-section-subtitle">Hot telemetry, lakehouse, asset hierarchy, graph, cache, search, compliance archive</div>
+      </div>
+      <div class="ps-section-num">LAYER 4 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Hot real-time telemetry</div><div class="ps-item-purpose">Last 90 days, sub-second query</div></div>
+          <div class="ps-item-choices">TimescaleDB (default)</div>
+        </div>
+        <div class="ps-row"><span class="k">TimescaleDB</span><span class="v">PostgreSQL extension for time-series — hypertables (auto-partition by time), continuous aggregates (materialized views refreshed automatically), compressed chunks (8-12× compression). SQL-native, no new language to learn.</span></div>
+        <div class="ps-row"><span class="k">InfluxDB</span><span class="v">Alternative — purpose-built TSDB, Flux query language. Faster ingest than Timescale at extreme scale (>1M points/sec), but Flux is harder to learn + smaller ecosystem. We use InfluxDB for one design partner who insisted.</span></div>
+        <div class="ps-row"><span class="k">QuestDB</span><span class="v">Alternative — fastest ingest (10M+ points/sec), SQL native, no dependencies. Newer project — community growing fast. Worth watching.</span></div>
+        <div class="ps-row"><span class="k">ClickHouse</span><span class="v">Used for OLAP analytics — fastest aggregation queries at petabyte scale, columnar, SQL native. NOT a TSDB (no auto-downsampling) but used alongside TimescaleDB for analytical workloads.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          TimescaleDB wins by being PostgreSQL — customers already have a Postgres ops story (backups, monitoring, replication). InfluxDB's Flux query language is the deal-breaker for many customers — they want SQL. ClickHouse is for OLAP analytics (which we use in the lakehouse layer), not for hot telemetry. We use both TimescaleDB (hot, last 90 days) + ClickHouse (analytical, 90 days to 5 years) — different tools for different access patterns.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Analytical lakehouse</div><div class="ps-item-purpose">Long-term analytics + ML training</div></div>
+          <div class="ps-item-choices">Apache Iceberg on S3</div>
+        </div>
+        <div class="ps-row"><span class="k">Apache Iceberg</span><span class="v">Default — open table format, schema evolution, time travel, ACID transactions on Parquet files on S3/ADLS/GCS. Native integration with Spark, Flink, Trino, DuckDB.</span></div>
+        <div class="ps-row"><span class="k">Delta Lake</span><span class="v">Alternative — Databricks' format, very similar to Iceberg. Use if you're already on Databricks.</span></div>
+        <div class="ps-row"><span class="k">Apache Hudi</span><span class="v">Alternative — best for upsert-heavy workloads (streaming + CDC). Use if your workload is dominated by updates rather than inserts.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Iceberg vs Delta vs Hudi is mostly a religious war in 2024. We chose Iceberg for: (a) Apache-governed (no single-vendor lock-in); (b) Trino + Spark + Flink all support it natively; (c) Snowflake + BigQuery + Athena all read Iceberg tables now — customer can move between warehouses. Delta is the right choice if you're on Databricks. Hudi is the right choice if your workload is upsert-heavy (e.g., CDC from Postgres). Our workload is insert-heavy time-series, so Iceberg.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Asset hierarchy</div><div class="ps-item-purpose">Relational store for tags → assets → plants</div></div>
+          <div class="ps-item-choices">PostgreSQL</div>
+        </div>
+        <div class="ps-row"><span class="k">PostgreSQL</span><span class="v">Default — battle-tested, JSONB for flexible metadata, mature ecosystem. Used for: asset registry, sensor metadata, maintenance work orders, audit log, user auth.</span></div>
+        <div class="ps-row"><span class="k">Avoid</span><span class="v">MySQL (no JSONB, weaker GEOMETRY, less mature replication), MongoDB (no transactions across collections, no SQL).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          PostgreSQL is the default and we'd need a strong reason to use anything else. JSONB + PostGIS + pg_partman (partition management) + pgvector (embeddings for Graph RAG) all in one database. The Postgres ecosystem is the strongest in databases — Citus for horizontal scale, TimescaleDB for time-series, Supabase for managed Postgres. We use Postgres for everything except time-series (where we split out TimescaleDB on a separate cluster).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Graph relationships</div><div class="ps-item-purpose">Asset dependency + cause-effect graph</div></div>
+          <div class="ps-item-choices">Neo4j (default) / Apache AGE</div>
+        </div>
+        <div class="ps-row"><span class="k">Neo4j</span><span class="v">Default — best-in-class graph database, Cypher query language, mature ecosystem. Used for: Graph RAG (sensor → asset → system → plant), causal inference backtracking, root-cause analysis.</span></div>
+        <div class="ps-row"><span class="k">Amazon Neptune</span><span class="v">Cloud alternative — managed, scales well, supports Gremlin + SPARQL. Use if you're all-in on AWS.</span></div>
+        <div class="ps-row"><span class="k">PostgreSQL + Apache AGE</span><span class="v">If you want to avoid a separate graph database — AGE adds Cypher to Postgres. Less mature than Neo4j but no separate ops.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Graph databases are critical for causal inference ("which upstream sensor caused this downstream alarm?") and Graph RAG (LLM retrieves from a graph rather than vector embeddings). We use Neo4j for the depth of Cypher + the maturity of the APOC library. <strong>If a customer doesn't want a separate graph database</strong>, Apache AGE on PostgreSQL works for the basic cases — it's a good fallback for small deployments.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Fast state / cache</div><div class="ps-item-purpose">Real-time state + dedup</div></div>
+          <div class="ps-item-choices">Redis</div>
+        </div>
+        <div class="ps-row"><span class="k">Redis</span><span class="v">Default — single-threaded but very fast, supports persistence (AOF + RDB), HA via Redis Sentinel or Redis Cluster. Used for: dedup keys, rate-limit counters, alarm state cache, session store, Pub/Sub for live UI updates.</span></div>
+        <div class="ps-row"><span class="k">Alternatives</span><span class="v">Dragonfly (drop-in Redis replacement, multi-threaded, faster), KeyDB (similar), Memcached (only if you need pure cache without persistence).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Redis is the default. Dragonfly/KeyDB are 2024-evolutions that solve Redis's single-threaded bottleneck — useful if you have > 100K ops/sec on a single key. For most industrial workloads, Redis is fine. Memcached if you need pure cache without persistence — but you lose the rich data structures (sorted sets, hyperloglog) that Redis gives you.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Object storage</div><div class="ps-item-purpose">Blobs, Parquet, models, images</div></div>
+          <div class="ps-item-choices">S3-compatible (default)</div>
+        </div>
+        <div class="ps-row"><span class="k">S3</span><span class="v">Default cloud — AWS S3 or S3-compatible (MinIO on-prem, GCS for Google, ADLS for Azure).</span></div>
+        <div class="ps-row"><span class="k">MinIO</span><span class="v">For on-prem / air-gapped — drop-in S3 API, erasure coding, Kubernetes-native. Used in every on-prem deployment.</span></div>
+        <div class="ps-row"><span class="k">Azure Blob</span><span class="v">If you're all-in on Azure. Same role as S3.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          The S3 API is the de-facto standard — every analytics tool (Spark, Trino, DuckDB, Iceberg) reads S3. Choose your S3-compatible backend based on deployment: AWS S3 in cloud, MinIO on-prem. Avoid Azure Blob's proprietary API if you want portability — ADLS Gen2 is S3-compatible enough.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Search / incidents</div><div class="ps-item-purpose">Full-text search across alerts, audit log, events</div></div>
+          <div class="ps-item-choices">OpenSearch (default)</div>
+        </div>
+        <div class="ps-row"><span class="k">OpenSearch</span><span class="v">Default — Apache 2.0 fork of Elasticsearch, fully open-source, no Elastic license issues. Used for: full-text search across alarms, audit log, events, maintenance records.</span></div>
+        <div class="ps-row"><span class="k">Elasticsearch</span><span class="v">Alternative — mature but moved to SSPL license in 2021 (not Apache 2.0). Some customers avoid for license reasons.</span></div>
+        <div class="ps-row"><span class="k">Quickwit</span><span class="v">Emerging — Rust-based, 10× cheaper for log-scale workloads. Worth watching for 2025.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          OpenSearch is the safe choice — Apache 2.0, AWS-backed, fully compatible with Elasticsearch APIs. We avoid Elasticsearch proper due to the 2021 SSPL license change — some customers can't accept it. Quickwit is the future for log-scale workloads but new; we'll evaluate in 2025.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Compliance archive (WORM)</div><div class="ps-item-purpose">Immutable audit log for regulators</div></div>
+          <div class="ps-item-choices">S3 Object Lock + Glacier</div>
+        </div>
+        <div class="ps-row"><span class="k">S3 Object Lock</span><span class="v">Default — WORM (Write-Once-Read-Many) on individual objects, governance or compliance mode, retention period up to 100 years. Used for: EPA-required 5-year retention of emission logs, SEC-required 7-year retention of audit logs, OSHA 5-year retention of injury logs.</span></div>
+        <div class="ps-row"><span class="k">AWS Glacier Deep Archive</span><span class="v">Cold storage tier — $0.00099/GB-month, retrieval time 12 hours. Used for: archived data > 1 year old that regulators might request.</span></div>
+        <div class="ps-row"><span class="k">On-prem WORM</span><span class="v">MinIO Object Locking + immutable tape (LTO-9). Used for: air-gapped customers who can't use AWS Glacier.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          WORM storage is required for almost every regulatory regime in industrial — EPA, OSHA, SEC, FDA, NERC all require 5-7 year immutable retention. S3 Object Lock is the cheapest path for cloud customers; on-prem customers use MinIO + LTO-9 tape. We do NOT use blockchain for WORM (a common suggestion) — blockchain is overkill for "make sure nobody tampered with last year's audit log".
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ ML / MLOPS ============ -->
+  <section class="ps-section" id="ml">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">🧠</div>
+      <div>
+        <div class="ps-section-title">ML / MLOps</div>
+        <div class="ps-section-subtitle">Training, feature store, registry, drift, edge inference</div>
+      </div>
+      <div class="ps-section-num">LAYER 5 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">ML stack</div><div class="ps-item-purpose">Training + serving</div></div>
+          <div class="ps-item-choices">Python + PyTorch + scikit-learn + XGBoost</div>
+        </div>
+        <div class="ps-row"><span class="k">Python</span><span class="v">The lingua franca of ML — every library has a Python API. We use Python 3.11+ for ML; Rust for everything else.</span></div>
+        <div class="ps-row"><span class="k">PyTorch</span><span class="v">Default for TS-FM training — 350M-param transformer, mixed precision (bf16), distributed via FSDP, trained on 8× A100 80GB. Industry standard for foundation models.</span></div>
+        <div class="ps-row"><span class="k">scikit-learn</span><span class="v">For classic ML — PCA, isolation forest, regression baselines. Used for: quick baselines, feature engineering experiments.</span></div>
+        <div class="ps-row"><span class="k">XGBoost</span><span class="v">For tabular ML — best-in-class for tabular features. Used for: RUL prediction (remaining useful life) when fine-tuned on a specific asset class.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Standard ML stack — no surprises. PyTorch (not TensorFlow) because (a) PyTorch has 70%+ research share, (b) Hailo Model Compiler prefers PyTorch, (c) ONNX export from PyTorch is rock-solid. We avoid JAX for now because the ecosystem is still smaller. XGBoost for tabular — LightGBM and CatBoost are alternatives but XGBoost has the broadest deployment (every cloud ML service supports it).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Feature store</div><div class="ps-item-purpose">Online + offline feature serving</div></div>
+          <div class="ps-item-choices">Feast (default) / custom</div>
+        </div>
+        <div class="ps-row"><span class="k">Feast</span><span class="v">Open-source feature store — offline (Iceberg/Parquet) + online (Redis/DynamoDB) feature serving. Decouples feature engineering from model training + serving.</span></div>
+        <div class="ps-row"><span class="k">Custom</span><span class="v">For customers who want full control — store features in PostgreSQL + Redis, version features with the model. More work but simpler architecture.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Feast is the only production-grade open-source feature store. Tecton (commercial Feast) is the right choice if you want commercial SLA. Custom is the right choice if your features are simple (e.g., just rolling-window aggregates). We default to Feast + Redis online + Iceberg offline.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Model registry</div><div class="ps-item-purpose">Versioned model artifacts</div></div>
+          <div class="ps-item-choices">MLflow (default)</div>
+        </div>
+        <div class="ps-row"><span class="k">MLflow</span><span class="v">Default — open-source, model versioning, experiment tracking, model stage transitions (staging/prod), deployment integration. Used for every model we ship.</span></div>
+        <div class="ps-row"><span class="k">Weights & Biases</span><span class="v">Commercial alternative — better UI, better experiment tracking, but $$ for large teams. We use MLflow for the registry + W&B for experiment tracking when budget allows.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          MLflow is the safe default for the registry. W&B is better for experiment tracking (hyperparameter sweeps, run comparison) but expensive. We use both — MLflow for the registry (where the artifact lives), W&B for experiment metadata (how we got there).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Drift monitoring</div><div class="ps-item-purpose">Detect model degradation</div></div>
+          <div class="ps-item-choices">Evidently + Prometheus</div>
+        </div>
+        <div class="ps-row"><span class="k">Evidently</span><span class="v">Open-source drift detection — PSI (Population Stability Index), KS-test, KL-divergence, JS-divergence. Generates HTML reports + JSON metrics.</span></div>
+        <div class="ps-row"><span class="k">Prometheus</span><span class="v">Metrics pipeline — Evidently emits Prometheus metrics, Grafana dashboards + Alertmanager for paging. Same observability stack as the rest of the platform.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Drift detection is a non-trivial part of the ML platform — a 350M-param model can silently degrade if the input distribution shifts. Evidently is the best open-source option; Arize Phoenix is the commercial alternative. We emit drift metrics to Prometheus so alerts integrate with existing ops alerting (no separate ML alerting system).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Edge inference</div><div class="ps-item-purpose">Run ML on Hailo / Orin / x86</div></div>
+          <div class="ps-item-choices">ONNX Runtime + Hailo + TensorRT + OpenVINO</div>
+        </div>
+        <div class="ps-row"><span class="k">ONNX Runtime</span><span class="v">Default for x86 + Orin — cross-platform, supports CUDA, TensorRT, OpenVINO execution providers. Used for: TS-FM inference on edge x86 servers.</span></div>
+        <div class="ps-row"><span class="k">Hailo-8</span><span class="v">For Hailo accelerator — Hailo Model Compiler converts PyTorch/ONNX to Hailo binary. Used for: TS-FM inference on Hailo-8 (26 TOPS, 2.5 W).</span></div>
+        <div class="ps-row"><span class="k">TensorRT</span><span class="v">For NVIDIA GPUs — fastest inference on Orin / T4 / A100. Used for: vision pipelines on Jetson Orin.</span></div>
+        <div class="ps-row"><span class="k">OpenVINO</span><span class="v">For Intel hardware — CPU, iGPU, VPU (Movidius). Used if customer has Intel-only edge hardware.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          We use multiple inference engines because no single engine covers all hardware. ONNX Runtime is the cross-platform default; Hailo SDK for Hailo-8; TensorRT for NVIDIA. We compile each model to multiple targets in the model registry and the liquid placement scheduler picks the best at runtime based on the edge hardware present. <strong>ONNX is the lingua franca</strong> — every framework exports to ONNX, every hardware vendor supports ONNX.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ OBSERVABILITY ============ -->
+  <section class="ps-section" id="observability">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">📊</div>
+      <div>
+        <div class="ps-section-title">Observability & Operations</div>
+        <div class="ps-section-subtitle">Kubernetes, metrics, logs, traces, infra-as-code, GitOps</div>
+      </div>
+      <div class="ps-section-num">LAYER 6 / 7</div>
+    </div>
+
+    <div class="ps-layer-grid">
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Kubernetes</div><div class="ps-item-purpose">Container orchestration</div></div>
+          <div class="ps-item-choices">Kubernetes 1.30+</div>
+        </div>
+        <div class="ps-row"><span class="k">K8s</span><span class="v">Default — only sensible choice for cloud-native orchestration in 2024. KubeEdge for edge clusters (single-node k3s also fine for small sites).</span></div>
+        <div class="ps-row"><span class="k">Avoid</span><span class="v">Docker Swarm (deprecated 2020), Nomad (smaller community, fewer features), ECS (AWS-only lock-in).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          K8s won the orchestration war in 2018-2020. We use vanilla K8s (upstream) for portability — customer can run on EKS, GKE, AKS, OpenShift, Rancher, or self-managed. KubeEdge extends K8s to edge — same API, same manifests, just slower (satellite latency for control plane).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Metrics + dashboards</div><div class="ps-item-purpose">Time-series metrics + visualization</div></div>
+          <div class="ps-item-choices">Prometheus + Grafana</div>
+        </div>
+        <div class="ps-row"><span class="k">Prometheus</span><span class="v">Default metrics pipeline — pull-based, TSDB, PromQL query language, Alertmanager for paging. Used for: every component's metrics (Kafka, Flink, edge, ML, custom).</span></div>
+        <div class="ps-row"><span class="k">Grafana</span><span class="v">Default dashboard — supports Prometheus + Loki + Tempo + Jaeger + ClickHouse + PostgreSQL + many more. Used for: every ops dashboard.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Prometheus + Grafana is the de-facto standard for K8s observability. No real alternatives — VictoriaMetrics is a Prometheus-compatible drop-in (faster, less memory) if you hit scale issues. Grafana has competition (Apache Superset, PowerBI) but for ops dashboards, Grafana wins.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Distributed tracing</div><div class="ps-item-purpose">Cross-service request tracing</div></div>
+          <div class="ps-item-choices">OpenTelemetry</div>
+        </div>
+        <div class="ps-row"><span class="k">OpenTelemetry</span><span class="v">Default — CNCF project, vendor-neutral, auto-instrumentation for every language. Used for: tracing MQTT messages through Kafka through Flink through ML inference.</span></div>
+        <div class="ps-row"><span class="k">Backends</span><span class="v">Tempo (Grafana ecosystem, open-source), Jaeger (CNCF, open-source), Datadog (commercial), Honeycomb (commercial).</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          OpenTelemetry is the only sensible choice — it's the standard. Vendor lock-in to Datadog or Honeycomb is real (their SDKs instrument differently); OTel gives you portability. We use Tempo as the backend (open-source, Grafana integration).
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Logs</div><div class="ps-item-purpose">Centralized structured logs</div></div>
+          <div class="ps-item-choices">Loki (default) / ELK</div>
+        </div>
+        <div class="ps-row"><span class="k">Loki</span><span class="v">Default — Grafana's log aggregation, index by labels only (not full text), 10× cheaper than ELK at scale. Used for: every container log, every application log.</span></div>
+        <div class="ps-row"><span class="k">ELK / EFK</span><span class="v">Alternative — full-text index, more flexible query, but expensive at petabyte scale. Use if you need full-text log search.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Loki's "index by labels, store logs raw" approach is much cheaper than ELK's full-text indexing. We use Loki for application + container logs (90% of volume); ELK only for the audit log where full-text search is needed. Hybrid is the right answer for most customers.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">Infrastructure as code</div><div class="ps-item-purpose">Reproducible infra</div></div>
+          <div class="ps-item-choices">Terraform + Ansible + Helm</div>
+        </div>
+        <div class="ps-row"><span class="k">Terraform</span><span class="v">For cloud infra — VPCs, subnets, IAM, K8s clusters, S3 buckets. Declarative, state file in S3+DynamoDB lock. Multi-cloud via providers.</span></div>
+        <div class="ps-row"><span class="k">Ansible</span><span class="v">For bare-metal + edge nodes — provisioning, configuration, application deployment. Agent-less (SSH-based), YAML playbooks. Used for: edge gateway setup, on-prem K8s nodes.</span></div>
+        <div class="ps-row"><span class="k">Helm</span><span class="v">For K8s application packaging — every component ships as a Helm chart. Used for: deploying SentinelEdge stack itself + dependencies.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          Terraform for cloud, Ansible for bare-metal — this is the standard split. Terraform for bare-metal exists (Terraform-provider-for-Proxmox etc.) but Ansible is better for it. Pulumi (alternative to Terraform, code in TypeScript/Python) is the right choice if your team is JS-native, but the Terraform ecosystem is broader. Helm won the K8s packaging war.
+        </div>
+      </div>
+
+      <div class="ps-item">
+        <div class="ps-item-head">
+          <div><div class="ps-item-name">GitOps</div><div class="ps-item-purpose">Declarative deployments from Git</div></div>
+          <div class="ps-item-choices">ArgoCD (default) / Flux</div>
+        </div>
+        <div class="ps-row"><span class="k">ArgoCD</span><span class="v">Default — CNCF graduated, UI-rich, multi-cluster, multi-tenancy, sync waves. Used for: deploying + reconciling every environment from Git.</span></div>
+        <div class="ps-row"><span class="k">Flux</span><span class="v">Alternative — CNCF graduated, lighter-weight, CLI-first, webhooks. Use if you prefer CLI over UI.</span></div>
+        <div class="ps-thoughts">
+          <div class="ps-thoughts-title">Our reasoning</div>
+          ArgoCD vs Flux is largely taste. ArgoCD has a richer UI + multi-cluster out of the box. Flux is lighter + has better CLI. We default to ArgoCD because customers want the UI for ops visibility. Both work fine — pick the one your team likes.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <section class="ps-section" id="summary">
+    <div class="ps-section-header">
+      <div class="ps-section-icon">🎯</div>
+      <div>
+        <div class="ps-section-title">Summary & Alternatives</div>
+        <div class="ps-section-subtitle">What we picked, what we'd pick differently, and how to validate the choices</div>
+      </div>
+      <div class="ps-section-num">LAYER 7 / 7</div>
+    </div>
+
+    <div style="padding: 24px; background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 8%, var(--card)), color-mix(in srgb, var(--violet) 6%, var(--card))); border: 1px solid var(--border-strong); border-radius: 12px; margin-bottom: 20px;">
+      <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; margin-bottom: 12px;">The 30-component stack at a glance</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; font-size: 13px;">
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">Edge:</strong> Hailo-8 + Jetson Orin + rugged x86 · Rust + C++ + Python · SQLite + DuckDB · MQTT Sparkplug B + OPC UA + Modbus + HART + 5 more · 8 edge capabilities</div>
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">Ingestion:</strong> EMQX + Mosquitto · Kafka + Redpanda + Pulsar · Avro + Protobuf + JSON Schema · mTLS + JWT + ACLs + rate limit + quarantine</div>
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">Streaming:</strong> Apache Flink (primary) + Kafka Streams (lightweight) + Spark Structured Streaming (batch+stream)</div>
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">Storage:</strong> TimescaleDB + InfluxDB/QuestDB/ClickHouse · Iceberg on S3 + MinIO · PostgreSQL + Neo4j + Redis · OpenSearch · S3 Object Lock + Glacier</div>
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">ML/MLOps:</strong> PyTorch + scikit-learn + XGBoost · Feast + MLflow + Evidently · ONNX Runtime + Hailo + TensorRT + OpenVINO</div>
+        <div style="padding: 12px; background: var(--bg-2); border-radius: 6px; border: 1px solid var(--border);"><strong style="color: var(--cyan);">Observability:</strong> Kubernetes + KubeEdge · Prometheus + Grafana · OpenTelemetry + Tempo · Loki + ELK · Terraform + Ansible + Helm · ArgoCD</div>
+      </div>
+    </div>
+
+    <div style="padding: 20px; background: var(--bg-2); border-left: 3px solid var(--violet); border-radius: 8px; margin-bottom: 20px;">
+      <h4 style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin-bottom: 10px;">What we'd pick differently for different customer profiles</h4>
+      <ul style="padding-left: 20px; color: var(--text-dim); font-size: 13px; line-height: 1.8;">
+        <li><strong>Small / PoC (≤ 1K sensors, single site):</strong> Mosquitto + Kafka Streams (no Flink cluster) + TimescaleDB + Postgres + MinIO + vanilla K8s. Skip: Neo4j, Flink, Iceberg. Saves 80% of ops burden.</li>
+        <li><strong>Mid (1K-50K sensors, multi-site):</strong> EMQX + Kafka + Flink + TimescaleDB + Postgres + Neo4j + Iceberg + OpenSearch + Prometheus. Standard stack.</li>
+        <li><strong>Large (50K-500K sensors, multi-region):</strong> EMQX cluster + Kafka cluster (5-10 brokers) + Flink cluster (16+ TMs) + TimescaleDB cluster + Postgres cluster + Neo4j cluster + Iceberg on S3 + OpenSearch cluster + Prometheus + Thanos for multi-region metrics. Consider Pulsar if geo-replication is critical.</li>
+        <li><strong>Air-gapped (oil & gas, defense, nuclear):</strong> Same as Large but on-prem — MinIO instead of S3, internal CA for certs, no external dependencies. Tape archive for WORM.</li>
+        <li><strong>Edge-only (no cloud):</strong> Hailo-8 + K3s + SQLite + DuckDB + local Postgres + local Neo4j. Sync to cloud when WAN available, but run fully autonomous.</li>
+      </ul>
+    </div>
+
+    <div style="padding: 20px; background: var(--bg-2); border-left: 3px solid var(--green); border-radius: 8px;">
+      <h4 style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin-bottom: 10px;">How to validate these choices for your deployment</h4>
+      <p style="color: var(--text-dim); font-size: 13px; line-height: 1.7;">This stack is the result of 4 years of iteration across 18+ design partner deployments. It is opinionated but not religious — every alternative listed above is a valid choice for the right customer. The way to validate for <em>your</em> deployment:</p>
+      <ol style="padding-left: 24px; color: var(--text-dim); font-size: 13px; line-height: 1.8;">
+        <li>Run the <a href="portal.html" style="color: var(--cyan);">60-day design partner pilot</a> with your actual sensor estate (free).</li>
+        <li>Benchmark ingest throughput + ML latency on your data shape (we ship a <a href="https://github.com/testdemoqwenai2025-creator/AISensorEdgeComp-Platform/blob/main/datasets/synthetic-industrial-telemetry-v1.parquet" target="_blank" rel="noopener" style="color: var(--cyan);">1M-row synthetic dataset</a> you can use as a baseline).</li>
+        <li>Test WAN-loss resilience (we simulate 72-hour disconnect during pilot).</li>
+        <li>Review the per-component cost model with your finance team — total cost of ownership is documented in the ROI calculator.</li>
+      </ol>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px;">
+      <a href="engineering.html" class="btn btn-ghost">← Engineering Hub</a>
+      <a href="architecture-deep.html" class="btn btn-ghost">Architecture deep dive →</a>
+      <a href="comparison.html" class="btn btn-ghost">Competitive comparison →</a>
+      <a href="portal.html" class="btn btn-primary">Start your pilot →</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" style="color: var(--cyan);">⚡ Live MVP Dashboard</a>
+    <a href="engineering.html">Engineering Hub</a>
+    <a href="architecture-deep.html">Architecture</a>
+    <a href="comparison.html">Competitive Comparison</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  &copy; 2026 AISensorEdgeComp &middot; Recommended Production Stack &middot; <a href="#top">Back to top</a>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
