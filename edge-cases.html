@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AISensorEdgeComp — 78 Edge Cases Addressed</title>
-<meta name="description" content="Comprehensive coverage of 78 industrial IoT edge cases across 6 categories (sensor, network, data quality, process, ML, safety) — with sector-specific mitigations for each of 7 scenarios." />
+<title>AISensorEdgeComp — 104 Edge Cases + Functional Design Addressed</title>
+<meta name="description" content="Comprehensive coverage of 104 industrial IoT edge cases across 9 categories (sensor, network, data quality, process, ML, safety, infrastructure, human/organizational, regulatory) plus functional design (ingestion, stream pipeline, rule engine) — with sector-specific mitigations for each of 7 scenarios." />
 <meta name="theme-color" content="#050810" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="AISensorEdgeComp" />
-<meta property="og:title" content="78 Edge Cases Addressed — Sector-Specific Mitigations" />
-<meta property="og:description" content="All 78 industrial IoT edge cases (sensor, network, data quality, process, ML, safety) covered with sector-specific implementations for 7 scenarios." />
+<meta property="og:title" content="104 Edge Cases + Functional Design — Sector-Specific Mitigations" />
+<meta property="og:description" content="All 104 industrial IoT edge cases (sensor, network, data quality, process, ML, safety, infrastructure, human/organizational, regulatory) covered with sector-specific implementations for 7 scenarios. Plus functional design (ingestion, stream pipeline, rule engine)." />
 <meta property="og:url" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/edge-cases.html" />
 <meta property="og:image" content="https://testdemoqwenai2025-creator.github.io/DemoSentinelEdge/og-cover.svg" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@aisensoredgecomp" />
-<meta name="twitter:title" content="AISensorEdgeComp — 78 Edge Cases Addressed" />
-<meta name="twitter:description" content="Comprehensive coverage of 78 industrial IoT edge cases with sector-specific mitigations." />
+<meta name="twitter:title" content="AISensorEdgeComp — 104 Edge Cases + Functional Design Addressed" />
+<meta name="twitter:description" content="Comprehensive coverage of 104 industrial IoT edge cases + functional design with sector-specific mitigations." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -119,6 +119,92 @@
     font-size: 20px; color: var(--green); text-align: center; font-weight: bold; padding-top: 2px;
   }
 
+  /* Functional Design section */
+  .ec-functional-divider {
+    text-align: center; padding: 60px 24px; margin: 80px 0 40px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cyan) 4%, var(--bg-2)), color-mix(in srgb, var(--violet) 4%, var(--bg-2)));
+    border: 1px solid var(--border-strong); border-radius: 16px;
+  }
+  .ec-functional-divider-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700; margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .ec-functional-divider-sub {
+    color: var(--text-dim); max-width: 760px; margin: 0 auto; font-size: 14px; line-height: 1.7;
+  }
+  .ec-func-h3 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600;
+    color: var(--text); margin: 24px 0 12px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .ec-func-list { margin-bottom: 24px; }
+  .ec-func-row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 16px;
+    padding: 12px 16px; background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 8px; align-items: start;
+  }
+  .ec-func-name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px;
+    color: var(--text);
+  }
+  .ec-func-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+  .ec-freq-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan);
+    text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500;
+  }
+  .ec-freq-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* Pipeline list */
+  .ec-pipeline-list { margin: 16px 0; }
+  .ec-pipeline-row {
+    display: grid; grid-template-columns: 36px 220px 1fr; gap: 16px;
+    padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border);
+    border-left: 3px solid var(--violet); border-radius: 8px; margin-bottom: 8px; align-items: start;
+  }
+  .ec-pipeline-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700;
+    color: var(--violet); text-align: center;
+  }
+  .ec-pipeline-name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px;
+    color: var(--text);
+  }
+  .ec-pipeline-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* Rule list */
+  .ec-rule-list { margin: 16px 0; }
+  .ec-rule-row {
+    display: grid; grid-template-columns: 36px 220px 1fr; gap: 16px;
+    padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border);
+    border-left: 3px solid #f97316; border-radius: 8px; margin-bottom: 8px; align-items: start;
+  }
+  .ec-rule-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700;
+    color: #f97316; text-align: center;
+  }
+  .ec-rule-name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px;
+    color: var(--text);
+  }
+  .ec-rule-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* Nav separator */
+  .ec-nav-separator {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.1em; padding: 10px 14px;
+    align-self: center;
+  }
+
   /* Hub CTA at bottom */
   .ec-hub-cta {
     text-align: center; padding: 60px 40px;
@@ -163,9 +249,9 @@
   <div class="page-hero-glow"></div>
   <div class="page-hero-content">
     <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><a href="engineering.html">Engineering</a><span class="sep">/</span><span>Edge Cases</span></div>
-    <div class="page-hero-badge"><span class="dot"></span>79 edge cases · 6 categories · 7 sectors · Audit-graded</div>
-    <h1>79 Edge Cases <span class="accent">Addressed</span></h1>
-    <p class="lead">Every industrial IoT platform must handle the 78 edge cases below — sensor faults, network failures, data quality issues, process transients, ML failure modes, and safety conditions. Each case has a general mitigation strategy, plus a sector-specific implementation for each of our 7 scenarios. Click the sector tabs to see how SentinelEdge handles each case in <em>your</em> vertical.</p>
+    <div class="page-hero-badge"><span class="dot"></span>104 edge cases · 9 categories · 7 sectors · Plus functional design</div>
+    <h1>104 Edge Cases <span class="accent">+ Functional Design</span></h1>
+    <p class="lead">Every industrial IoT platform must handle the 104 edge cases below — sensor faults, network failures, data quality issues, process transients, ML failure modes, safety conditions, infrastructure failures, human/organizational issues, and regulatory/compliance requirements — plus the functional design for ingestion, stream processing, and rule engine that ties it all together. Each edge case has a general mitigation strategy, plus a sector-specific implementation for each of our 7 scenarios. Click the sector tabs to see how SentinelEdge handles each case in <em>your</em> vertical.</p>
     <div class="page-hero-cta" style="margin-top: 24px;">
       <a href="#sensor" class="btn btn-primary">Browse edge cases →</a>
       <a href="engineering.html" class="btn btn-ghost">Engineering Hub</a>
@@ -178,10 +264,11 @@
 
   <!-- Stats bar -->
   <div class="ec-stats">
-    <div class="stat"><div class="num">79</div><div class="lbl">Total Edge Cases</div></div>
-    <div class="stat"><div class="num">6</div><div class="lbl">Categories</div></div>
+    <div class="stat"><div class="num">104</div><div class="lbl">Total Edge Cases</div></div>
+    <div class="stat"><div class="num">9</div><div class="lbl">Categories</div></div>
     <div class="stat"><div class="num">7</div><div class="lbl">Sector Implementations</div></div>
-    <div class="stat"><div class="num">553</div><div class="lbl">Sector-Specific Responses</div></div>
+    <div class="stat"><div class="num">728</div><div class="lbl">Sector-Specific Responses</div></div>
+    <div class="stat"><div class="num">31</div><div class="lbl">Functional Design Items</div></div>
     <div class="stat"><div class="num">100%</div><div class="lbl">Mitigation Coverage</div></div>
   </div>
 
@@ -193,9 +280,16 @@
 <a href="#process" class="ec-nav-item" style="border-left-color: #f97316;">⚙️ Process and Operational Edge Cases <span class="ec-nav-count">16</span></a>
 <a href="#ml" class="ec-nav-item" style="border-left-color: #a855f7;">🧠 Analytics and ML Edge Cases <span class="ec-nav-count">13</span></a>
 <a href="#safety" class="ec-nav-item" style="border-left-color: #dc2626;">🛡️ Safety and Control Edge Cases <span class="ec-nav-count">10</span></a>
+<a href="#infrastructure" class="ec-nav-item" style="border-left-color: #0891b2;">🏗️ Infrastructure Edge Cases <span class="ec-nav-count">10</span></a>
+<a href="#human-organizational" class="ec-nav-item" style="border-left-color: #10b981;">👥 Human and Organizational Edge Cases <span class="ec-nav-count">8</span></a>
+<a href="#regulatory" class="ec-nav-item" style="border-left-color: #7c3aed;">📜 Regulatory and Compliance Edge Cases <span class="ec-nav-count">7</span></a>
+<span class="ec-nav-separator">Functional Design:</span>
+<a href="#functional-telemetry-ingestion" class="ec-nav-item" style="border-left-color: #06b6d4;">🌊 Real-Time Telemetry Ingestion <span class="ec-nav-count">→</span></a>
+<a href="#functional-stream-pipeline" class="ec-nav-item" style="border-left-color: #a855f7;">⚡ Stream Processing Pipeline <span class="ec-nav-count">→</span></a>
+<a href="#functional-rule-engine" class="ec-nav-item" style="border-left-color: #f97316;">⚙️ Rule Engine <span class="ec-nav-count">→</span></a>
   </div>
 
-  <!-- Sections -->
+  <!-- Edge Case Sections -->
   
     <section class="ec-category-section" id="sensor">
       <div class="ec-cat-header" style="border-left-color: #06b6d4;">
@@ -1618,9 +1712,520 @@
       </div>
     </section>
 
+    <section class="ec-category-section" id="infrastructure">
+      <div class="ec-cat-header" style="border-left-color: #0891b2;">
+        <div class="ec-cat-icon">🏗️</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Infrastructure Edge Cases</div>
+          <div class="ec-cat-subtitle">Database, streaming, storage, query, region, and DR failures — 10 cases every platform must survive.</div>
+          <div class="ec-cat-count">10 edge cases</div>
+        </div>
+      </div>
+      <div class="ec-cases">
+        
+        <div class="ec-row" id="case-infrastructure-1">
+          <div class="ec-row-num">1</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Database failure</div>
+            <div class="ec-row-desc">Time-series DB unavailable (TimescaleDB/ClickHouse/Postgres down)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Replication (1 primary + 2 replicas, sync commit), automatic failover via Patroni &lt; 10s, edge SQLite buffer absorbs outage, alerts routed via edge rules during DB loss</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-1-0" onclick="switchEcTab(this, 'tab-infrastructure-1-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-1" onclick="switchEcTab(this, 'tab-infrastructure-1-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-2" onclick="switchEcTab(this, 'tab-infrastructure-1-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-3" onclick="switchEcTab(this, 'tab-infrastructure-1-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-4" onclick="switchEcTab(this, 'tab-infrastructure-1-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-5" onclick="switchEcTab(this, 'tab-infrastructure-1-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-1-6" onclick="switchEcTab(this, 'tab-infrastructure-1-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-1-0">TimescaleDB cluster 3 nodes (1 primary + 2 sync replicas via Patroni), failover &lt; 10s, edge SQLite buffer 72h absorbs outage. During DB loss: edge rules keep firing, alarms persist locally, cloud catches up on restore.</div><div class="ec-tab-content " id="tab-infrastructure-1-1">TimescaleDB cluster 3 nodes via Patroni, failover &lt; 10s. Edge SGX enclave on edge server runs all sepsis-detection inference locally — DB failure = no analytics, but sepsis alarms keep firing. 8-hour UPS + generator backup.</div><div class="ec-tab-content " id="tab-infrastructure-1-2">Edge-only operation (4× Orin per vehicle) — DB failure in cloud = no fleet learning, but driving continues. Cloud TimescaleDB cluster 3 nodes via Patroni for fleet analytics.</div><div class="ec-tab-content " id="tab-infrastructure-1-3">TimescaleDB cluster 3 nodes via Patroni. Failover &lt; 10s. Edge SQLite buffer 35h absorbs outage. During DB loss: SIS (Triconex TMR) is local + independent. Edge rules keep firing alarms. Cloud catches up on restore.</div><div class="ec-tab-content " id="tab-infrastructure-1-4">TimescaleDB cluster 3 nodes via Patroni. Failover &lt; 10s. Edge SQLite buffer 24h. During DB loss: protection relays (Schweitzer, SEL) are local + independent. Edge FLISR (self-healing) continues.</div><div class="ec-tab-content " id="tab-infrastructure-1-5">TimescaleDB cluster 3 nodes via Patroni. Failover &lt; 10s. Edge SQLite buffer 72h. During DB loss: MSHA-mandated methane evacuation is local (hardwired). Cloud catches up on restore.</div><div class="ec-tab-content " id="tab-infrastructure-1-6">TimescaleDB cluster 3 nodes via Patroni. Failover &lt; 10s. Edge SQLite buffer 35h. During DB loss: backup chlorination is local (hardwired). Edge rules keep firing alarms.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-2">
+          <div class="ec-row-num">2</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Stream processor crash</div>
+            <div class="ec-row-desc">Flink/Kafka Streams job fails (OOM, exception, node loss)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Flink checkpoints every 30s to S3, restart from last checkpoint, savepoint migration for upgrades, exactly-once via 2PC, dead-letter topic for poison messages</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-2-0" onclick="switchEcTab(this, 'tab-infrastructure-2-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-1" onclick="switchEcTab(this, 'tab-infrastructure-2-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-2" onclick="switchEcTab(this, 'tab-infrastructure-2-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-3" onclick="switchEcTab(this, 'tab-infrastructure-2-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-4" onclick="switchEcTab(this, 'tab-infrastructure-2-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-5" onclick="switchEcTab(this, 'tab-infrastructure-2-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-2-6" onclick="switchEcTab(this, 'tab-infrastructure-2-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-2-0">Flink 8 TMs with checkpoint every 30s to S3. Job restart from last checkpoint, exactly-once via 2PC. Dead-letter topic for poison messages (e.g. malformed Modbus payloads from a misconfigured RTU). Savepoint before every code deploy.</div><div class="ec-tab-content " id="tab-infrastructure-2-1">Flink 4 TMs with 30s checkpoint to S3. Job restart from checkpoint. Dead-letter topic for poison HL7 FHIR messages (e.g. malformed observation from a Philips monitor). Savepoint before every code deploy.</div><div class="ec-tab-content " id="tab-infrastructure-2-2">Flink 8 TMs in cloud with 30s checkpoint to S3. Job restart from checkpoint. Dead-letter topic for poison CAN-FD frames. Edge inference runs locally, independent of cloud Flink.</div><div class="ec-tab-content " id="tab-infrastructure-2-3">Flink 8 TMs with 30s checkpoint to S3. Job restart from checkpoint. Dead-letter topic for poison OPC-UA payloads. Savepoint before every code deploy.</div><div class="ec-tab-content " id="tab-infrastructure-2-4">Flink 8 TMs with 30s checkpoint to S3. Job restart. Dead-letter for poison DNP3 frames. Savepoint before every deploy. Critical: state estimator must run continuously.</div><div class="ec-tab-content " id="tab-infrastructure-2-5">Flink 4 TMs (edge) + 8 TMs (cloud) with 30s checkpoint to S3. Job restart. Dead-letter for poison Modbus frames. Savepoint before every deploy.</div><div class="ec-tab-content " id="tab-infrastructure-2-6">Flink 4 TMs with 30s checkpoint to S3. Job restart. Dead-letter for poison Modbus frames. Savepoint before every deploy.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-3">
+          <div class="ec-row-num">3</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Storage full</div>
+            <div class="ec-row-desc">Disk exhausted (Kafka log retention, S3 cross-region replication backlog)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Retention policies (Kafka 7d hot, 30d cold, &gt; 30d → Iceberg), tiered storage to S3, predictive capacity alerts at 70/85/95%, automatic expansion K8s PVC</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-3-0" onclick="switchEcTab(this, 'tab-infrastructure-3-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-1" onclick="switchEcTab(this, 'tab-infrastructure-3-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-2" onclick="switchEcTab(this, 'tab-infrastructure-3-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-3" onclick="switchEcTab(this, 'tab-infrastructure-3-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-4" onclick="switchEcTab(this, 'tab-infrastructure-3-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-5" onclick="switchEcTab(this, 'tab-infrastructure-3-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-3-6" onclick="switchEcTab(this, 'tab-infrastructure-3-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-3-0">Kafka 7-day hot retention, 30-day cold in tiered storage, &gt; 30 days → Iceberg on S3. Predictive capacity alerts at 70/85/95% via Prometheus + CloudWatch. K8s PVC auto-expansion via StorageClass allowVolumeExpansion.</div><div class="ec-tab-content " id="tab-infrastructure-3-1">Kafka 7-day hot, 30-day cold, &gt; 30 days → Iceberg. Predictive capacity alerts at 70/85/95%. Patient data lifecycle: 7 years (HIPAA) for adult, until age 21+7 for pediatric, longer for some.</div><div class="ec-tab-content " id="tab-infrastructure-3-2">Local SSD 1 TB per vehicle (circular buffer — diagnostics dropped first). Cloud Kafka 7-day hot, Iceberg cold. Per-vehicle data lifecycle: 90 days hot, 7 years for crash data (NHTSA Part 573).</div><div class="ec-tab-content " id="tab-infrastructure-3-3">Kafka 7-day hot, 30-day cold, &gt; 30 days → Iceberg on S3. Predictive capacity alerts at 70/85/95%. K8s PVC auto-expansion. OSHA PSM: 5 years process data retention.</div><div class="ec-tab-content " id="tab-infrastructure-3-4">Kafka 7-day hot, 30-day cold, &gt; 30 days → Iceberg on S3. NERC CIP: 7 years protection event data (COMTRADE). Predictive capacity alerts. K8s PVC auto-expansion.</div><div class="ec-tab-content " id="tab-infrastructure-3-5">Kafka 7-day hot, 30-day cold, &gt; 30 days → Iceberg on S3. MSHA: 5 years microseismic + methane. Predictive capacity alerts. K8s PVC auto-expansion.</div><div class="ec-tab-content " id="tab-infrastructure-3-6">Kafka 7-day hot, 30-day cold, &gt; 30 days → Iceberg on S3. EPA SDWA: 10 years compliance data. Predictive capacity alerts. K8s PVC auto-expansion.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-4">
+          <div class="ec-row-num">4</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Query overload</div>
+            <div class="ec-row-desc">Dashboards + analytics overload DB (100s of concurrent queries)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Read replicas (3 for analytics, 1 for dashboards), Redis cache (5-min TTL), Grafana query rate limit, ClickHouse materialized views pre-compute common aggregates</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-4-0" onclick="switchEcTab(this, 'tab-infrastructure-4-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-1" onclick="switchEcTab(this, 'tab-infrastructure-4-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-2" onclick="switchEcTab(this, 'tab-infrastructure-4-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-3" onclick="switchEcTab(this, 'tab-infrastructure-4-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-4" onclick="switchEcTab(this, 'tab-infrastructure-4-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-5" onclick="switchEcTab(this, 'tab-infrastructure-4-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-4-6" onclick="switchEcTab(this, 'tab-infrastructure-4-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-4-0">Read replicas: 3 ClickHouse replicas for offshore analytics (drilling optimization, reservoir modeling), 1 TimescaleDB replica for dashboards. Redis cache 5-min TTL for asset registry. Grafana query rate limit 100 concurrent per operator.</div><div class="ec-tab-content " id="tab-infrastructure-4-1">Read replicas: 3 for clinical research, 1 for live dashboards. Redis cache 5-min TTL for patient demographic. Grafana query rate limit per user role (resident &lt; attending &lt; researcher).</div><div class="ec-tab-content " id="tab-infrastructure-4-2">Read replicas: 3 for fleet analytics, 1 for live dashboards. Redis cache 5-min TTL for vehicle state. Grafana query rate limit per fleet operator. ClickHouse for aggregate fleet queries.</div><div class="ec-tab-content " id="tab-infrastructure-4-3">Read replicas: 3 ClickHouse for chemical process analytics (yield optimization, batch tracking), 1 TimescaleDB for dashboards. Redis cache 5-min TTL. Grafana query rate limit per operator.</div><div class="ec-tab-content " id="tab-infrastructure-4-4">Read replicas: 3 ClickHouse for grid analytics (load forecasting, renewable integration), 1 TimescaleDB for dashboards. Redis cache 5-min TTL for substation state. Grafana query rate limit per operator.</div><div class="ec-tab-content " id="tab-infrastructure-4-5">Read replicas: 3 ClickHouse for geological analysis (microseismic event correlation), 1 TimescaleDB for dashboards. Redis cache 5-min TTL. Grafana query rate limit per operator.</div><div class="ec-tab-content " id="tab-infrastructure-4-6">Read replicas: 3 ClickHouse for water quality analytics (trend analysis, regulatory reports), 1 TimescaleDB for dashboards. Redis cache 5-min TTL. Grafana query rate limit per operator.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-5">
+          <div class="ec-row-num">5</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Region outage</div>
+            <div class="ec-row-desc">Cloud region down (us-east-1 outage, AWS/Azure incident)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Multi-region deployment (active-active for read, active-passive for write), edge autonomy keeps safety running, Route53 / Azure Traffic Manager failover &lt; 5min, or single-region + 72h edge buffer</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-5-0" onclick="switchEcTab(this, 'tab-infrastructure-5-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-1" onclick="switchEcTab(this, 'tab-infrastructure-5-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-2" onclick="switchEcTab(this, 'tab-infrastructure-5-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-3" onclick="switchEcTab(this, 'tab-infrastructure-5-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-4" onclick="switchEcTab(this, 'tab-infrastructure-5-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-5" onclick="switchEcTab(this, 'tab-infrastructure-5-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-5-6" onclick="switchEcTab(this, 'tab-infrastructure-5-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-5-0">Single-region (us-east-1) + 72h edge buffer for offshore (acceptable — offshore has satellite anyway). Multi-region optional for onshore corporate. Edge autonomy keeps safety running through any cloud outage.</div><div class="ec-tab-content " id="tab-infrastructure-5-1">Hospital must operate fully autonomous. Edge SGX enclave runs full pipeline. Cloud is for reporting + research only. Single-region deployment acceptable (hospital has fiber + 5G + UPS + generator).</div><div class="ec-tab-content " id="tab-infrastructure-5-2">Vehicle operates fully autonomous — region outage = no fleet learning, no remote assistance. Multi-region cloud optional. Edge autonomy is the safety case (4× Orin + ASIL-D ECU is local).</div><div class="ec-tab-content " id="tab-infrastructure-5-3">Plant has 1 Gbps fiber + 5G CBRS. 8× Hailo-8 edge modules. 35h edge autonomy. Cloud loss = analytics loss only — SIS is local. Multi-region optional.</div><div class="ec-tab-content " id="tab-infrastructure-5-4">Substations have local edge (12× Hailo-8). 24h edge autonomy. Protection + FLISR run locally. Cloud loss = analytics + forecasting loss only. Multi-region optional for national grid.</div><div class="ec-tab-content " id="tab-infrastructure-5-5">Atacama 4500m, satellite-only (Starlink + Iridium). 72h edge autonomy. Methane evacuation logic local. Cloud loss = analytics loss only. Multi-region cloud irrelevant (satellite uplink from remote mine).</div><div class="ec-tab-content " id="tab-infrastructure-5-6">Plant fiber + LoRaWAN. 2× Hailo-8 edge modules. 35h edge autonomy. Backup chlorination local. Cloud loss = analytics loss only.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-6">
+          <div class="ec-row-num">6</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Data corruption</div>
+            <div class="ec-row-desc">Bad writes (DB bug, FS bug, silent disk corruption)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Per-row checksums, periodic scrubbing, immutable append-only event log, versioned backups with restore-test drills, ZFS/Btrfs for bit-rot detection</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-6-0" onclick="switchEcTab(this, 'tab-infrastructure-6-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-1" onclick="switchEcTab(this, 'tab-infrastructure-6-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-2" onclick="switchEcTab(this, 'tab-infrastructure-6-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-3" onclick="switchEcTab(this, 'tab-infrastructure-6-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-4" onclick="switchEcTab(this, 'tab-infrastructure-6-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-5" onclick="switchEcTab(this, 'tab-infrastructure-6-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-6-6" onclick="switchEcTab(this, 'tab-infrastructure-6-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-6-0">ZFS on K8s nodes for bit-rot detection. Per-row checksums in Iceberg. Weekly scrubbing cron. Backup to S3 with Object Lock (immutable 5 years per BSEE SEMS). Monthly restore drills.</div><div class="ec-tab-content " id="tab-infrastructure-6-1">Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock. Monthly restore drills. HIPAA requires verifiable integrity of patient data.</div><div class="ec-tab-content " id="tab-infrastructure-6-2">Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock. Per-vehicle data integrity critical for crash investigation (NHTSA Part 573 requires 7 years of crash data).</div><div class="ec-tab-content " id="tab-infrastructure-6-3">ZFS on K8s nodes for bit-rot. Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock 5 years (OSHA PSM). Monthly restore drills.</div><div class="ec-tab-content " id="tab-infrastructure-6-4">Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock. NERC PRC-005 requires verifiable protection system event data integrity.</div><div class="ec-tab-content " id="tab-infrastructure-6-5">Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock (5 years MSHA). Monthly restore drills.</div><div class="ec-tab-content " id="tab-infrastructure-6-6">Per-row checksums in Iceberg. Weekly scrubbing. Backup to S3 with Object Lock (10 years EPA SDWA). Monthly restore drills.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-7">
+          <div class="ec-row-num">7</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Clock drift in servers</div>
+            <div class="ec-row-desc">Distributed time inconsistency (NTP off, GPS loss, VM clock drift)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">NTP sync every 15min (chrony), PTP for sub-millisecond accuracy (industrial), logical clocks (Lamport/HLC) for event ordering, GPS-disciplined clocks for PMUs</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-7-0" onclick="switchEcTab(this, 'tab-infrastructure-7-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-1" onclick="switchEcTab(this, 'tab-infrastructure-7-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-2" onclick="switchEcTab(this, 'tab-infrastructure-7-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-3" onclick="switchEcTab(this, 'tab-infrastructure-7-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-4" onclick="switchEcTab(this, 'tab-infrastructure-7-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-5" onclick="switchEcTab(this, 'tab-infrastructure-7-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-7-6" onclick="switchEcTab(this, 'tab-infrastructure-7-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-7-0">GPS-disciplined clock on platform (already required for drilling). NTP via satellite (chrony, 15min sync). PTP not needed (industrial but not substation). Logical clocks (HLC) for event ordering.</div><div class="ec-tab-content " id="tab-infrastructure-7-1">Hospital NTP (1ms accuracy). PTP not needed (no sub-millisecond clinical requirement). HL7 FHIR timestamps always UTC. Local display configurable per user.</div><div class="ec-tab-content " id="tab-infrastructure-7-2">GNSS-disciplined clock per vehicle. PTP for in-vehicle network (sub-microsecond for sensor fusion). Cloud NTP. Logical clocks for event ordering. PMU equivalent: GPS timestamp on every sensor frame.</div><div class="ec-tab-content " id="tab-infrastructure-7-3">Plant NTP (1ms accuracy). PTP for substation I/O. Logical clocks for event ordering. Skew correction per device.</div><div class="ec-tab-content " id="tab-infrastructure-7-4">GPS-disciplined clock per PMU (1 μs accuracy required per IEEE C37.118). PTP for substations (sub-microsecond). NTP for corporate. Logical clocks for event ordering.</div><div class="ec-tab-content " id="tab-infrastructure-7-5">Above-ground: GPS. Underground: no GPS — NTP via leaky feeder (10ms accuracy). PTP not needed (mining not sub-millisecond). Logical clocks for event ordering. Skew correction per device.</div><div class="ec-tab-content " id="tab-infrastructure-7-6">Plant NTP. LoRaWAN: TDMA-based, 100ms accuracy. PTP not needed. Logical clocks for event ordering. Skew correction per device.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-8">
+          <div class="ec-row-num">8</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Cost explosion</div>
+            <div class="ec-row-desc">Too much high-frequency data sent to cloud (vibration 25.6kHz × 1000 sensors = explosion)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Downsampling at edge (decimate 25.6kHz → 1kHz for cloud), compression (delta-of-delta 8-12x), lifecycle policies (Iceberg time-travel tiering), carbon-aware routing off-peak</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-8-0" onclick="switchEcTab(this, 'tab-infrastructure-8-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-1" onclick="switchEcTab(this, 'tab-infrastructure-8-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-2" onclick="switchEcTab(this, 'tab-infrastructure-8-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-3" onclick="switchEcTab(this, 'tab-infrastructure-8-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-4" onclick="switchEcTab(this, 'tab-infrastructure-8-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-5" onclick="switchEcTab(this, 'tab-infrastructure-8-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-8-6" onclick="switchEcTab(this, 'tab-infrastructure-8-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-8-0">Vibration 25.6 kHz decimated to 1 kHz at edge before satellite uplink (12× cost reduction). Delta-of-delta compression 8-12×. Carbon-aware routing off-peak (cheaper satellite window).</div><div class="ec-tab-content " id="tab-infrastructure-8-1">ECG 500 Hz × 24 beds × 24h = 1B samples/day/ICU. Decimate to 250 Hz for cloud (2× reduction) — clinical quality preserved per AAMI EC-13. Compression via delta-of-delta. Lifecycle: 7 years retention.</div><div class="ec-tab-content " id="tab-infrastructure-8-2">LiDAR 1.8M points/sec × 4 LiDARs × 100K vehicles = exabyte-scale. Decimate at edge (object-level perception output, not raw point cloud) to cloud. Compression (draco for point clouds). Lifecycle: raw 7 days, perception 90 days, events 7 years.</div><div class="ec-tab-content " id="tab-infrastructure-8-3">Vibration 25.6 kHz × 1000 sensors = explosion. Decimate to 1 kHz at edge before fiber uplink. Compression (delta-of-delta 8-12×). Carbon-aware routing off-peak.</div><div class="ec-tab-content " id="tab-infrastructure-8-4">PMU 30/60/120 Hz × 1000 substations × 100 PMUs = explosion. Decimate at edge (state estimator output, not raw phasor) to cloud. Compression. Carbon-aware routing.</div><div class="ec-tab-content " id="tab-infrastructure-8-5">Microseismic 2 kHz × 64 channels × 24/7 = explosion. Decimate to 200 Hz at edge before satellite uplink (10× reduction). Compression (delta-of-delta). Carbon-aware routing off-peak.</div><div class="ec-tab-content " id="tab-infrastructure-8-6">LoRaWAN remote pump stations 5-min updates = low data rate. Plant sensors 1 Hz. Not a cost explosion scenario. Compression. Carbon-aware routing off-peak.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-9">
+          <div class="ec-row-num">9</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Backpressure</div>
+            <div class="ec-row-desc">Producers faster than consumers (Kafka lag spikes, Flink can&#x27;t keep up)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Kafka producer quotas (per-device rate cap), consumer autoscaling (HPA on lag), priority lanes (alarms &gt; telemetry), Circuit Breaker to shed load, dead-letter + alert on persistent lag</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-9-0" onclick="switchEcTab(this, 'tab-infrastructure-9-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-1" onclick="switchEcTab(this, 'tab-infrastructure-9-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-2" onclick="switchEcTab(this, 'tab-infrastructure-9-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-3" onclick="switchEcTab(this, 'tab-infrastructure-9-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-4" onclick="switchEcTab(this, 'tab-infrastructure-9-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-5" onclick="switchEcTab(this, 'tab-infrastructure-9-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-9-6" onclick="switchEcTab(this, 'tab-infrastructure-9-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-9-0">Per-device MQTT publish rate cap 100 msg/s. Kafka quotas per topic. Flink autoscaling on lag (HPA). Priority lanes: alarms &gt; safety &gt; flow &gt; vibration. Vibration dropped first if backpressure persists.</div><div class="ec-tab-content " id="tab-infrastructure-9-1">Per-monitor MQTT publish rate cap 1000 msg/s (ECG is 500 Hz × 2 leads = 1000 msg/s). Kafka quotas per bed topic. Flink autoscaling on lag. Priority lanes: alarms &gt; vitals &gt; waveforms.</div><div class="ec-tab-content " id="tab-infrastructure-9-2">Per-vehicle CAN-FD bus has physical limit (8 Mbps). In-vehicle compute has 100Hz sensor fusion loop. Cloud Kafka quotas per fleet. Flink autoscaling on lag. Priority: perception &gt; planning &gt; diagnostics.</div><div class="ec-tab-content " id="tab-infrastructure-9-3">Per-device MQTT publish rate cap 100 msg/s. Kafka quotas per topic. Flink autoscaling on lag. Priority: alarms &gt; safety &gt; reactor &gt; vibration. Vibration dropped first.</div><div class="ec-tab-content " id="tab-infrastructure-9-4">Per-PMU MQTT publish rate cap. Kafka quotas per substation. Flink autoscaling on lag. Priority: protection &gt; PMU &gt; SCADA &gt; DFR. DFR dropped first.</div><div class="ec-tab-content " id="tab-infrastructure-9-5">Per-device MQTT publish rate cap. Kafka quotas per sensor. Flink autoscaling on lag. Priority: methane &gt; microseismic &gt; truck &gt; SAG mill. Truck telemetry dropped first.</div><div class="ec-tab-content " id="tab-infrastructure-9-6">Per-device MQTT publish rate cap. Kafka quotas per sensor. Flink autoscaling on lag. Priority: alarms &gt; chlorine &gt; turbidity &gt; flow &gt; pump. Pump telemetry dropped first.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-infrastructure-10">
+          <div class="ec-row-num">10</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Disaster recovery failure</div>
+            <div class="ec-row-desc">Backup cannot restore (backup corruption, wrong restore order, missing dependencies)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Periodic restore drills (monthly on isolated DR cluster), RPO 5min / RTO 30min for hot path, RPO 1hr / RTO 4hr for cold path, immutable backup copies (S3 Object Lock), documented runbook + automated test</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-infrastructure-10-0" onclick="switchEcTab(this, 'tab-infrastructure-10-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-1" onclick="switchEcTab(this, 'tab-infrastructure-10-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-2" onclick="switchEcTab(this, 'tab-infrastructure-10-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-3" onclick="switchEcTab(this, 'tab-infrastructure-10-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-4" onclick="switchEcTab(this, 'tab-infrastructure-10-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-5" onclick="switchEcTab(this, 'tab-infrastructure-10-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-infrastructure-10-6" onclick="switchEcTab(this, 'tab-infrastructure-10-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-infrastructure-10-0">Monthly restore drill on isolated DR cluster. RPO 5min for alarms (async replication), RTO 30min. RPO 1hr for telemetry (batch Iceberg export). RTO 4hr for cold storage. S3 Object Lock on backups.</div><div class="ec-tab-content " id="tab-infrastructure-10-1">Monthly restore drill on isolated DR cluster. RPO 5min for alarms (synchronous to backup data center), RTO 30min. RPO 1hr for ECG (batch). HIPAA Business Continuity Plan required.</div><div class="ec-tab-content " id="tab-infrastructure-10-2">Monthly restore drill. RPO 5min for crash events (sync replication), RTO 30min. RPO 1hr for fleet learning. RTO 4hr for cold storage. NHTSA Part 573 compliance: 7-year crash data retention.</div><div class="ec-tab-content " id="tab-infrastructure-10-3">Monthly restore drill on isolated DR cluster. RPO 5min for alarms, RTO 30min. RPO 1hr for telemetry. RTO 4hr for cold storage. OSHA PSM requires documented DR plan.</div><div class="ec-tab-content " id="tab-infrastructure-10-4">Monthly restore drill. RPO 5min for protection events, RTO 30min. RPO 1hr for SCADA. NERC CIP-009 requires disaster recovery plan + annual test.</div><div class="ec-tab-content " id="tab-infrastructure-10-5">Monthly restore drill. RPO 5min for methane alarms, RTO 30min. RPO 1hr for telemetry. RTO 4hr for cold storage. MSHA requires documented DR plan.</div><div class="ec-tab-content " id="tab-infrastructure-10-6">Monthly restore drill. RPO 5min for alarms, RTO 30min. RPO 1hr for telemetry. EPA requires documented DR plan + business continuity for water systems (America&#x27;s Water Infrastructure Act 2018).</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ec-category-section" id="human-organizational">
+      <div class="ec-cat-header" style="border-left-color: #10b981;">
+        <div class="ec-cat-icon">👥</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Human and Organizational Edge Cases</div>
+          <div class="ec-cat-subtitle">The platform is only useful if operators trust it. 8 cases that determine adoption.</div>
+          <div class="ec-cat-count">8 edge cases</div>
+        </div>
+      </div>
+      <div class="ec-cases">
+        
+        <div class="ec-row" id="case-human-organizational-1">
+          <div class="ec-row-num">1</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Operator misreads dashboard</div>
+            <div class="ec-row-desc">UI unclear, wrong alarm acknowledged</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">UX testing with real operators (shadow sessions), alarm clarity (one-sentence what + why + recommended action), color-blind safe palette, drill mode for new operators</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-1-0" onclick="switchEcTab(this, 'tab-human-organizational-1-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-1" onclick="switchEcTab(this, 'tab-human-organizational-1-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-2" onclick="switchEcTab(this, 'tab-human-organizational-1-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-3" onclick="switchEcTab(this, 'tab-human-organizational-1-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-4" onclick="switchEcTab(this, 'tab-human-organizational-1-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-5" onclick="switchEcTab(this, 'tab-human-organizational-1-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-1-6" onclick="switchEcTab(this, 'tab-human-organizational-1-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-1-0">Offshore control room often 1 operator on night shift — alarm clarity critical. UX shadow-tested with offshore operators (BSEE SEMS audited). One-sentence alarm: &#x27;methane 1.2% on deck 4 (limit 1.0%) — evacuate deck 4 per SEMS&#x27; (what + why + action).</div><div class="ec-tab-content " id="tab-human-organizational-1-1">ICU alarm fatigue is the central pain (90% false alarms in legacy). One-sentence alarm: &#x27;Patient bed 7 HR 145 bpm + SpO2 88% — likely sepsis per TS-FM, recommend blood culture + lactate&#x27;. UX shadow-tested with bedside nurses.</div><div class="ec-tab-content " id="tab-human-organizational-1-2">Driver-facing UI minimal (L4 — driver not actively driving). Fleet ops dashboard tested with ops team. One-sentence event: &#x27;Vehicle 47 hard-braked at intersection X for pedestrian — confirmed real obstacle by LiDAR + camera&#x27;.</div><div class="ec-tab-content " id="tab-human-organizational-1-3">Chemical plant control room — alarm clarity critical (T2 Laboratories-scale incidents). One-sentence: &#x27;reactor 3 T 245°C rising 5°C/min — runaway risk, recommend quench + depressurize&#x27;. UX shadow-tested with chemical operators.</div><div class="ec-tab-content " id="tab-human-organizational-1-4">Grid control room — alarm clarity critical (Northeast 2003-scale events). One-sentence: &#x27;substation 47 line 2 fault detected — auto-recloser armed, isolate section 47-2&#x27;. UX tested with system operators.</div><div class="ec-tab-content " id="tab-human-organizational-1-5">Mine control room — alarm clarity critical (Upper Big Branch 2010-scale events). One-sentence: &#x27;face methane 1.2% (limit 1.0%) — evacuate face per MSHA 30 CFR 75.323&#x27;. UX tested with mine operators.</div><div class="ec-tab-content " id="tab-human-organizational-1-6">Water plant control room — alarm clarity critical (Flint MI-scale events). One-sentence: &#x27;turbidity 0.8 NTU on filter 3 effluent (limit 0.3 NTU) — possible pathogen breakthrough, recommend boil-water advisory&#x27;. UX tested with operators.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-2">
+          <div class="ec-row-num">2</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Wrong timezone</div>
+            <div class="ec-row-desc">Local vs UTC confusion (offshore platform GMT, control room CST, vendor in IST)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Always store UTC, display local with operator&#x27;s timezone setting, alarm timestamps in dual format (UTC + local), daylight-saving-aware date pickers</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-2-0" onclick="switchEcTab(this, 'tab-human-organizational-2-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-1" onclick="switchEcTab(this, 'tab-human-organizational-2-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-2" onclick="switchEcTab(this, 'tab-human-organizational-2-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-3" onclick="switchEcTab(this, 'tab-human-organizational-2-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-4" onclick="switchEcTab(this, 'tab-human-organizational-2-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-5" onclick="switchEcTab(this, 'tab-human-organizational-2-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-2-6" onclick="switchEcTab(this, 'tab-human-organizational-2-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-2-0">Offshore platforms often in different TZ than shore control room (e.g. GoM platform CST, Houston office CST, but drilling crew may be from Norway CET). Always store UTC, display local + UTC dual. Daylight-saving auto-handled.</div><div class="ec-tab-content " id="tab-human-organizational-2-1">Hospital always local TZ for clinical context. Always UTC internally. HL7 FHIR timestamps UTC. Display local with daylight-saving. Drug administration timestamps critical for medication reconciliation.</div><div class="ec-tab-content " id="tab-human-organizational-2-2">Vehicles cross timezones (US highway driving). Always UTC internally. Driver display local. Crash data timestamped UTC + GNSS coordinates. NHTSA Part 573 requires UTC.</div><div class="ec-tab-content " id="tab-human-organizational-2-3">Plant often different TZ than corporate (e.g. Houston plant CST, NYC corporate EST, global ops team CET). Always UTC internally. Display local + UTC for shift handover.</div><div class="ec-tab-content " id="tab-human-organizational-2-4">Grid operator often spans TZ (e.g. PJM RTO spans EST/CST). Always UTC internally. Display local + UTC for shift handover. NERC reporting requires UTC.</div><div class="ec-tab-content " id="tab-human-organizational-2-5">Mine remote from control room. Atacama mine (Chile) GMT-3, Santiago control room GMT-3, Houston HQ CST. Always UTC internally. Display local + UTC for shift handover (mining shifts often 7-on/7-off).</div><div class="ec-tab-content " id="tab-human-organizational-2-6">Plant local TZ. Always UTC internally. SCADA timestamps UTC. Display local + UTC for shift handover.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-3">
+          <div class="ec-row-num">3</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Language barrier</div>
+            <div class="ec-row-desc">Alerts not understood (offshore platform mixed ES/EN, mining ES/PT, hospital EN/ES)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Localization (i18n with ICU MessageFormat), clear terminology (no jargon), bilingual alert text for mixed crews, pictograms for safety-critical alarms</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-3-0" onclick="switchEcTab(this, 'tab-human-organizational-3-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-1" onclick="switchEcTab(this, 'tab-human-organizational-3-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-2" onclick="switchEcTab(this, 'tab-human-organizational-3-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-3" onclick="switchEcTab(this, 'tab-human-organizational-3-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-4" onclick="switchEcTab(this, 'tab-human-organizational-3-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-5" onclick="switchEcTab(this, 'tab-human-organizational-3-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-3-6" onclick="switchEcTab(this, 'tab-human-organizational-3-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-3-0">Offshore GoM: EN + ES (mixed crews). Offshore Norway: NO + EN. Offshore Brazil: PT. ICU MessageFormat for i18n. Bilingual alarm text for mixed crews. Pictograms (flame, gas cloud) for safety alarms regardless of language.</div><div class="ec-tab-content " id="tab-human-organizational-3-1">US hospitals: EN + ES (Hispanic population). ICU: bilingual alarm text + pictograms (heart rate, O2, BP). ICD-10 codes are language-neutral. Joint Commission requires language access plan.</div><div class="ec-tab-content " id="tab-human-organizational-3-2">Fleet ops team: EN (US), DE (EU), ZH (China), JA (Japan). ICU MessageFormat. Crash event reports in local language + UTC timestamps. Pictograms for safety events.</div><div class="ec-tab-content " id="tab-human-organizational-3-3">US Gulf Coast: EN + ES. Saudi Arabia: EN + AR. China: ZH + EN. ICU MessageFormat. Bilingual alarm text for mixed crews. Pictograms (flame, toxic cloud) for safety alarms.</div><div class="ec-tab-content " id="tab-human-organizational-3-4">Grid operators typically single-language (US: EN, EU: EN + DE + FR). ICU MessageFormat. Bilingual alarm text for cross-border operations. Pictograms (lightning, frequency) for safety events.</div><div class="ec-tab-content " id="tab-human-organizational-3-5">Chile: ES. Peru: ES. Australia: EN. South Africa: EN + AF. ICU MessageFormat. Bilingual alarm text for mixed crews (e.g. ESL workers). Pictograms (flame, gas cloud) for safety alarms regardless of language.</div><div class="ec-tab-content " id="tab-human-organizational-3-6">US water plants: EN + ES (Hispanic workforce). Localized alarm text. Pictograms (water drop, skull) for safety alarms regardless of language.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-4">
+          <div class="ec-row-num">4</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Training gap</div>
+            <div class="ec-row-desc">Operators distrust the system, override alarms or disable</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Training (4-hour onboarding, annual refresher), explanation per alarm (citation chain), feedback loop (operator can mark alarm false → retrain model), gamified dashboard usage stats</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-4-0" onclick="switchEcTab(this, 'tab-human-organizational-4-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-1" onclick="switchEcTab(this, 'tab-human-organizational-4-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-2" onclick="switchEcTab(this, 'tab-human-organizational-4-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-3" onclick="switchEcTab(this, 'tab-human-organizational-4-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-4" onclick="switchEcTab(this, 'tab-human-organizational-4-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-5" onclick="switchEcTab(this, 'tab-human-organizational-4-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-4-6" onclick="switchEcTab(this, 'tab-human-organizational-4-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-4-0">BSEE SEMS requires annual training + drills. 4-hour onboarding on platform-specific alarm patterns. Annual refresher. Operator can mark alarm false → feeds back into TS-FM training data (human-in-the-loop).</div><div class="ec-tab-content " id="tab-human-organizational-4-1">Nurses: 2-hour onboarding + annual competency check. Physicians: 1-hour CME. Vendor in-service for new monitors. Feedback loop: nurse marks alarm false → feeds TS-FM training (human-in-the-loop) — addresses alarm fatigue.</div><div class="ec-tab-content " id="tab-human-organizational-4-2">Fleet ops training: 8-hour onboarding. Driver onboarding (L4): 30-min video + 10-min practical (emergency take-over). Feedback loop: driver marks event false-positive → feeds TS-FM training.</div><div class="ec-tab-content " id="tab-human-organizational-4-3">OSHA PSM requires annual training + drills. 4-hour onboarding on plant-specific alarms. Annual refresher with simulator. Operator can mark alarm false → feeds TS-FM training.</div><div class="ec-tab-content " id="tab-human-organizational-4-4">NERC System Operator certification (per NERC SOCCED). 4-hour onboarding on grid-specific alarms. Annual recertification. Operator can mark alarm false → feeds TS-FM training.</div><div class="ec-tab-content " id="tab-human-organizational-4-5">MSHA requires annual training + drills (Part 46 surface, Part 48 underground). 4-hour onboarding. Annual refresher with simulator. Operator can mark alarm false → feeds TS-FM training.</div><div class="ec-tab-content " id="tab-human-organizational-4-6">State certification (most US states require operator certification). 4-hour onboarding. Annual refresher. Operator can mark alarm false → feeds TS-FM training. AWWA training resources.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-5">
+          <div class="ec-row-num">5</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Responsibility ambiguity</div>
+            <div class="ec-row-desc">Nobody owns alert (control room + field + maintenance all point at each other)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Ownership matrix (asset → owner role → escalation), embedded in alarm payload, escalation policy auto-routes to right role, audit log of who handled what</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-5-0" onclick="switchEcTab(this, 'tab-human-organizational-5-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-1" onclick="switchEcTab(this, 'tab-human-organizational-5-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-2" onclick="switchEcTab(this, 'tab-human-organizational-5-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-3" onclick="switchEcTab(this, 'tab-human-organizational-5-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-4" onclick="switchEcTab(this, 'tab-human-organizational-5-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-5" onclick="switchEcTab(this, 'tab-human-organizational-5-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-5-6" onclick="switchEcTab(this, 'tab-human-organizational-5-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-5-0">BSEE SEMS requires ownership matrix. Asset → owner role (Control Room Operator → Offshore Installation Manager → On-Call Engineer). Embedded in alarm payload. Audit log per SEMS.</div><div class="ec-tab-content " id="tab-human-organizational-5-1">Bedside nurse → charge nurse → attending physician → rapid response team → code team. Ownership matrix per ICU policy. Embedded in alarm payload. Audit log per Joint Commission + CMS Conditions of Participation.</div><div class="ec-tab-content " id="tab-human-organizational-5-2">Fleet ops (remote monitoring) → driver (in-vehicle take-over) → OEM (manufacturer responsibility) → NHTSA (regulator). Ownership matrix per ISO 26262 hazard analysis. Audit log per UN-R155.</div><div class="ec-tab-content " id="tab-human-organizational-5-3">OSHA PSM requires ownership matrix (PSM Coordinator → Plant Manager → On-Call Engineer → Off-site Emergency Response). Embedded in alarm payload. Audit log per OSHA PSM.</div><div class="ec-tab-content " id="tab-human-organizational-5-4">NERC requires ownership matrix (Control Area → Balancing Authority → Transmission Operator → Reliability Coordinator). Embedded in alarm. Audit log per NERC PRC.</div><div class="ec-tab-content " id="tab-human-organizational-5-5">MSHA requires ownership matrix (Shift Supervisor → Mine Manager → Site Safety Coordinator → Off-site Emergency Response). Embedded in alarm. Audit log per MSHA.</div><div class="ec-tab-content " id="tab-human-organizational-5-6">Plant ownership: Operator → Plant Manager → Utility Director → State Regulator (EPA primacy). Embedded in alarm. Audit log per EPA + state primacy agency.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-6">
+          <div class="ec-row-num">6</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Manual work order missing</div>
+            <div class="ec-row-desc">Alert not converted to action (alarm fires, no CMMS ticket created)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Workflow integration (one-click &#x27;create work order&#x27; from alarm → CMMS API), auto-create ticket for high-severity alarms, audit log tracks alarm → ticket → close</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-6-0" onclick="switchEcTab(this, 'tab-human-organizational-6-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-1" onclick="switchEcTab(this, 'tab-human-organizational-6-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-2" onclick="switchEcTab(this, 'tab-human-organizational-6-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-3" onclick="switchEcTab(this, 'tab-human-organizational-6-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-4" onclick="switchEcTab(this, 'tab-human-organizational-6-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-5" onclick="switchEcTab(this, 'tab-human-organizational-6-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-6-6" onclick="switchEcTab(this, 'tab-human-organizational-6-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-6-0">SAP PM / IBM Maximo integration — one-click &#x27;create work order&#x27; from alarm. Auto-create for high-severity alarms (e.g. gas leak → automatic work order + evacuation notification). Audit trail alarm → ticket → close per BSEE SEMS.</div><div class="ec-tab-content " id="tab-human-organizational-6-1">EHR integration (Epic, Cerner) — one-click &#x27;create order&#x27; from alarm (e.g. sepsis → blood culture + lactate + IV antibiotics order set). Auto-create for high-severity alarms. Audit trail per HIPAA + CMS.</div><div class="ec-tab-content " id="tab-human-organizational-6-2">Fleet maintenance system integration (Geotab, Samsara, custom) — one-click &#x27;create service ticket&#x27; from vehicle diagnostic. Auto-create for safety events (e.g. brake fault → immediate tow). Audit trail.</div><div class="ec-tab-content " id="tab-human-organizational-6-3">SAP PM / Maximo integration — one-click &#x27;create work order&#x27; from alarm. Auto-create for high-severity (e.g. reactor runaway → automatic work order + evacuation). Audit trail alarm → ticket → close per OSHA PSM.</div><div class="ec-tab-content " id="tab-human-organizational-6-4">CMMS integration (Maximo, SAP PM, Oracle). One-click &#x27;create work order&#x27; from alarm. Auto-create for high-severity (e.g. transformer PD → automatic work order + crew dispatch). Audit trail per NERC.</div><div class="ec-tab-content " id="tab-human-organizational-6-5">CMMS integration (SAP PM, JD Edwards). One-click &#x27;create work order&#x27; from alarm. Auto-create for high-severity (e.g. methane → automatic work order + evacuation notification). Audit trail per MSHA.</div><div class="ec-tab-content " id="tab-human-organizational-6-6">CMMS integration (Maximo, Lucity for utilities). One-click &#x27;create work order&#x27; from alarm. Auto-create for high-severity (e.g. turbidity → automatic work order + boil-water advisory notification). Audit trail per EPA.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-7">
+          <div class="ec-row-num">7</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Poor maintenance data</div>
+            <div class="ec-row-desc">Bad asset metadata (wrong tag description, missing asset criticality, stale hierarchy)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Master data governance (asset hierarchy in CMMS as source of truth, validation at ingest, audit for stale entries, mandatory fields enforced at commissioning)</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-7-0" onclick="switchEcTab(this, 'tab-human-organizational-7-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-1" onclick="switchEcTab(this, 'tab-human-organizational-7-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-2" onclick="switchEcTab(this, 'tab-human-organizational-7-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-3" onclick="switchEcTab(this, 'tab-human-organizational-7-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-4" onclick="switchEcTab(this, 'tab-human-organizational-7-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-5" onclick="switchEcTab(this, 'tab-human-organizational-7-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-7-6" onclick="switchEcTab(this, 'tab-human-organizational-7-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-7-0">Asset hierarchy in SAP PM as source of truth. P&amp;ID cross-check at commissioning. Audit for stale entries (e.g. &#x27;compressor 7&#x27; tag if compressor 7 was replaced 3 months ago → flag for update). Mandatory fields enforced (asset criticality, location, owner).</div><div class="ec-tab-content " id="tab-human-organizational-7-1">Asset hierarchy in CMMS (TMA, Maximo Healthcare). Biomed manages monitor calibration. Mandatory fields: device serial, calibration date, patient ID at install. Audit for stale (e.g. discharged patient&#x27;s monitor still assigned).</div><div class="ec-tab-content " id="tab-human-organizational-7-2">Vehicle asset hierarchy: VIN → ECU → sensor. Mandatory fields: VIN, mileage at install, calibration date. Audit for stale (e.g. &#x27;tire pressure sensor&#x27; if tire was replaced — flag for re-pair). OEM-provided vehicle master data.</div><div class="ec-tab-content " id="tab-human-organizational-7-3">Asset hierarchy in SAP PM as source of truth. P&amp;ID cross-check at commissioning. Mandatory fields: asset criticality, location, owner. Audit for stale (e.g. &#x27;reactor 3 agitator&#x27; if agitator was replaced — flag for re-pair).</div><div class="ec-tab-content " id="tab-human-organizational-7-4">Asset hierarchy in CMMS. GIS cross-check (substation → feeder → customer). Mandatory fields: substation, voltage, asset criticality. Audit for stale (e.g. &#x27;transformer 47&#x27; if transformer was replaced).</div><div class="ec-tab-content " id="tab-human-organizational-7-5">Asset hierarchy in CMMS. MSHA map cross-check. Mandatory fields: asset criticality, location, owner. Audit for stale (e.g. &#x27;truck 47&#x27; if truck was retired).</div><div class="ec-tab-content " id="tab-human-organizational-7-6">Asset hierarchy in CMMS. GIS cross-check (plant → distribution mains → customers). Mandatory fields: treatment train, asset criticality. Audit for stale (e.g. &#x27;filter 3&#x27; if filter media was replaced — flag for re-baseline).</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-human-organizational-8">
+          <div class="ec-row-num">8</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Shift handover gap</div>
+            <div class="ec-row-desc">Context lost between shifts (incoming operator doesn&#x27;t know about ongoing issue)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Incident summaries auto-generated by LLM at handover, active alert board persists across shifts, handoff protocol (5-min verbal + signed electronic handover), persistent &#x27;in-progress&#x27; flags on alarms</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-human-organizational-8-0" onclick="switchEcTab(this, 'tab-human-organizational-8-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-1" onclick="switchEcTab(this, 'tab-human-organizational-8-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-2" onclick="switchEcTab(this, 'tab-human-organizational-8-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-3" onclick="switchEcTab(this, 'tab-human-organizational-8-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-4" onclick="switchEcTab(this, 'tab-human-organizational-8-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-5" onclick="switchEcTab(this, 'tab-human-organizational-8-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-human-organizational-8-6" onclick="switchEcTab(this, 'tab-human-organizational-8-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-human-organizational-8-0">12-hour shifts offshore. LLM auto-generates 5-bullet handover summary at shift change (active alarms, equipment status, ongoing issues, weather, outstanding work orders). Persistent &#x27;in-progress&#x27; alarm flags across shifts. Electronic handover signed by both operators.</div><div class="ec-tab-content " id="tab-human-organizational-8-1">12-hour shifts ICU. LLM auto-generates SBAR-format handover (Situation, Background, Assessment, Recommendation) at shift change. Active alert board persists. Electronic handover signed by both nurses per Joint Commission National Patient Safety Goals.</div><div class="ec-tab-content " id="tab-human-organizational-8-2">Fleet ops 24/7. LLM auto-generates shift handover (active vehicles, in-progress events, weather, traffic incidents). Electronic handover signed by both operators. Active alert board persists.</div><div class="ec-tab-content " id="tab-human-organizational-8-3">12-hour shifts. LLM auto-generates handover summary at shift change (active alarms, equipment status, batch progress, ongoing issues, weather). Electronic handover signed by both operators. Active alert board persists.</div><div class="ec-tab-content " id="tab-human-organizational-8-4">12-hour shifts (24/7 grid operation). LLM auto-generates handover (active alarms, grid status, weather, generation). Electronic handover signed by both operators. Active alert board persists.</div><div class="ec-tab-content " id="tab-human-organizational-8-5">12-hour shifts, often 7-on/7-off (remote mining). LLM auto-generates handover (active alarms, equipment status, ongoing issues, weather, microseismic). Electronic handover signed by both operators.</div><div class="ec-tab-content " id="tab-human-organizational-8-6">12-hour shifts (24/7 plant operation). LLM auto-generates handover (active alarms, plant status, water quality, ongoing issues). Electronic handover signed by both operators. Active alert board persists.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ec-category-section" id="regulatory">
+      <div class="ec-cat-header" style="border-left-color: #7c3aed;">
+        <div class="ec-cat-icon">📜</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Regulatory and Compliance Edge Cases</div>
+          <div class="ec-cat-subtitle">Regulators ask &#x27;prove you did the right thing&#x27;. 7 cases that determine audit-readiness.</div>
+          <div class="ec-cat-count">7 edge cases</div>
+        </div>
+      </div>
+      <div class="ec-cases">
+        
+        <div class="ec-row" id="case-regulatory-1">
+          <div class="ec-row-num">1</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Data retention requirement</div>
+            <div class="ec-row-desc">Must keep data for years (EPA 5yr, OSHA 5yr, SEC 7yr, FDA 10yr, NERC 7yr)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Tiered storage (TimescaleDB hot 90d, Iceberg cold 5-10yr), immutable archive (S3 Object Lock WORM), retention policies enforced at storage layer, deletion requires compliance officer approval</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-1-0" onclick="switchEcTab(this, 'tab-regulatory-1-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-1" onclick="switchEcTab(this, 'tab-regulatory-1-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-2" onclick="switchEcTab(this, 'tab-regulatory-1-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-3" onclick="switchEcTab(this, 'tab-regulatory-1-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-4" onclick="switchEcTab(this, 'tab-regulatory-1-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-5" onclick="switchEcTab(this, 'tab-regulatory-1-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-1-6" onclick="switchEcTab(this, 'tab-regulatory-1-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-1-0">EPA OOOO-b: 5 years emissions. BSEE SEMS: 5 years safety data. OSHA 1910.119: 5 years process safety. SEC: 7 years financial. TimescaleDB hot 90d → Iceberg cold 5-10yr → S3 Glacier Deep Archive 10yr+.</div><div class="ec-tab-content " id="tab-regulatory-1-1">HIPAA: 6 years (adult), 21+7 (pediatric), longer for some states. Joint Commission: 3 years clinical. FDA 510(k): device records 7 years. TimescaleDB hot 90d → Iceberg cold 7-10yr → S3 Glacier.</div><div class="ec-tab-content " id="tab-regulatory-1-2">NHTSA Part 573: 7 years crash data. UN-R155: cybersecurity event logs 6 months min. OEM warranty: 10 years. TimescaleDB hot 90d → Iceberg cold 7-10yr → S3 Glacier. Special: EDR (Event Data Recorder) per 49 CFR 563.</div><div class="ec-tab-content " id="tab-regulatory-1-3">OSHA PSM: 5 years process safety data. EPA RMP: 5 years. EPA RMP: 5 years. SEC: 7 years financial. TimescaleDB hot 90d → Iceberg cold 5-10yr → S3 Glacier.</div><div class="ec-tab-content " id="tab-regulatory-1-4">NERC PRC-002: 7 years disturbance data (COMTRADE). NERC CIP-009: 12 months logging. IEEE C37.118: 7 years PMU data. TimescaleDB hot 90d → Iceberg cold 7-10yr → S3 Glacier.</div><div class="ec-tab-content " id="tab-regulatory-1-5">MSHA 30 CFR 75: 5 years microseismic + methane. ISO 19434: 5 years. SEC: 7 years financial. TimescaleDB hot 90d → Iceberg cold 5-10yr → S3 Glacier.</div><div class="ec-tab-content " id="tab-regulatory-1-6">EPA SDWA: 10 years compliance data (LCR). EPA NPDES: 3 years discharge. SEC: 7 years financial. TimescaleDB hot 90d → Iceberg cold 10yr → S3 Glacier. Special: lead service line inventory (perpetual).</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-2">
+          <div class="ec-row-num">2</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Audit trail missing</div>
+            <div class="ec-row-desc">Cannot prove action taken (operator says &#x27;I acknowledged&#x27;, no record)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Append-only event log (every state change timestamped + signed), immutable in OpenSearch with WORM index, every operator action (acknowledge, bypass, override) creates event, retention matches regulatory requirement</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-2-0" onclick="switchEcTab(this, 'tab-regulatory-2-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-1" onclick="switchEcTab(this, 'tab-regulatory-2-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-2" onclick="switchEcTab(this, 'tab-regulatory-2-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-3" onclick="switchEcTab(this, 'tab-regulatory-2-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-4" onclick="switchEcTab(this, 'tab-regulatory-2-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-5" onclick="switchEcTab(this, 'tab-regulatory-2-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-2-6" onclick="switchEcTab(this, 'tab-regulatory-2-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-2-0">BSEE SEMS + OSHA 1910.119 require full audit trail. Append-only event log in OpenSearch with WORM index. Every operator action (acknowledge, bypass, override, evac decision) creates timestamped + signed event. Retention 5 years.</div><div class="ec-tab-content " id="tab-regulatory-2-1">HIPAA + Joint Commission require full audit trail. Append-only event log. Every operator action (acknowledge alarm, override, medication administration) creates timestamped + signed event. Retention 6 years.</div><div class="ec-tab-content " id="tab-regulatory-2-2">UN-R155 + UN-R156 require audit trail. Append-only event log. Every safety event (hard-brake, take-over request, disengagement) creates timestamped + signed event. Retention 6 months min (UN-R155).</div><div class="ec-tab-content " id="tab-regulatory-2-3">OSHA PSM + EPA RMP require full audit trail. Append-only event log. Every operator action (acknowledge, bypass, override, trip) creates event. Retention 5 years.</div><div class="ec-tab-content " id="tab-regulatory-2-4">NERC CIP-007 + PRC-002 require full audit trail. Append-only event log. Every operator action (acknowledge, isolate, restore) creates event. Retention 7 years.</div><div class="ec-tab-content " id="tab-regulatory-2-5">MSHA + ISO 19434 require full audit trail. Append-only event log. Every operator action (acknowledge, evacuate, override) creates event. Retention 5 years.</div><div class="ec-tab-content " id="tab-regulatory-2-6">EPA SDWA + state primacy agency require full audit trail. Append-only event log. Every operator action (acknowledge, bypass, boil-water advisory) creates event. Retention 10 years (LCR).</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-3">
+          <div class="ec-row-num">3</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Privacy issue</div>
+            <div class="ec-row-desc">Worker location or video data collected (GDPR, HIPAA, CCPA)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Anonymization (worker IDs hashed, video blurred except for safety events), access controls (RBAC + purpose-based), data minimization (only collect what&#x27;s needed), right-to-erasure workflow for GDPR</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-3-0" onclick="switchEcTab(this, 'tab-regulatory-3-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-1" onclick="switchEcTab(this, 'tab-regulatory-3-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-2" onclick="switchEcTab(this, 'tab-regulatory-3-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-3" onclick="switchEcTab(this, 'tab-regulatory-3-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-4" onclick="switchEcTab(this, 'tab-regulatory-3-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-5" onclick="switchEcTab(this, 'tab-regulatory-3-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-3-6" onclick="switchEcTab(this, 'tab-regulatory-3-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-3-0">Offshore platform worker location data (mustering stations, evacuation tracking) — anonymize worker IDs, blur video except for safety events (e.g. fire). Worker consent + data minimization per BSEE SEMS + general privacy.</div><div class="ec-tab-content " id="tab-regulatory-3-1">HIPAA is the central requirement. Patient IDs hashed, ECG/waveforms de-identified for research (Safe Harbor method). Access controls (RBAC + purpose-based). Right-of-access + amendment workflows per HIPAA.</div><div class="ec-tab-content " id="tab-regulatory-3-2">GDPR: driver personal data (location, biometric). CCPA: California driver data. Driver consent + data minimization. Anonymize driver IDs in fleet analytics. Video blurred except for safety events (NHTSA investigation).</div><div class="ec-tab-content " id="tab-regulatory-3-3">Plant worker location (mustering, evacuation). Worker IDs hashed, video blurred except for safety events (e.g. toxic release). Worker consent + data minimization per general privacy + plant security.</div><div class="ec-tab-content " id="tab-regulatory-3-4">AMI (smart meter) data is PII (customer usage patterns). Anonymize customer IDs. Access controls (RBAC + purpose-based). Data minimization (15-min intervals not 1-sec). Right-to-erasure per state law.</div><div class="ec-tab-content " id="tab-regulatory-3-5">Mine worker location (mustering, evacuation tracking). Worker IDs hashed. Video blurred except for safety events (e.g. methane ignition). Worker consent + data minimization.</div><div class="ec-tab-content " id="tab-regulatory-3-6">Customer consumption data (AMI/smart meters) is PII. Anonymize customer IDs. Access controls (RBAC + purpose-based). Data minimization (15-min intervals not 1-sec for AMI). Right-to-erasure per state law (CCPA).</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-4">
+          <div class="ec-row-num">4</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Data sovereignty</div>
+            <div class="ec-row-desc">Data must remain in country (Saudi Aramco, UAE, China, Russia, EU GDPR)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Regional deployment (in-country K8s cluster, local MinIO + Postgres), no cross-border data flow (configurable region routing), sovereignty compliance audit per customer</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-4-0" onclick="switchEcTab(this, 'tab-regulatory-4-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-1" onclick="switchEcTab(this, 'tab-regulatory-4-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-2" onclick="switchEcTab(this, 'tab-regulatory-4-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-3" onclick="switchEcTab(this, 'tab-regulatory-4-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-4" onclick="switchEcTab(this, 'tab-regulatory-4-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-5" onclick="switchEcTab(this, 'tab-regulatory-4-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-4-6" onclick="switchEcTab(this, 'tab-regulatory-4-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-4-0">Saudi Aramco, ADNOC require in-country data. UAE, KSA: deploy in-country K8s cluster (local AWS region or on-prem). Norway: Equinor uses Azure Norway East. UK: BP uses Azure UK South. Per-customer sovereignty compliance audit.</div><div class="ec-tab-content " id="tab-regulatory-4-1">EU GDPR: patient data stays in EU. Canada PIPEDA: in-country. Saudi Arabia: in-country. Per-hospital sovereignty compliance audit. EU-US Data Privacy Framework for cross-border.</div><div class="ec-tab-content " id="tab-regulatory-4-2">China: data must stay in China (Shanghai AWS region). EU GDPR: data stays in EU. Russia: in-country. Per-OEM sovereignty compliance audit. UN-R155 cybersecurity requires regional deployment.</div><div class="ec-tab-content " id="tab-regulatory-4-3">Saudi Aramco, ADNOC, SABIC require in-country data. China: in-country. EU: in-region. Per-customer sovereignty compliance audit. On-prem deployment available for air-gapped.</div><div class="ec-tab-content " id="tab-regulatory-4-4">EU GDPR + national grid operators require in-country. China: in-country. Russia: in-country. Per-grid-operator sovereignty compliance audit. On-prem for air-gapped (federal grid).</div><div class="ec-tab-content " id="tab-regulatory-4-5">Chile: in-country (local data center or Santiago AWS). Peru: in-country. Australia: in-country. South Africa: in-country. Per-mine sovereignty compliance audit.</div><div class="ec-tab-content " id="tab-regulatory-4-6">EU GDPR: customer data stays in EU. China: in-country. Per-utility sovereignty compliance audit. On-prem for federal/municipal utilities.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-5">
+          <div class="ec-row-num">5</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Safety certification</div>
+            <div class="ec-row-desc">System used near safety functions (IEC 61511, IEC 61508, IEC 62304, ISO 26262)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Clear boundary: platform is ADVISORY ONLY, certified SIS independent, written safety case per IEC 61511 Annex D, no automated action without integration with certified safety system, third-party functional safety assessment</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-5-0" onclick="switchEcTab(this, 'tab-regulatory-5-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-1" onclick="switchEcTab(this, 'tab-regulatory-5-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-2" onclick="switchEcTab(this, 'tab-regulatory-5-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-3" onclick="switchEcTab(this, 'tab-regulatory-5-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-4" onclick="switchEcTab(this, 'tab-regulatory-5-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-5" onclick="switchEcTab(this, 'tab-regulatory-5-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-5-6" onclick="switchEcTab(this, 'tab-regulatory-5-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-5-0">IEC 61511 SIL-3 for ESD/BOP. Platform is ADVISORY ONLY — SIS is independent (Triconex TMR), hardwired fail-safe. Written safety case per IEC 61511 Annex D. Third-party functional safety assessment by DNV or ABS.</div><div class="ec-tab-content " id="tab-regulatory-5-1">IEC 60601-1-8 alarm priority (high/medium/low). IEC 62304 Class C for sepsis predictor (FDA 510(k) Class II). Platform is ADVISORY ONLY — ventilator + infusion pump controlled by their own FDA-cleared firmware. Sepsis model is clinical decision support.</div><div class="ec-tab-content " id="tab-regulatory-5-2">ISO 26262 ASIL-D for brake/steer. ISO 21448 SOTIF. UN-R155 cybersecurity. UN-R156 software update. Platform is ADVISORY — vehicle control via ASIL-D certified ECU. Written safety case per ISO 26262 Part 3.</div><div class="ec-tab-content " id="tab-regulatory-5-3">IEC 61511 SIL-2 SIS (Triconex TMR). IEC 61508 for safety-related software. Platform is ADVISORY ONLY — SIS independent. Written safety case per IEC 61511 Annex D. Third-party assessment by TÜV or DNV.</div><div class="ec-tab-content " id="tab-regulatory-5-4">IEC 61850 GOOSE &lt; 4ms for protection. IEC 60870-5-103 for protection. Platform is ADVISORY ONLY — protection relays independent. Written safety case. NERC CIP-014 physical + cyber.</div><div class="ec-tab-content " id="tab-regulatory-5-5">MSHA 30 CFR 75.380 methane evacuation (hardwired fail-safe). ISO 19434 mining equipment safety. Platform is ADVISORY ONLY — MSHA-mandated safety systems independent. Third-party assessment by MSHA.</div><div class="ec-tab-content " id="tab-regulatory-5-6">EPA SDWA + state primacy agency. Platform is ADVISORY ONLY — backup chlorination is hardwired (failsafe over-chlorinate). State certification required for operators. Written safety case per state regs.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-6">
+          <div class="ec-row-num">6</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Environmental reporting</div>
+            <div class="ec-row-desc">Emissions/leak reporting (EPA OOOO-b, EU MRV, BSEE SEMS)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Audit-ready reports auto-generated (monthly emission totals, leak events with sensor trace), regulator format (EPA CEDRI XML, EU MRV CSV), full sensor lineage for every data point in report</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-6-0" onclick="switchEcTab(this, 'tab-regulatory-6-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-1" onclick="switchEcTab(this, 'tab-regulatory-6-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-2" onclick="switchEcTab(this, 'tab-regulatory-6-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-3" onclick="switchEcTab(this, 'tab-regulatory-6-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-4" onclick="switchEcTab(this, 'tab-regulatory-6-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-5" onclick="switchEcTab(this, 'tab-regulatory-6-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-6-6" onclick="switchEcTab(this, 'tab-regulatory-6-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-6-0">EPA OOOO-b: monthly methane emission reports (CEDRI XML format). BSEE SEMS: incident reports. EU MRV (if European offshore): annual CO2 reports. Auto-generated from sensor lineage, audit-ready.</div><div class="ec-tab-content " id="tab-regulatory-6-1">Hospital environmental: EPA refrigerant (chillers), EPA medical waste. Joint Commission Environment of Care. Auto-generated audit-ready reports. Not safety-critical compared to patient care.</div><div class="ec-tab-content " id="tab-regulatory-6-2">EPA GHG emissions for fleet (per vehicle). EU MRV (if European fleet). OEM CAFE standards. Auto-generated audit-ready reports from vehicle telemetry.</div><div class="ec-tab-content " id="tab-regulatory-6-3">EPA RMP: annual chemical release reports (RMP*Submit format). EPA OOOO-b (if applicable): methane. OSHA 300/301: injury logs. EU Seveso III (if European): major accident reports. Auto-generated audit-ready.</div><div class="ec-tab-content " id="tab-regulatory-6-4">EPA Clean Air Act (emissions from generation). EPA Clean Water Act (thermal discharge). EIA generation reports. Auto-generated audit-ready. EU MRV for European utilities.</div><div class="ec-tab-content " id="tab-regulatory-6-5">EPA (US mining): NPDES water discharge, air permits. SERNAGEOMIN (Chile): tailings dam reports. Auto-generated audit-ready reports from sensor lineage.</div><div class="ec-tab-content " id="tab-regulatory-6-6">EPA SDWA: monthly compliance reports (Consumer Confidence Report annually). EPA NPDES: monthly discharge reports. State primacy agency reports. Auto-generated audit-ready. EPA LCR: lead reports.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+
+        <div class="ec-row" id="case-regulatory-7">
+          <div class="ec-row-num">7</div>
+          <div class="ec-row-content">
+            <div class="ec-row-title">Incident investigation</div>
+            <div class="ec-row-desc">Regulator requests evidence after incident (NTSB, CSB, OSHA investigation)</div>
+            <div class="ec-row-mitigation">
+              <span class="ec-row-mit-label">General mitigation:</span>
+              <span class="ec-row-mit-text">Full lineage and replayability (raw sensor → processed → alarm → operator action → outcome), time-travel query (Iceberg snapshot at exact incident timestamp), export to regulator format (CSV + Avro + log), chain-of-custody log</span>
+            </div>
+            <div class="ec-sector-tabs">
+              <div class="ec-tab-buttons"><button class="ec-tab-btn active" data-tab="tab-regulatory-7-0" onclick="switchEcTab(this, 'tab-regulatory-7-0')">🛢️ Offshore Oil & Gas</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-1" onclick="switchEcTab(this, 'tab-regulatory-7-1')">🏥 Hospital ICU</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-2" onclick="switchEcTab(this, 'tab-regulatory-7-2')">🚗 Autonomous Vehicles</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-3" onclick="switchEcTab(this, 'tab-regulatory-7-3')">⚗️ Chemical Plant</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-4" onclick="switchEcTab(this, 'tab-regulatory-7-4')">⚡ Smart Grid</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-5" onclick="switchEcTab(this, 'tab-regulatory-7-5')">⛏️ Mining</button><button class="ec-tab-btn " data-tab="tab-regulatory-7-6" onclick="switchEcTab(this, 'tab-regulatory-7-6')">💧 Water Treatment</button></div>
+              <div class="ec-tab-contents"><div class="ec-tab-content active" id="tab-regulatory-7-0">BSEE + USCG + NTSB may investigate offshore incidents. Full lineage: raw sensor → processed → alarm → operator action → outcome. Time-travel query (Iceberg snapshot at exact incident timestamp). Export to NTSB format.</div><div class="ec-tab-content " id="tab-regulatory-7-1">Sentinel event → Root Cause Analysis (RCA) per Joint Commission. Full lineage: raw vital → TS-FM alarm → nurse acknowledgment → physician action → patient outcome. Time-travel query (Iceberg snapshot). Export to RCA format. HIPAA-compliant.</div><div class="ec-tab-content " id="tab-regulatory-7-2">NHTSA + state police + OEM investigation. Full lineage: raw sensor (LiDAR point cloud + camera frame + radar) → perception → planning → control → outcome. Time-travel query (Iceberg snapshot at crash timestamp). Export to NHTSA Early Warning Reporting format.</div><div class="ec-tab-content " id="tab-regulatory-7-3">OSHA + CSB + EPA may investigate (CSB investigates chemical incidents). Full lineage: raw sensor → TS-FM alarm → operator action → outcome. Time-travel query. Export to CSB format. Chain-of-custody.</div><div class="ec-tab-content " id="tab-regulatory-7-4">NERC + FERC + state PUC may investigate (e.g. major outage). Full lineage: raw PMU → state estimator alarm → operator action → restoration. Time-travel query (Iceberg snapshot). Export to NERC ERCOT/PJM/CAL-ISO format.</div><div class="ec-tab-content " id="tab-regulatory-7-5">MSHA + state mining board may investigate. Full lineage: raw sensor → TS-FM alarm → operator action → outcome. Time-travel query. Export to MSHA format. Chain-of-custody.</div><div class="ec-tab-content " id="tab-regulatory-7-6">EPA + state primacy agency + CDC may investigate (e.g. outbreak). Full lineage: raw sensor → TS-FM alarm → operator action → public health outcome. Time-travel query. Export to EPA format. Chain-of-custody.</div></div>
+            </div>
+          </div>
+          <div class="ec-row-status" title="Mitigated">✓</div>
+        </div>
+      </div>
+    </section>
+
+  <!-- Functional Design Sections -->
+  <div class="ec-functional-divider">
+    <h2 class="ec-functional-divider-title">Functional Design — How it all fits together</h2>
+    <p class="ec-functional-divider-sub">After all 104 edge cases above, the platform still needs to function. Below: the functional design for real-time ingestion, the 15-step stream pipeline, and the 9-rule engine. Each is what makes the edge-case coverage actionable in production.</p>
+  </div>
+  
+    <section class="ec-category-section" id="functional-telemetry-ingestion">
+      <div class="ec-cat-header" style="border-left-color: #06b6d4;">
+        <div class="ec-cat-icon">🌊</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Functional Design · Real-Time Telemetry Ingestion</div>
+          <div class="ec-cat-subtitle">The platform should ingest 7 data types. Each has explicit requirements.</div>
+          <div class="ec-cat-count">14 items</div>
+        </div>
+      </div>
+
+      <h3 class="ec-func-h3">Ingestion data types (7 types)</h3>
+      <div class="ec-func-list"><div class="ec-func-row"><div class="ec-func-name">Continuous process telemetry</div><div class="ec-func-desc">Vibration, temperature, pressure, flow, level, current — analog values sampled at 1 Hz to 25.6 kHz</div></div><div class="ec-func-row"><div class="ec-func-name">Discrete events</div><div class="ec-func-desc">Valve open/close, motor start/stop, breaker trip — boolean state changes, event-driven</div></div><div class="ec-func-row"><div class="ec-func-name">Alarm states</div><div class="ec-func-desc">Active/acknowledged/cleared, priority (per ISA-18.2), severity, source sensor, time-stamped</div></div><div class="ec-func-row"><div class="ec-func-name">Maintenance events</div><div class="ec-func-desc">Work order created/closed, calibration start/end, bypass enable/disable, override — from CMMS sync</div></div><div class="ec-func-row"><div class="ec-func-name">Operator actions</div><div class="ec-func-desc">Acknowledge, silence, bypass, override, setpoint change — from HMI audit trail</div></div><div class="ec-func-row"><div class="ec-func-name">Equipment states</div><div class="ec-func-desc">Running/stopped/maintenance/fault — from DCS/PLC state registers</div></div><div class="ec-func-row"><div class="ec-func-name">Model outputs</div><div class="ec-func-desc">TS-FM anomaly score, RUL prediction, drift metric — from ML inference pipeline</div></div></div>
+
+      <h3 class="ec-func-h3">Ingestion requirements (7)</h3>
+      <div class="ec-func-list"><div class="ec-func-row"><div class="ec-freq-name">Support millions of messages per day</div><div class="ec-freq-desc">Smart grid: 2.6B points/day fleet-wide. Hospital ICU: 890M points/day. Scaling via Kafka partitioning + EMQX cluster.</div></div><div class="ec-func-row"><div class="ec-freq-name">Support burst traffic during alarms or network restoration</div><div class="ec-freq-desc">Alarm storm can 10x volume for 30s. Network restore backfills 72h buffered data. Kafka quotas + backpressure prevent cascade.</div></div><div class="ec-func-row"><div class="ec-freq-name">Handle late data</div><div class="ec-freq-desc">Flink watermark 5 min tolerance (offshore satellite), side-output for late events. Idempotent ingestion handles replay.</div></div><div class="ec-func-row"><div class="ec-freq-name">Preserve message order per sensor/device where possible</div><div class="ec-freq-desc">Kafka partition by device_id, single partition per device preserves order. Flink keyBy(sensor_id) maintains order in stream.</div></div><div class="ec-func-row"><div class="ec-freq-name">Provide at-least-once delivery with idempotent processing</div><div class="ec-freq-desc">Kafka acks=all + min.insync.replicas=2. Consumer commit after process. Idempotency key (sensor_id + ts + value_hash) dedups.</div></div><div class="ec-func-row"><div class="ec-freq-name">Support replay for backfill and incident investigation</div><div class="ec-freq-desc">Kafka 7-day hot retention + 30-day cold. Iceberg time-travel for 10yr cold. Flink savepoint + restart for replay. NERC/BSEE audit supports 5-7yr lookback.</div></div><div class="ec-func-row"><div class="ec-freq-name">Schema enforcement</div><div class="ec-freq-desc">Confluent Schema Registry enforces Avro/Protobuf/JSON Schema on write. Backward/forward compatibility checked at deploy time.</div></div></div>
+    </section>
+
+    <section class="ec-category-section" id="functional-stream-pipeline">
+      <div class="ec-cat-header" style="border-left-color: #a855f7;">
+        <div class="ec-cat-icon">⚡</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Functional Design · Stream Processing Pipeline</div>
+          <div class="ec-cat-subtitle">For every telemetry message: 15 steps. Each step idempotent. Exactly-once via 2PC.</div>
+          <div class="ec-cat-count">15 steps</div>
+        </div>
+      </div>
+      <div class="ec-pipeline-list"><div class="ec-pipeline-row"><div class="ec-pipeline-num">1</div><div class="ec-pipeline-name">Parse and validate schema</div><div class="ec-pipeline-desc">Avro/Protobuf parse → enforce Schema Registry. Reject malformed → dead-letter topic. Validate required fields + types.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">2</div><div class="ec-pipeline-name">Authenticate device and verify topic</div><div class="ec-pipeline-desc">mTLS cert validation. Topic ACL check (device can only publish to its own namespace). Rate-limit per device (100 msg/sec default).</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">3</div><div class="ec-pipeline-name">Check timestamp sanity</div><div class="ec-pipeline-desc">1970 &lt; ts &lt; now+5min. Reject future timestamps. Flag clock-skew suspicion. Server receive time as fallback.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">4</div><div class="ec-pipeline-name">Convert to canonical unit</div><div class="ec-pipeline-desc">LLM-assisted unit normalization (psi → Pa, °F → °C). Per-device unit config cached in Redis. Physics sanity check post-conversion.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">5</div><div class="ec-pipeline-name">Enrich with asset metadata</div><div class="ec-pipeline-desc">Tag → Asset → System → Plant hierarchy lookup from PostgreSQL. Cache in Redis (5-min TTL). Adds: asset criticality, location, owner, regulatory class.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">6</div><div class="ec-pipeline-name">Apply quality rules</div><div class="ec-pipeline-desc">Range validation (e.g. bearing T &lt; 200°C). Physics constraints (e.g. voltage 0-500kV). Quality flag (Good/Uncertain/Bad) per ISA-95.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">7</div><div class="ec-pipeline-name">Detect duplicates and gaps</div><div class="ec-pipeline-desc">Idempotency key (sensor_id + ts + value_hash). Dedup within 100ms window. Sequence gap detection on critical tags. Gap-fill via physics model.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">8</div><div class="ec-pipeline-name">Update sensor health state</div><div class="ec-pipeline-desc">Heartbeat monitoring (last-seen-ts). Stuck-value detection (zero variance &gt; N hours). Drift tracking against reference. Calibration status (active/expired).</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">9</div><div class="ec-pipeline-name">Update asset state and digital twin</div><div class="ec-pipeline-desc">Asset state (running/stopped/fault). Digital twin update (current setpoint, current load, current efficiency). State machine transitions logged.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">10</div><div class="ec-pipeline-name">Run deterministic safety rules</div><div class="ec-pipeline-desc">Independent of ML. Hardcoded thresholds per ISA-18.2 (e.g. methane &gt; 2% → evacuate). Voting logic (2oo3 redundancy). SIS-grade reliability.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">11</div><div class="ec-pipeline-name">Run statistical anomaly detection</div><div class="ec-pipeline-desc">Z-score &gt; 3σ on rolling window. EWMA control limits. CUSUM for slow drift. Median absolute deviation (MAD) robust statistics.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">12</div><div class="ec-pipeline-name">Run ML inference</div><div class="ec-pipeline-desc">TS-FM (350M params, zero-shot, 0.89 AUC-ROC). Liquid placement decides edge-vs-cloud. Model version from MLflow registry. Inference cached 5-min TTL.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">13</div><div class="ec-pipeline-name">Correlate with other alerts</div><div class="ec-pipeline-desc">Time-window correlation (alarms within 60s on same system). Causal inference (PC algorithm + do-calculus). Root-cause graph (Neo4j) identifies source.</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">14</div><div class="ec-pipeline-name">Emit alerts, metrics, and events</div><div class="ec-pipeline-desc">Alert → MQTT broker + SCADA + pager. Metrics → Prometheus. Events → Kafka audit topic. Alarm priority per ISA-18.2 (high/med/low).</div></div><div class="ec-pipeline-row"><div class="ec-pipeline-num">15</div><div class="ec-pipeline-name">Persist raw and processed data</div><div class="ec-pipeline-desc">Raw → Kafka 7d + Iceberg (immutable). Processed → TimescaleDB hot 90d + ClickHouse OLAP. Audit → OpenSearch WORM index. All time-stamped + signed.</div></div></div>
+    </section>
+
+    <section class="ec-category-section" id="functional-rule-engine">
+      <div class="ec-cat-header" style="border-left-color: #f97316;">
+        <div class="ec-cat-icon">⚙️</div>
+        <div class="ec-cat-content">
+          <div class="ec-cat-title">Functional Design · Rule Engine</div>
+          <div class="ec-cat-subtitle">9 rule types. Safety-critical rules independent of ML. Voting across sensors. Maintenance-mode aware.</div>
+          <div class="ec-cat-count">9 rule types</div>
+        </div>
+      </div>
+      <div class="ec-rule-list"><div class="ec-rule-row"><div class="ec-rule-num">1</div><div class="ec-rule-name">Threshold rules</div><div class="ec-rule-desc">value &gt; X → alert (e.g. methane &gt; 1%). High/low/both. Per-asset configurable. Time-of-day aware (different thresholds day/night).</div></div><div class="ec-rule-row"><div class="ec-rule-num">2</div><div class="ec-rule-name">Rate-of-change rules</div><div class="ec-rule-desc">dT/dt &gt; X → alert (e.g. reactor T rising &gt; 5°C/min = runaway risk). Distinguishes slow drift from rapid change. Per-asset configurable.</div></div><div class="ec-rule-row"><div class="ec-rule-num">3</div><div class="ec-rule-name">Deadband rules</div><div class="ec-rule-desc">|value - last_value| &gt; X → publish (saves bandwidth on slow-changing tags). Per-asset configurable. Combined with store-and-forward.</div></div><div class="ec-rule-row"><div class="ec-rule-num">4</div><div class="ec-rule-name">Duration rules</div><div class="ec-rule-desc">value &gt; X for &gt; T seconds → alert (e.g. bearing T &gt; 90°C for &gt; 5 min). Distinguishes transient from sustained. Per-asset configurable.</div></div><div class="ec-rule-row"><div class="ec-rule-num">5</div><div class="ec-rule-name">Multi-condition rules</div><div class="ec-rule-desc">value1 &gt; X AND value2 &lt; Y → alert (e.g. flow low + pressure high = blockage). Boolean AND/OR/NOT. Per-asset configurable. ISA-95 rule grammar.</div></div><div class="ec-rule-row"><div class="ec-rule-num">6</div><div class="ec-rule-name">Asset state rules</div><div class="ec-rule-desc">if asset.state == &#x27;running&#x27; AND vibration &gt; X → alert (e.g. vibration on stopped motor = sensor fault, not real). State machine from DCS/PLC.</div></div><div class="ec-rule-row"><div class="ec-rule-num">7</div><div class="ec-rule-name">Maintenance mode rules</div><div class="ec-rule-desc">if asset.in_maintenance → suppress alarms (with audit trail + 2-person approval). Time-limited (auto-restore 4h). CMMS sync required.</div></div><div class="ec-rule-row"><div class="ec-rule-num">8</div><div class="ec-rule-name">Voting rules from multiple sensors</div><div class="ec-rule-desc">if 2 of 3 methane sensors &gt; 1% → evacuate (2oo3 voting). Per-asset-group configurable. Defeats single-sensor-fault false positive.</div></div><div class="ec-rule-row"><div class="ec-rule-num">9</div><div class="ec-rule-name">Safety-critical rules independent of ML</div><div class="ec-rule-desc">Hardcoded thresholds, never overridden by ML. Independent code path. SIL-2/3 certified (IEC 61511). Tested quarterly. Red-team exercises.</div></div></div>
+    </section>
+
   <!-- Hub CTA -->
   <div class="ec-hub-cta">
-    <h2>All 79 edge cases addressed across 7 scenarios</h2>
+    <h2>All 104 edge cases + functional design addressed across 7 scenarios</h2>
     <p>For sector-specific deployment details, visit the corresponding live scenario. For the engineering context (protocols, edge compute, ML stack), visit the Engineering Hub. For competitive positioning on how this edge-case coverage compares to AWS IoT / Azure / Cognite / Augury / Uptake / Seeq / ThingsBoard / PTC ThingWorx, visit the Competitive Comparison.</p>
     <div class="btn-row">
       <a href="scenario-demo.html" class="btn btn-primary">★ Live Scenario Hub</a>
@@ -1642,7 +2247,7 @@
     <a href="comparison.html">Competitive Comparison</a>
     <a href="contact.html">Contact</a>
   </div>
-  &copy; 2026 AISensorEdgeComp &middot; 78 Edge Cases Addressed &middot; <a href="#top">Back to top</a>
+  &copy; 2026 AISensorEdgeComp &middot; 104 Edge Cases + Functional Design &middot; <a href="#top">Back to top</a>
 </footer>
 
 <script src="assets/app.js"></script>
