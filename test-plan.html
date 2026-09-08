@@ -143,6 +143,38 @@
     .tp-test-freq { width: 100%; }
     .tp-hub-cta { padding: 32px 20px; }
   }
+
+  /* Collapsible categories */
+  .tp-tests { transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; }
+  .tp-category.collapsed .tp-tests { max-height: 0; opacity: 0; }
+  .tp-cat-toggle {
+    background: transparent; border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; color: var(--text-dim); cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; transition: all 0.2s;
+  }
+  .tp-cat-toggle:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  .tp-cat-toggle::after { content: " ▾"; }
+  .tp-category.collapsed .tp-cat-toggle::after { content: " ▸"; }
+
+  /* Sticky quick-jump nav */
+  .tp-quick-nav {
+    position: sticky; top: 60px; z-index: 90;
+    display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 20px;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+    border-radius: 0 0 12px 12px; margin: -20px 0 24px;
+  }
+  .tp-quick-nav a {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 6px 12px; border-radius: 6px; text-decoration: none;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-dim); transition: all 0.2s;
+  }
+  .tp-quick-nav a:hover { border-color: var(--cyan); color: var(--cyan); }
+  @media (max-width: 768px) {
+    .tp-quick-nav { position: static; }
+  }
+
 </style>
 </head>
 <body id="test-plan">
@@ -222,6 +254,7 @@
 <a href="#simulation" class="tp-nav-item" style="border-left-color: #f97316;">🎬 Simulation Testing <span class="tp-nav-count">9</span></a>
 <a href="#safety" class="tp-nav-item" style="border-left-color: #dc2626;">🛡️ Safety Validation <span class="tp-nav-count">6</span></a>
   </div>
+  <div style="margin-bottom: 24px;"><button id="tp-toggle-all" onclick="toggleAllCategories('collapse')" style="padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;">− Collapse all</button></div>
 
   <!-- Category blocks -->
   
@@ -1083,6 +1116,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+</script>
+<script>
+// Collapse/expand all categories
+function toggleAllCategories(action) {
+  document.querySelectorAll('.tp-category').forEach(function(c) {
+    if (action === 'collapse') c.classList.add('collapsed');
+    else c.classList.remove('collapsed');
+  });
+  var btn = document.getElementById('tp-toggle-all');
+  if (btn) {
+    btn.textContent = action === 'collapse' ? '+ Expand all' : '− Collapse all';
+    btn.onclick = function() { toggleAllCategories(action === 'collapse' ? 'expand' : 'collapse'); };
+  }
+}
 </script>
 </body>
 </html>
