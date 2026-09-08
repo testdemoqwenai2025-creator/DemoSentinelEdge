@@ -165,8 +165,13 @@
     <h2>Explore the API</h2>
     <p>Click any endpoint to expand. Try it live against the staging server (read-only endpoints work with no auth).</p>
 
-    <!-- Swagger UI container -->
-    <div id="swagger-ui"></div>
+    <!-- Collapsible Swagger UI — collapsed by default to keep page manageable -->
+    <div style="margin: 16px 0;">
+      <button id="swagger-toggle" onclick="var c=document.getElementById('swagger-collapse');var b=this;if(c.style.display==='none'){c.style.display='block';b.textContent='− Collapse Swagger UI';}else{c.style.display='none';b.textContent='+ Expand Swagger UI (16 endpoints)';}" style="display:block;width:100%;padding:14px 18px;background:linear-gradient(135deg,color-mix(in srgb,var(--cyan) 8%,var(--card)),var(--card));border:1px solid var(--border-strong);border-radius:10px;color:var(--cyan);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-align:left;transition:all 0.2s;">+ Expand Swagger UI (16 endpoints)</button>
+      <div id="swagger-collapse" style="display:none;margin-top:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+        <div id="swagger-ui"></div>
+      </div>
+    </div>
   </section>
 
   <!-- Code samples -->
