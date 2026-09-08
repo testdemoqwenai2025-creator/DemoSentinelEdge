@@ -254,6 +254,16 @@
 <a href="#simulation" class="tp-nav-item" style="border-left-color: #f97316;">🎬 Simulation Testing <span class="tp-nav-count">9</span></a>
 <a href="#safety" class="tp-nav-item" style="border-left-color: #dc2626;">🛡️ Safety Validation <span class="tp-nav-count">6</span></a>
   </div>
+
+  <!-- Sticky quick-jump nav -->
+  <div class="tp-quick-nav">
+    <a href="#functional" style="border-left: 3px solid #10b981;">✅ Functional (5)</a>
+    <a href="#edge-case" style="border-left: 3px solid #06b6d4;">🛡️ Edge-case (10)</a>
+    <a href="#chaos" style="border-left: 3px solid #a855f7;">🌀 Chaos (7)</a>
+    <a href="#simulation" style="border-left: 3px solid #f97316;">🎬 Simulation (9)</a>
+    <a href="#safety" style="border-left: 3px solid #dc2626;">🛡️ Safety (6)</a>
+  </div>
+
   <div style="margin-bottom: 24px;"><button id="tp-toggle-all" onclick="toggleAllCategories('collapse')" style="padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;">− Collapse all</button></div>
 
   <!-- Category blocks -->
@@ -266,6 +276,7 @@
           <div class="tp-cat-subtitle">Happy-path + basic failure tests — must pass on every PR + nightly</div>
         </div>
         <div class="tp-cat-count">5 tests</div>
+        <button class="tp-cat-toggle" onclick="this.closest('.tp-category').classList.toggle('collapsed')">Collapse</button>
       </div>
       <div class="tp-tests">
         <div class="tp-test" id="test-functional-1">
@@ -378,6 +389,7 @@
           <div class="tp-cat-subtitle">Sensor + network + data edge cases — must pass nightly</div>
         </div>
         <div class="tp-cat-count">10 tests</div>
+        <button class="tp-cat-toggle" onclick="this.closest('.tp-category').classList.toggle('collapsed')">Collapse</button>
       </div>
       <div class="tp-tests">
         <div class="tp-test" id="test-edge-case-1">
@@ -590,6 +602,7 @@
           <div class="tp-cat-subtitle">Random failure injection in production-like environment — weekly chaos day</div>
         </div>
         <div class="tp-cat-count">7 tests</div>
+        <button class="tp-cat-toggle" onclick="this.closest('.tp-category').classList.toggle('collapsed')">Collapse</button>
       </div>
       <div class="tp-tests">
         <div class="tp-test" id="test-chaos-1">
@@ -742,6 +755,7 @@
           <div class="tp-cat-subtitle">Digital twin simulator generates normal + abnormal scenarios — continuous + on-demand</div>
         </div>
         <div class="tp-cat-count">9 tests</div>
+        <button class="tp-cat-toggle" onclick="this.closest('.tp-category').classList.toggle('collapsed')">Collapse</button>
       </div>
       <div class="tp-tests">
         <div class="tp-test" id="test-simulation-1">
@@ -934,6 +948,7 @@
           <div class="tp-cat-subtitle">Formal safety engineering techniques — required for IEC 61511 / ISO 26262 / IEC 62304 certification</div>
         </div>
         <div class="tp-cat-count">6 tests</div>
+        <button class="tp-cat-toggle" onclick="this.closest('.tp-category').classList.toggle('collapsed')">Collapse</button>
       </div>
       <div class="tp-tests">
         <div class="tp-test" id="test-safety-1">
