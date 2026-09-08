@@ -34,9 +34,20 @@
     <a href="sectors.html">All Sectors</a>
     <a href="scenario-demo.html" style="color: var(--cyan);">★ Scenario Hub</a>
     
-    <a href="engineering.html">Engineering</a>
-    <a href="test-plan.html">Test Plan</a>
-    <a href="comparison.html">Comparison</a>
+    <div class="nav-dropdown" style="position:relative;display:inline-block;">
+      <a href="engineering.html" style="cursor:pointer;">More ▾</a>
+      <div class="nav-dropdown-menu" style="display:none;position:absolute;top:100%;left:0;background:var(--card);border:1px solid var(--border-strong);border-radius:8px;padding:8px 0;min-width:200px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <a href="engineering.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Engineering Hub</a>
+        <a href="architecture-deep.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Architecture</a>
+        <a href="production-stack.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Production Stack</a>
+        <a href="edge-cases.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Edge Cases (104)</a>
+        <a href="build-plan.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Build Plan</a>
+        <a href="test-plan.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Test Plan</a>
+        <a href="comparison.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Comparison</a>
+        <a href="what-we-dont-do.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">What We Don't Do</a>
+        <a href="blog.html" style="display:block;padding:8px 16px;font-size:13px;color:var(--text-dim);text-decoration:none;">Blog</a>
+      </div>
+    </div>
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
   </div>
   <div class="nav-actions">
@@ -113,6 +124,10 @@
 </div>
 
 <footer>
+  <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+    <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 6px;">About AISensorEdgeComp</div>
+    <p style="font-size: 12px; color: var(--text-mute); line-height: 1.6; margin: 0;">SentinelEdge is a big-data IoT platform that ingests sensor data from harsh, safety-critical environments — offshore platforms, chemical plants, hospital ICUs, autonomous fleets — and fuses it at the edge with a 350M-parameter time-series foundation model for zero-shot anomaly detection, predictive maintenance, and regulatory-grade audit trails.</p>
+  </div>
   <div class="footer-links">
     <a href="engineering.html">Engineering Hub</a>
     <a href="architecture-deep.html">Architecture</a>
@@ -126,6 +141,11 @@
     <a href="api-reference.html">API</a>
     <a href="portal.html">Portal</a>
     <a href="contact.html">Contact</a>
+  </div>
+    <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--text-dim);text-decoration:none;">&larr; Return to Home</a>
+    <span style="color:var(--text-mute);">|</span>
+    <a href="#" onclick="alert('AISensorEdgeComp respects your privacy. We do not use cookies for tracking. All telemetry data is synthetic in this demo. No personal data is collected. For GDPR inquiries: testdemoqwenai2025@gmail.com');return false;" style="font-size:13px;color:var(--text-dim);text-decoration:none;">GDPR / Privacy</a>
   </div>
   &copy; 2026 AISensorEdgeComp &middot; Smart Grid ROI Calculator &middot; <a href="#top">Back to top</a>
 </footer>
@@ -152,6 +172,22 @@ function updateSectorROI() {
   document.getElementById('s-payback').textContent = payback;
 }
 updateSectorROI();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-dropdown > a').forEach(function(trigger) {
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      var menu = this.parentElement.querySelector('.nav-dropdown-menu');
+      if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-dropdown')) {
+      document.querySelectorAll('.nav-dropdown-menu').forEach(function(m) { m.style.display = 'none'; });
+    }
+  });
+});
 </script>
 </body>
 </html>
