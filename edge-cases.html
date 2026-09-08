@@ -221,6 +221,12 @@
     .ec-tab-btn { font-size: 10px; padding: 4px 8px; }
     .ec-hub-cta { padding: 32px 20px; }
   }
+
+  .ec-cases { transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; }
+  .ec-category-section.collapsed .ec-cases { max-height: 0; opacity: 0; }
+  .ec-cat-toggle { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: var(--text-dim); cursor: pointer; font-family: 'JetBrains Mono', monospace; }
+  .ec-cat-toggle:hover { border-color: var(--cyan); color: var(--cyan); }
+
 </style>
 </head>
 <body id="edge-cases">
@@ -249,6 +255,7 @@
     <a href="https://preview-chat-beeb4b2b-e7e5-4b02-a2cd-72b95656e3a8.space-z.ai/#sensors" target="_blank" rel="noopener" class="live-link"><span class="live-dot"></span>Live MVP</a>
   </div>
   <div class="nav-actions">
+    <button class="nav-btn" onclick="openModal('searchModal')" aria-label="Search" style="padding:6px 10px;font-size:13px;background:transparent;border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Search</button>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -311,6 +318,7 @@
           <div class="ec-cat-title">Sensor-level Edge Cases</div>
           <div class="ec-cat-subtitle">Sensors misbehave in 15 ways. Each must be detected and mitigated.</div>
           <div class="ec-cat-count">15 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -579,6 +587,7 @@
           <div class="ec-cat-title">Network and Gateway Edge Cases</div>
           <div class="ec-cat-subtitle">Industrial networks are unreliable. 13 cases each must have explicit handling.</div>
           <div class="ec-cat-count">13 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -813,6 +822,7 @@
           <div class="ec-cat-title">Data Quality Edge Cases</div>
           <div class="ec-cat-subtitle">Bad data poisons ML. 11 cases at ingest must be detected.</div>
           <div class="ec-cat-count">12 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -1030,6 +1040,7 @@
           <div class="ec-cat-title">Process and Operational Edge Cases</div>
           <div class="ec-cat-subtitle">Industrial processes have 16 transient states that look like anomalies but aren&#x27;t.</div>
           <div class="ec-cat-count">16 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -1315,6 +1326,7 @@
           <div class="ec-cat-title">Analytics and ML Edge Cases</div>
           <div class="ec-cat-subtitle">ML in safety-critical contexts has 13 specific failure modes.</div>
           <div class="ec-cat-count">13 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -1549,6 +1561,7 @@
           <div class="ec-cat-title">Safety and Control Edge Cases</div>
           <div class="ec-cat-subtitle">Safety-critical systems have 10 edge cases that must be deterministic, not ML-driven.</div>
           <div class="ec-cat-count">10 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -1732,6 +1745,7 @@
           <div class="ec-cat-title">Infrastructure Edge Cases</div>
           <div class="ec-cat-subtitle">Database, streaming, storage, query, region, and DR failures — 10 cases every platform must survive.</div>
           <div class="ec-cat-count">10 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -1915,6 +1929,7 @@
           <div class="ec-cat-title">Human and Organizational Edge Cases</div>
           <div class="ec-cat-subtitle">The platform is only useful if operators trust it. 8 cases that determine adoption.</div>
           <div class="ec-cat-count">8 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -2064,6 +2079,7 @@
           <div class="ec-cat-title">Regulatory and Compliance Edge Cases</div>
           <div class="ec-cat-subtitle">Regulators ask &#x27;prove you did the right thing&#x27;. 7 cases that determine audit-readiness.</div>
           <div class="ec-cat-count">7 edge cases</div>
+      <button class="ec-cat-toggle" onclick="this.closest(\'.ec-category-section\').classList.toggle(\'collapsed\')">Collapse</button>
         </div>
       </div>
       <div class="ec-cases">
@@ -2279,6 +2295,28 @@
   </div>
   &copy; 2026 AISensorEdgeComp &middot; 104 Edge Cases + Functional Design &middot; <a href="#top">Back to top</a>
 </footer>
+
+
+<!-- Search modal -->
+<div class="modal-overlay" id="searchModal" onclick="if(event.target===this)closeModal('searchModal')" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;">
+  <div style="background:var(--card);border:1px solid var(--border-strong);border-radius:16px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:32px;">
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;">
+      <div><h3 style="font-size:22px;margin-bottom:4px;">Search AISensorEdgeComp</h3><p style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--text-mute);">Ask about TAM, architecture, team, ROI, competitors...</p></div>
+      <button onclick="closeModal('searchModal')" style="background:transparent;border:1px solid var(--border);cursor:pointer;width:32px;height:32px;border-radius:6px;color:var(--text);font-size:18px;">&times;</button>
+    </div>
+    <input type="text" id="searchInput" placeholder="e.g. What is the TAM? How does the TS-FM work?" onkeydown="if(event.key==='Enter')handleSearch()" style="width:100%;padding:12px 16px;border-radius:8px;background:var(--bg-2);border:1px solid var(--border);color:var(--text);font-family:Inter,sans-serif;font-size:14px;margin-bottom:16px;" />
+    <button onclick="handleSearch()" style="padding:10px 20px;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;border-radius:8px;color:white;font-weight:600;cursor:pointer;font-size:14px;">Search →</button>
+    <div id="searchResults" style="margin-top:20px;"></div>
+  </div>
+</div>
+
+<!-- Floating Back-to-Top button -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top" style="position:fixed;bottom:30px;right:30px;z-index:90;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.3);transition:opacity 0.3s;">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<script>
+window.addEventListener('scroll',function(){var b=document.getElementById('backToTop');if(!b)return;if(window.scrollY>300){b.style.display='flex';b.style.opacity='1';}else{b.style.display='none';}});
+</script>
 
 <script src="assets/app.js"></script>
 <script>
